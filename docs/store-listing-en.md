@@ -42,7 +42,7 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 
 ## Contact
 
-Add a support email you monitor (required for Play). Example placeholder: replace before publish.
+**support@safelight.fi** (required for Play — use in Console store listing and developer contact)
 
 ## Device targeting
 
