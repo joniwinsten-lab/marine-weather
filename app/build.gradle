@@ -1,0 +1,114 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'com.google.devtools.ksp'
+}
+
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace 'fi.veneappi.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'fi.veneappi.app'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField 'String', 'WEATHER_USER_AGENT', '"MarineWeather/0.1.0 (fi.veneappi.app; planning app)"'
+        buildConfigField 'boolean', 'ENABLE_OSRM_DEMO', 'false'
+        // Play Console: create matching product IDs and prices (e.g. €59.99 one-time, €3.99/mo subscription).
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_INAPP', '"route_premium_lifetime"'
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_SUB', '"route_premium_monthly"'
+        // Release: always false. Debug build overrides below so route tab works without Play product yet.
+        buildConfigField 'boolean', 'DEBUG_ROUTE_PREMIUM_UNLOCKED', 'false'
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            // false = näet paywallin ja lukot; true = reitti auki ilman Play-tuotteita kehityksessä
+            buildConfigField 'boolean', 'DEBUG_ROUTE_PREMIUM_UNLOCKED', 'false'
+        }
+        friends {
+            initWith debug
+            matchingFallbacks = ['debug']
+            applicationIdSuffix '.friends'
+            versionNameSuffix '-friends'
+            buildConfigField 'boolean', 'DEBUG_ROUTE_PREMIUM_UNLOCKED', 'true'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.activity:activity-compose:1.9.3'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.8.7'
+    implementation 'androidx.navigation:navigation-compose:2.8.4'
+    implementation platform('androidx.compose:compose-bom:2024.12.01')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
+    ksp 'androidx.room:room-compiler:2.6.1'
+    implementation 'org.maplibre.gl:android-sdk:11.5.1'
+    implementation 'org.maplibre.gl:android-sdk-geojson:6.0.1'
+    implementation 'com.android.billingclient:billing-ktx:7.1.1'
+    implementation 'androidx.datastore:datastore-preferences:1.1.1'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-tooling-preview'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.truth:truth:1.4.4'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+}

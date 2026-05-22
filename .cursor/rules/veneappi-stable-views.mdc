@@ -1,0 +1,20 @@
+---
+description: Älä muuta Map & weather tai Route -näkymiä ilman erillistä pyyntöä
+alwaysApply: true
+---
+
+# Marine Weather: vakaiden näkymien rajaus
+
+Noudatettava **aina**, ellei käyttäjä **erillisessä viestissä** pyydä nimenomaan kyseisen näkymän muutoksia.
+
+## Map & weather
+
+- **Älä** muuta Map & weather -näkymää (kartta + säävertailu, `ComparePane` / `WeatherPane`, tiivis kolmen lähteen layout, `SourceWindForecastCard` kun käytössä karttanäkymässä, jne.), **ellei** käyttäjä pyydä sitä **täysin erikseen** (esim. "muuta vain Map & weather -paneelia…").
+- Muut työt (laskutus, kieli, muut välilehdet, backend) ok; vältä tiedostoja ja refaktorointeja, jotka koskevat tätä näkymää.
+
+## Route
+
+- **Älä** muuta Route-näkymää (`RoutePane`, reittikartan UI, reittisää, `RouteStripForSource`, reittinavigaatio), **ellei** käyttäjä pyydä sitä **erikseen**.
+- Sama periaate: muut osat ok; älä koske Route-koodiin ilman selkeää pyyntöä.
+
+Kun käyttäjä pyytää muutosta jompaankumpaan, rajaa diff **vain** pyydettyyn näkymään.

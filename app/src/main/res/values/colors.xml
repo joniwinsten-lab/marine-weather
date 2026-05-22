@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#0B3D91</color>
+    <!-- Legacy splash / map underpaint (dark); kept for any older references -->
+    <color name="splash_ocean_underpaint">#0B2847</color>
+    <color name="splash_icon_plate">#E8F5FF</color>
+    <!-- Splash: dark sea blue (matches gradient top in Compose) -->
+    <color name="splash_background">#070F1A</color>
+    <color name="splash_gradient_mid">#0F2844</color>
+    <color name="splash_gradient_bottom">#153E5C</color>
+</resources>

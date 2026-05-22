@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection
+  timeStamp="2026-05-16T12:00:00Z"
+  numberReturned="2"
+  numberMatched="2"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:BsWfs="http://xml.fmi.fi/schema/wfs/2.0">
+  <wfs:member>
+    <BsWfs:BsWfsElement gml:id="lightning.1">
+      <BsWfs:Time>2026-05-16T11:58:00Z</BsWfs:Time>
+      <BsWfs:Location>
+        <gml:Point srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:pos>24.88 60.15</gml:pos>
+        </gml:Point>
+      </BsWfs:Location>
+    </BsWfs:BsWfsElement>
+  </wfs:member>
+  <wfs:member>
+    <BsWfs:BsWfsElement gml:id="lightning.2">
+      <BsWfs:Time>2026-05-16T11:59:30Z</BsWfs:Time>
+      <BsWfs:Parameters>
+        <BsWfs:Parameter name="longitude" values="21.5"/>
+        <BsWfs:Parameter name="latitude" values="62.0"/>
+      </BsWfs:Parameters>
+    </BsWfs:BsWfsElement>
+  </wfs:member>
+</wfs:FeatureCollection>

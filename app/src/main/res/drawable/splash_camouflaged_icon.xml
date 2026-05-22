@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Same fill as windowSplashScreenBackground so the system icon slot blends away
+  (no default square icon).
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <size
+                android:width="288dp"
+                android:height="288dp" />
+            <solid android:color="@color/splash_background" />
+        </shape>
+    </item>
+</layer-list>
