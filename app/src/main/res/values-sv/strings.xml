@@ -4,8 +4,8 @@
     <string name="nav_compare">Karta\noch väder</string>
     <string name="nav_route">Ruttplanering</string>
     <string name="nav_premium_mark">(Premium)</string>
-    <string name="route_premium_title">Ruttplanering</string>
-    <string name="route_premium_body">Lås upp ruttplanering med väder längs rutten: engångsköp eller månadsprenumeration i Google Play. Kartan och punktprognoser förblir gratis.</string>
+    <string name="route_premium_title">Premium</string>
+    <string name="route_premium_body">Lås upp ruttplanering med väder längs rutten och 12-dagars vindprognos. Karta &amp; väderjämförelse, radar, marintext och punktprognoser förblir gratis.</string>
     <string name="route_premium_buy_once">Köp en gång — %1$s</string>
     <string name="route_premium_subscribe_monthly">Prenumerera — %1$s / månad</string>
     <string name="route_premium_price_loading">…</string>

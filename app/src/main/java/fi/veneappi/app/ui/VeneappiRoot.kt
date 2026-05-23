@@ -204,13 +204,12 @@ fun VeneappiRoot(
     val useNavigationRail =
         LocalConfiguration.current.screenWidthDp >= UiBreakpoints.NAVIGATION_RAIL_MIN_WIDTH_DP
 
-    LaunchedEffect(ui.latitude, ui.longitude, isRoutePremium) {
+    LaunchedEffect(ui.latitude, ui.longitude) {
         app.appContainer.applicationScope.launch {
             runCatching {
                 app.appContainer.mapTileWarmup.warm(ui.latitude, ui.longitude)
             }
         }
-        if (!isRoutePremium) return@LaunchedEffect
         app.appContainer.stormRadarPrefetcher.schedule(
             scope = app.appContainer.applicationScope,
             lat = ui.latitude,
@@ -222,7 +221,7 @@ fun VeneappiRoot(
         if (destination == MainDest.EXTENDED_WIND && isRoutePremium) {
             vm.refreshWeather()
         }
-        if (destination == MainDest.STORM_RADAR && isRoutePremium) {
+        if (destination == MainDest.STORM_RADAR) {
             stormVm.refreshRadar(ui.latitude, ui.longitude)
         }
     }
@@ -312,13 +311,22 @@ fun VeneappiRoot(
                         selected = destination == MainDest.STORM_RADAR,
                         onClick = { destination = MainDest.STORM_RADAR },
                         icon = {
-                            NavPremiumBadgeIcon(
-                                baseImageVector = Icons.Outlined.Thunderstorm,
-                                baseContentDescription = stringResource(R.string.storm_nav_cd),
-                                isUnlocked = isRoutePremium,
+                            Icon(
+                                Icons.Outlined.Thunderstorm,
+                                contentDescription = stringResource(R.string.storm_nav_cd),
                             )
                         },
-                        label = { NavPremiumStackLabel(stringResource(R.string.nav_storm_radar), forRail = true) },
+                        label = {
+                            Text(
+                                text = stringResource(R.string.nav_storm_radar),
+                                style = MaterialTheme.typography.labelSmall,
+                                textAlign = TextAlign.Center,
+                                maxLines = 4,
+                                softWrap = true,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
+                            )
+                        },
                     )
                 }
             }
@@ -503,74 +511,20 @@ fun VeneappiRoot(
                                 modifier = Modifier.fillMaxSize(),
                             )
                         MainDest.STORM_RADAR ->
-                            if (isRoutePremium) {
-                                StormRadarPane(
-                                    mapUi = ui,
-                                    stormUi = stormUi,
-                                    onLongPressMap = vm::setMapLocation,
-                                    onMyLocation = { vm.recenterToDeviceLocation(context) },
-                                    onRadarEnabled = stormVm::setRadarEnabled,
-                                    onLightningEnabled = stormVm::setLightningEnabled,
-                                    onRefreshRadar = stormVm::refreshRadar,
-                                    onRefreshLightning = stormVm::refreshLightning,
-                                    onToggleAnimation = stormVm::toggleRadarAnimation,
-                                    onStepRadarFrame = stormVm::stepRadarFrame,
-                                    onSetRadarFrameIndex = stormVm::setRadarFrameIndex,
-                                    modifier = Modifier.fillMaxSize(),
-                                )
-                            } else {
-                                RoutePremiumPaywall(
-                                    billingReady = billingReady,
-                                    inAppProduct = routePremiumInApp,
-                                    subscriptionProduct = routePremiumSub,
-                                    showTrialOffer = !routeTrialWasStarted,
-                                    onStartTrial = {
-                                        scope.launch {
-                                            val ok =
-                                                app.appContainer.userPreferencesRepository.startRouteTrialIfEligible()
-                                            if (!ok) {
-                                                Toast.makeText(
-                                                    context,
-                                                    context.getString(R.string.route_premium_trial_already_used),
-                                                    Toast.LENGTH_SHORT,
-                                                ).show()
-                                            }
-                                        }
-                                    },
-                                    onBuyLifetime = {
-                                        val started =
-                                            app.appContainer.billingManager.launchRoutePremiumInAppPurchase(activity)
-                                        if (!started) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.route_premium_purchase_unavailable),
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
-                                        }
-                                    },
-                                    onSubscribeMonthly = {
-                                        val started =
-                                            app.appContainer.billingManager.launchRoutePremiumSubscriptionPurchase(
-                                                activity,
-                                            )
-                                        if (!started) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.route_premium_purchase_unavailable),
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
-                                        }
-                                    },
-                                    onRestorePurchases = {
-                                        app.appContainer.billingManager.syncPurchasesAndAcknowledge()
-                                    },
-                                    onBackToMap = {
-                                        destination = MainDest.COMPARE
-                                        vm.setRoutePickMode(RoutePickMode.None)
-                                    },
-                                    modifier = Modifier.fillMaxSize(),
-                                )
-                            }
+                            StormRadarPane(
+                                mapUi = ui,
+                                stormUi = stormUi,
+                                onLongPressMap = vm::setMapLocation,
+                                onMyLocation = { vm.recenterToDeviceLocation(context) },
+                                onRadarEnabled = stormVm::setRadarEnabled,
+                                onLightningEnabled = stormVm::setLightningEnabled,
+                                onRefreshRadar = stormVm::refreshRadar,
+                                onRefreshLightning = stormVm::refreshLightning,
+                                onToggleAnimation = stormVm::toggleRadarAnimation,
+                                onStepRadarFrame = stormVm::stepRadarFrame,
+                                onSetRadarFrameIndex = stormVm::setRadarFrameIndex,
+                                modifier = Modifier.fillMaxSize(),
+                            )
                     }
                 }
 
@@ -656,13 +610,19 @@ fun VeneappiRoot(
                             selected = destination == MainDest.STORM_RADAR,
                             onClick = { destination = MainDest.STORM_RADAR },
                             icon = {
-                                NavPremiumBadgeIcon(
-                                    baseImageVector = Icons.Outlined.Thunderstorm,
-                                    baseContentDescription = stringResource(R.string.storm_nav_cd),
-                                    isUnlocked = isRoutePremium,
+                                Icon(
+                                    Icons.Outlined.Thunderstorm,
+                                    contentDescription = stringResource(R.string.storm_nav_cd),
                                 )
                             },
-                            label = { NavPremiumStackLabel(stringResource(R.string.nav_storm_radar)) },
+                            label = {
+                                Text(
+                                    stringResource(R.string.nav_storm_radar),
+                                    maxLines = 2,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            },
                         )
                     }
                 }

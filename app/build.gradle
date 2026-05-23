@@ -20,14 +20,14 @@ android {
         applicationId 'fi.veneappi.app'
         minSdk 26
         targetSdk 35
-        versionCode 1
-        versionName '0.1.0'
+        versionCode 4
+        versionName '0.2.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField 'String', 'WEATHER_USER_AGENT', '"MarineWeather/0.1.0 (fi.veneappi.app; planning app)"'
         buildConfigField 'boolean', 'ENABLE_OSRM_DEMO', 'false'
         // Play Console: create matching product IDs and prices (e.g. €59.99 one-time, €3.99/mo subscription).
-        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_INAPP', '"route_premium_lifetime"'
-        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_SUB', '"route_premium_monthly"'
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_INAPP', '"route-premium-lifetime"'
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_SUB', '"route-premium-monthly"'
         // Release: always false. Debug build overrides below so route tab works without Play product yet.
         buildConfigField 'boolean', 'DEBUG_ROUTE_PREMIUM_UNLOCKED', 'false'
     }
@@ -35,10 +35,11 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile rootProject.file(keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['keyPassword']
+                // getProperty (not bracket + GString) so $ and % in passwords stay literal
+                storeFile rootProject.file(keystoreProperties.getProperty('storeFile'))
+                storePassword keystoreProperties.getProperty('storePassword')
+                keyAlias keystoreProperties.getProperty('keyAlias')
+                keyPassword keystoreProperties.getProperty('keyPassword')
             }
         }
     }
@@ -50,6 +51,10 @@ android {
             }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Native libs (MapLibre): symbols for Play crash/ANR reports — removes native-symbol warning.
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
         }
         debug {
             // false = näet paywallin ja lukot; true = reitti auki ilman Play-tuotteita kehityksessä

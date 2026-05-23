@@ -4,8 +4,8 @@
     <string name="nav_compare">Kartta\nja sää</string>
     <string name="nav_route">Reittisuunnittelu</string>
     <string name="nav_premium_mark">(Premium)</string>
-    <string name="route_premium_title">Reittisuunnittelu</string>
-    <string name="route_premium_body">Avaa reittisuunnittelu sääennusteineen reitin varrella: kertaluonteinen osto tai kuukausitilaus Google Playssa. Kartta ja pistemäiset ennusteet pysyvät ilmaisina.</string>
+    <string name="route_premium_title">Premium</string>
+    <string name="route_premium_body">Avaa reittisuunnittelu sääennusteineen reitin varrella ja 12 päivän tuuliennuste. Kartta ja säävertailu, tutka, meritekstiyhteenveto ja pistemäiset ennusteet pysyvät ilmaisina.</string>
     <string name="route_premium_buy_once">Osta kerralla — %1$s</string>
     <string name="route_premium_subscribe_monthly">Tilaa — %1$s / kk</string>
     <string name="route_premium_price_loading">…</string>

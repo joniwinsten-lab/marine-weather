@@ -24,8 +24,14 @@ FREE
 
 PREMIUM (Google Play)
 • Route planning with weather along the route
+• 12-day wind outlook
 • Export route as GPX or PDF
 • One-time purchase or monthly subscription — prices shown in Play before you buy
+
+FREE (also included)
+• Storm radar and lightning
+• National marine text summaries
+• Map & multi-source point forecasts
 
 IMPORTANT
 Open maps and forecasts are planning aids only. They do not replace official nautical charts, AIS, or regulations. Not for primary navigation.
@@ -46,8 +52,8 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 
 ## Device targeting
 
-- Phones and tablets
-- Mention in release notes / listing: **designed for landscape use on tablets**
+- **Tablets** (phones filtered via `requiresSmallestWidthDp=600` in manifest)
+- Mention in store listing: **designed for landscape use on Android tablets**
 
 ## Graphics checklist
 
@@ -61,8 +67,8 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 
 | Type | Product ID |
 |------|------------|
-| One-time | `route_premium_lifetime` |
-| Subscription | `route_premium_monthly` |
+| One-time | `route-premium-lifetime` |
+| Subscription | `route-premium-monthly` |
 
 ## Privacy policy URL
 

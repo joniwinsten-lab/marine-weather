@@ -4,8 +4,8 @@
     <string name="nav_compare">Kart og\nvær</string>
     <string name="nav_route">Ruteplanlegging</string>
     <string name="nav_premium_mark">(Premium)</string>
-    <string name="route_premium_title">Ruteplanlegging</string>
-    <string name="route_premium_body">Lås opp ruteplanlegging med vær langs ruten: engangskjøp eller månedlig abonnement i Google Play. Kartet og punktprognoser forblir gratis.</string>
+    <string name="route_premium_title">Premium</string>
+    <string name="route_premium_body">Lås opp ruteplanlegging med vær langs ruten og 12-dagers vindprognose. Kart &amp; værsammenligning, radar, marintekst og punktprognoser forblir gratis.</string>
     <string name="route_premium_buy_once">Kjøp én gang — %1$s</string>
     <string name="route_premium_subscribe_monthly">Abonner — %1$s / mnd</string>
     <string name="route_premium_price_loading">…</string>

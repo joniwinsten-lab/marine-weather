@@ -4,8 +4,8 @@
     <string name="nav_compare">Map &amp;\nweather</string>
     <string name="nav_route">Route planning</string>
     <string name="nav_premium_mark">(Premium)</string>
-    <string name="route_premium_title">Route planning</string>
-    <string name="route_premium_body">Unlock route planning with weather along the route: choose a one-time purchase or a monthly subscription in Google Play. The map and point forecasts stay free.</string>
+    <string name="route_premium_title">Premium</string>
+    <string name="route_premium_body">Unlock route planning with weather along the route and the 12-day wind outlook. Map &amp; weather comparison, storm radar, marine text summaries and point forecasts stay free.</string>
     <string name="route_premium_buy_once">Buy once — %1$s</string>
     <string name="route_premium_subscribe_monthly">Subscribe — %1$s / month</string>
     <string name="route_premium_price_loading">…</string>

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import fi.veneappi.app.AppContainer
-import fi.veneappi.app.billing.PremiumAccess
 import fi.veneappi.app.data.lightning.CompositeLightningRepository
 import fi.veneappi.app.data.lightning.LightningStrike
 import fi.veneappi.app.data.radar.ActiveRadarOverlay
@@ -44,7 +43,6 @@ data class StormMapUiState(
 class StormMapViewModel(
     private val lightningRepository: CompositeLightningRepository,
     private val stormRadarPrefetcher: StormRadarPrefetcher,
-    private val premiumAccess: PremiumAccess,
 ) : ViewModel() {
     private val _stormUi = MutableStateFlow(StormMapUiState())
     val stormUi: StateFlow<StormMapUiState> = _stormUi.asStateFlow()
@@ -87,7 +85,7 @@ class StormMapViewModel(
         lat: Double?,
         lon: Double?,
     ) {
-        if (!premiumAccess.isPremium.value || !_stormUi.value.radarEnabled) return
+        if (!_stormUi.value.radarEnabled) return
         if (lat == null || lon == null) return
         viewModelScope.launch {
             val wasPlaying = _stormUi.value.radarAnimationPlaying
@@ -160,7 +158,7 @@ class StormMapViewModel(
     }
 
     fun refreshLightning() {
-        if (!premiumAccess.isPremium.value || !_stormUi.value.lightningEnabled) return
+        if (!_stormUi.value.lightningEnabled) return
         lightningJob?.cancel()
         lightningJob =
             viewModelScope.launch {
@@ -279,7 +277,6 @@ class StormMapViewModel(
             return StormMapViewModel(
                 lightningRepository = container.compositeLightningRepository,
                 stormRadarPrefetcher = container.stormRadarPrefetcher,
-                premiumAccess = container.premiumAccess,
             ) as T
         }
     }
