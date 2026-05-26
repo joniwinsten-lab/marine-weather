@@ -57,6 +57,35 @@ object GeoMath {
 
     fun metersToNauticalMiles(m: Double): Double = m / 1852.0
 
+    /** Great-circle destination from start, bearing (° true), distance (nm). */
+    fun destinationPoint(
+        lat: Double,
+        lon: Double,
+        bearingDeg: Double,
+        distanceNm: Double,
+    ): Pair<Double, Double> {
+        if (distanceNm <= 0 || !distanceNm.isFinite() || !bearingDeg.isFinite()) {
+            return lat to lon
+        }
+        val earthRadiusM = 6_371_000.0
+        val distanceM = distanceNm * 1852.0
+        val bearing = Math.toRadians(bearingDeg)
+        val lat1 = Math.toRadians(lat)
+        val lon1 = Math.toRadians(lon)
+        val lat2 =
+            kotlin.math.asin(
+                kotlin.math.sin(lat1) * kotlin.math.cos(distanceM / earthRadiusM) +
+                    kotlin.math.cos(lat1) * kotlin.math.sin(distanceM / earthRadiusM) * kotlin.math.cos(bearing),
+            )
+        val lon2 =
+            lon1 +
+                kotlin.math.atan2(
+                    kotlin.math.sin(bearing) * kotlin.math.sin(distanceM / earthRadiusM) * kotlin.math.cos(lat1),
+                    kotlin.math.cos(distanceM / earthRadiusM) - kotlin.math.sin(lat1) * kotlin.math.sin(lat2),
+                )
+        return Math.toDegrees(lat2) to Math.toDegrees(lon2)
+    }
+
     /** Cumulative great-circle length of a polyline in meters. */
     fun polylineLengthMeters(pts: List<Pair<Double, Double>>): Double {
         if (pts.size < 2) return 0.0

@@ -2,6 +2,9 @@ package fi.veneappi.app.billing
 
 import android.app.Activity
 import android.app.Application
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -17,6 +20,7 @@ import fi.veneappi.app.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.concurrent.atomic.AtomicBoolean
 
 class BillingManager(
     application: Application,
@@ -40,6 +44,10 @@ class BillingManager(
             )
             .build()
 
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val productQueryInFlight = AtomicBoolean(false)
+    private var productQueryRetry: Runnable? = null
+
     private val ready = MutableStateFlow(false)
     val billingReady: StateFlow<Boolean> = ready.asStateFlow()
 
@@ -52,13 +60,27 @@ class BillingManager(
     private val subscriptionProduct = MutableStateFlow<ProductDetails?>(null)
     val routePremiumSubscriptionProduct: StateFlow<ProductDetails?> = subscriptionProduct.asStateFlow()
 
+    /** True when billing is connected but Play returned no price-bearing product details. */
+    private val productsUnavailable = MutableStateFlow(false)
+    val routePremiumProductsUnavailable: StateFlow<Boolean> = productsUnavailable.asStateFlow()
+
+    /** Human-readable result of the last product query (for paywall / logcat). */
+    private val productQueryDiagnostic = MutableStateFlow("")
+    val routePremiumProductQueryDiagnostic: StateFlow<String> = productQueryDiagnostic.asStateFlow()
+
+    private var productQueryAttempts = 0
+
     fun startConnection() {
         client.startConnection(
             object : BillingClientStateListener {
                 override fun onBillingSetupFinished(result: BillingResult) {
                     val ok = result.responseCode == BillingClient.BillingResponseCode.OK
                     ready.value = ok
+                    log(
+                        "setup finished code=${result.responseCode} debugMessage=${result.debugMessage}",
+                    )
                     if (ok) {
+                        productQueryAttempts = 0
                         queryRouteProductDetails()
                         syncPurchasesAndAcknowledge()
                     }
@@ -66,13 +88,25 @@ class BillingManager(
 
                 override fun onBillingServiceDisconnected() {
                     ready.value = false
+                    productsUnavailable.value = false
+                    productQueryDiagnostic.value = ""
+                    cancelProductQueryRetry()
                 }
             },
         )
     }
 
     fun endConnection() {
+        cancelProductQueryRetry()
         runCatching { client.endConnection() }
+    }
+
+    /** Re-query Play product details (e.g. when paywall opens). */
+    fun refreshRouteProductDetails() {
+        if (!client.isReady) return
+        cancelProductQueryRetry()
+        productQueryAttempts = 0
+        queryRouteProductDetails()
     }
 
     /** Re-query Play for active in-app + subscription purchases (e.g. Restore). */
@@ -135,13 +169,17 @@ class BillingManager(
             client.acknowledgePurchase(ackParams) { }
         }
     }
+
     /** One-time route premium (managed product). */
     fun launchRoutePremiumInAppPurchase(activity: Activity): Boolean {
         if (!client.isReady) return false
         val details = inAppProduct.value ?: return false
+        val offer = details.primaryOneTimeOffer() ?: return false
+        val offerToken = offer.offerToken ?: return false
         val productParams =
             BillingFlowParams.ProductDetailsParams.newBuilder()
                 .setProductDetails(details)
+                .setOfferToken(offerToken)
                 .build()
         val flowParams =
             BillingFlowParams.newBuilder()
@@ -151,13 +189,11 @@ class BillingManager(
         return result.responseCode == BillingClient.BillingResponseCode.OK
     }
 
-    /** Monthly (or primary) subscription from Play product’s first offer. */
+    /** Monthly (or primary) subscription from Play product’s best offer. */
     fun launchRoutePremiumSubscriptionPurchase(activity: Activity): Boolean {
         if (!client.isReady) return false
         val details = subscriptionProduct.value ?: return false
-        val offer =
-            details.subscriptionOfferDetails?.firstOrNull()
-                ?: return false
+        val offer = details.primarySubscriptionOffer() ?: return false
         val productParams =
             BillingFlowParams.ProductDetailsParams.newBuilder()
                 .setProductDetails(details)
@@ -172,6 +208,8 @@ class BillingManager(
     }
 
     private fun queryRouteProductDetails() {
+        if (!client.isReady) return
+        if (!productQueryInFlight.compareAndSet(false, true)) return
         val products = ArrayList<QueryProductDetailsParams.Product>(2)
         if (routePremiumInAppSku.isNotBlank()) {
             products.add(
@@ -189,27 +227,114 @@ class BillingManager(
                     .build(),
             )
         }
-        if (products.isEmpty()) return
+        if (products.isEmpty()) {
+            productQueryInFlight.set(false)
+            return
+        }
         val params =
             QueryProductDetailsParams.newBuilder()
                 .setProductList(products)
                 .build()
-        client.queryProductDetailsAsync(params) { result, list ->
-            if (result.responseCode != BillingClient.BillingResponseCode.OK) {
-                inAppProduct.value = null
-                subscriptionProduct.value = null
-                return@queryProductDetailsAsync
-            }
-            var inApp: ProductDetails? = null
-            var sub: ProductDetails? = null
-            for (d in list.orEmpty()) {
-                when (d.productType) {
-                    BillingClient.ProductType.INAPP -> if (d.productId == routePremiumInAppSku) inApp = d
-                    BillingClient.ProductType.SUBS -> if (d.productId == routePremiumSubSku) sub = d
+        client.queryProductDetailsAsync(params) { result, productDetailsResult ->
+            try {
+                productQueryAttempts++
+                if (result.responseCode != BillingClient.BillingResponseCode.OK) {
+                    val msg =
+                        "query failed: billingResponse=${result.responseCode} ${result.debugMessage.orEmpty()}"
+                    productQueryDiagnostic.value = msg
+                    logWarn(msg)
+                    scheduleProductRetryIfNeeded(result.responseCode)
+                    return@queryProductDetailsAsync
                 }
+                var inApp: ProductDetails? = null
+                var sub: ProductDetails? = null
+                for (d in productDetailsResult.productDetailsList.orEmpty()) {
+                    when (d.productType) {
+                        BillingClient.ProductType.INAPP -> if (d.productId == routePremiumInAppSku) inApp = d
+                        BillingClient.ProductType.SUBS -> if (d.productId == routePremiumSubSku) sub = d
+                    }
+                }
+                val unfetched = productDetailsResult.unfetchedProductList.orEmpty()
+                for (item in unfetched) {
+                    logWarn(
+                        "unfetched productId=${item.productId} type=${item.productType} " +
+                            "status=${unfetchedStatusLabel(item.statusCode)}",
+                    )
+                }
+                inAppProduct.value = inApp
+                subscriptionProduct.value = sub
+                val hasLifetime = inApp?.lifetimeFormattedPrice() != null
+                val hasSub = sub?.subscriptionFormattedPrice() != null
+                productsUnavailable.value = !hasLifetime && !hasSub
+                val lifetimeOfferCount = inApp?.oneTimePurchaseOfferDetailsList?.size ?: 0
+                val subOfferCount = sub?.subscriptionOfferDetails?.size ?: 0
+                val diag =
+                    buildString {
+                        append("billingOk; ")
+                        append("lifetime=${routePremiumInAppSku} ")
+                        append(if (inApp == null) "missing" else "offers=$lifetimeOfferCount price=$hasLifetime; ")
+                        append("monthly=${routePremiumSubSku} ")
+                        append(if (sub == null) "missing" else "offers=$subOfferCount price=$hasSub")
+                        if (unfetched.isNotEmpty()) {
+                            append("; unfetched=")
+                            append(
+                                unfetched.joinToString { u ->
+                                    "${u.productId}:${unfetchedStatusLabel(u.statusCode)}"
+                                },
+                            )
+                        }
+                    }
+                productQueryDiagnostic.value = diag
+                log(
+                    "queryProductDetails ok attempt=$productQueryAttempts $diag",
+                )
+                if (!hasLifetime && !hasSub) {
+                    logWarn("no prices from Play — check Console Active + purchase option / base plan")
+                    scheduleProductRetryIfNeeded(BillingClient.BillingResponseCode.OK)
+                }
+            } catch (t: Throwable) {
+                val msg = "query crashed: ${t.message}"
+                productQueryDiagnostic.value = msg
+                logWarn(msg)
+                productsUnavailable.value = true
+            } finally {
+                productQueryInFlight.set(false)
             }
-            inAppProduct.value = inApp
-            subscriptionProduct.value = sub
         }
+    }
+
+    private fun scheduleProductRetryIfNeeded(responseCode: Int) {
+        if (productQueryAttempts >= MAX_PRODUCT_QUERY_ATTEMPTS) return
+        if (responseCode == BillingClient.BillingResponseCode.DEVELOPER_ERROR) return
+        cancelProductQueryRetry()
+        val delayMs = PRODUCT_QUERY_RETRY_MS * productQueryAttempts
+        val runnable =
+            Runnable {
+                productQueryRetry = null
+                if (client.isReady) queryRouteProductDetails()
+            }
+        productQueryRetry = runnable
+        mainHandler.postDelayed(runnable, delayMs)
+    }
+
+    private fun cancelProductQueryRetry() {
+        productQueryRetry?.let { mainHandler.removeCallbacks(it) }
+        productQueryRetry = null
+    }
+
+    private fun log(message: String) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, message)
+        }
+    }
+
+    private fun logWarn(message: String) {
+        Log.w(TAG, message)
+    }
+
+    private companion object {
+        const val TAG = "VeneappiBilling"
+        const val MAX_PRODUCT_QUERY_ATTEMPTS = 3
+        const val PRODUCT_QUERY_RETRY_MS = 3_000L
     }
 }

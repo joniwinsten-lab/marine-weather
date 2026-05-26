@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marine Weather — Privacy Policy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .legal { max-width: 42rem; margin: 0 auto; padding: 2rem 0 4rem; }
+    .legal h1 { font-size: 1.5rem; }
+    .legal h2 { font-size: 1.1rem; margin-top: 1.75rem; }
+    .legal p, .legal li { font-size: 0.95rem; color: var(--muted); }
+    .legal strong, .legal h2 { color: var(--text); }
+    .meta { font-size: 0.85rem; }
+    .back { display: inline-block; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="./">Marine Weather</a>
+      <nav class="nav">
+        <a href="./">Home</a>
+        <a href="mailto:support@safelight.fi">Support</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap legal">
+    <a class="back" href="./">← Back to home</a>
+    <h1>Privacy Policy</h1>
+    <p class="meta">Effective date: 19 May 2026 · App ID: fi.veneappi.app</p>
+
+    <p>
+      Marine Weather is a marine planning app (maps, weather comparison, optional route planning).
+      This policy describes what the app does on your device and what is sent over the network.
+    </p>
+
+    <h2>Who we are</h2>
+    <p>
+      The app is published under the package name <strong>fi.veneappi.app</strong>.
+      For privacy or support questions, contact
+      <a href="mailto:support@safelight.fi">support@safelight.fi</a>.
+    </p>
+
+    <h2>No account on our servers</h2>
+    <p>
+      Marine Weather does not require you to create an account with us. We do not operate a login server
+      or store your identity on our own backend.
+    </p>
+
+    <h2>Location</h2>
+    <ul>
+      <li>
+        <strong>On your device:</strong> If you grant permission, the app uses GPS to centre the map on your
+        position and to plan routes. Map centre coordinates are also used to request public weather summaries.
+      </li>
+      <li>
+        <strong>Not uploaded to us:</strong> Your precise location is not sent to a developer-operated server.
+        Coordinates are included only in requests your device makes directly to third-party weather and map
+        services (see below), as required to fetch forecasts for that area.
+      </li>
+    </ul>
+
+    <h2>Data stored on your device</h2>
+    <ul>
+      <li>
+        <strong>Preferences:</strong> Wind unit choice and local route-trial timing (stored with Android DataStore).
+      </li>
+      <li>
+        <strong>Cache:</strong> Downloaded forecast data may be cached locally (Room database) to improve performance
+        and reduce repeat downloads.
+      </li>
+      <li>
+        <strong>Premium status:</strong> Google Play purchase state is handled by Google Play Billing; the app
+        remembers entitlement locally after purchase or restore.
+      </li>
+      <li>
+        <strong>Exports:</strong> If you export a route as GPX or PDF, files are written where you choose (e.g. Downloads).
+      </li>
+    </ul>
+
+    <h2>Network and third-party services</h2>
+    <p>
+      The app needs internet access to load maps and weather. Your device contacts public APIs and tile servers,
+      for example:
+    </p>
+    <ul>
+      <li>Finnish Meteorological Institute (FMI) open data</li>
+      <li>MET Norway (api.met.no)</li>
+      <li>SMHI open data</li>
+      <li>OpenStreetMap-related services (e.g. OpenFreeMap tiles, Overpass for harbour search)</li>
+      <li>Finnish Transport Infrastructure Agency open raster charts (when enabled)</li>
+      <li>Google Play (in-app purchases and subscriptions for route planning premium)</li>
+    </ul>
+    <p>
+      Each provider has its own terms and privacy practices. Requests typically include approximate coordinates,
+      app version, and a technical User-Agent string (<code>MarineWeather/…</code>) so services can apply fair-use rules.
+    </p>
+
+    <h2>Payments</h2>
+    <p>
+      Paid features (one-time purchase or subscription) are processed by <strong>Google Play Billing</strong>.
+      We do not receive your payment card details. Google’s privacy policy applies to payment data.
+    </p>
+
+    <h2>Analytics and advertising</h2>
+    <p>
+      The app does not include third-party analytics SDKs or advertising networks.
+    </p>
+
+    <h2>Children</h2>
+    <p>
+      The app is not directed at children under 13 and is intended for marine planning by adults.
+    </p>
+
+    <h2>Changes</h2>
+    <p>
+      We may update this policy. The effective date at the top will change when we do.
+      Continued use of the app after changes means you accept the updated policy.
+    </p>
+
+    <h2>Your rights</h2>
+    <p>
+      You can revoke location permission in Android settings, clear app storage, or uninstall the app to remove
+      local data. For Google Play purchase issues, use Play Store subscription and order management.
+    </p>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Marine Weather · <a href="./">Home</a></p>
+    </div>
+  </footer>
+</body>
+</html>

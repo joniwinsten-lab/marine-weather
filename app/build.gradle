@@ -20,14 +20,15 @@ android {
         applicationId 'fi.veneappi.app'
         minSdk 26
         targetSdk 35
-        versionCode 4
-        versionName '0.2.2'
+        versionCode 10
+        versionName '0.2.8'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField 'String', 'WEATHER_USER_AGENT', '"MarineWeather/0.1.0 (fi.veneappi.app; planning app)"'
         buildConfigField 'boolean', 'ENABLE_OSRM_DEMO', 'false'
         // Play Console: create matching product IDs and prices (e.g. €59.99 one-time, €3.99/mo subscription).
-        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_INAPP', '"route-premium-lifetime"'
-        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_SUB', '"route-premium-monthly"'
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_INAPP', '"route_premium_lifetime"'
+        // Play Console subscription product ID (base plan inside: route-premium-monthly)
+        buildConfigField 'String', 'BILLING_ROUTE_PREMIUM_SUB', '"marine_weather_premium"'
         // Release: always false. Debug build overrides below so route tab works without Play product yet.
         buildConfigField 'boolean', 'DEBUG_ROUTE_PREMIUM_UNLOCKED', 'false'
     }
@@ -109,7 +110,7 @@ dependencies {
     ksp 'androidx.room:room-compiler:2.6.1'
     implementation 'org.maplibre.gl:android-sdk:11.5.1'
     implementation 'org.maplibre.gl:android-sdk-geojson:6.0.1'
-    implementation 'com.android.billingclient:billing-ktx:7.1.1'
+    implementation 'com.android.billingclient:billing-ktx:8.0.0'
     implementation 'androidx.datastore:datastore-preferences:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-tooling-preview'

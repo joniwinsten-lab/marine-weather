@@ -101,6 +101,8 @@ import fi.veneappi.app.export.exportFileUri
 import fi.veneappi.app.export.formatRouteSlotForPdf
 import fi.veneappi.app.export.routeExportCacheDir
 import fi.veneappi.app.export.shareStream
+import fi.veneappi.app.ui.ais.AisMapViewModel
+import fi.veneappi.app.ui.ais.MapWithAisChrome
 import fi.veneappi.app.ui.map.MapPane
 import fi.veneappi.app.ui.theme.VeneappiTheme
 import fi.veneappi.app.ui.weather.SourceWindForecastCard
@@ -193,11 +195,17 @@ fun VeneappiRoot(
     val app = context.applicationContext as VeneappiApplication
     val isRoutePremium by app.appContainer.premiumAccess.isPremium.collectAsState()
     val billingReady by app.appContainer.billingManager.billingReady.collectAsState(initial = false)
+    val routePremiumProductsUnavailable by
+        app.appContainer.billingManager.routePremiumProductsUnavailable.collectAsState(initial = false)
+    val routePremiumBillingDiagnostic by
+        app.appContainer.billingManager.routePremiumProductQueryDiagnostic.collectAsState(initial = "")
     val routePremiumInApp by app.appContainer.billingManager.routePremiumInAppProduct.collectAsState()
     val routePremiumSub by app.appContainer.billingManager.routePremiumSubscriptionProduct.collectAsState()
     val routeTrialWasStarted by
         app.appContainer.userPreferencesRepository.routeTrialWasStarted.collectAsState(initial = false)
     val scope = rememberCoroutineScope()
+    val aisViewModel: AisMapViewModel =
+        viewModel(factory = AisMapViewModel.factory(app.appContainer.digitrafficAisRepository))
     var destination by remember { mutableStateOf(MainDest.COMPARE) }
     var showAttribution by remember { mutableStateOf(false) }
     var traficomPlanningChart by remember { mutableStateOf(true) }
@@ -367,6 +375,8 @@ fun VeneappiRoot(
                                 onWindUnit = vm::setWindUnit,
                                 traficomPlanningChart = traficomPlanningChart,
                                 onTraficomPlanningChartChange = { traficomPlanningChart = it },
+                                aisViewModel = aisViewModel,
+                                isPremium = isRoutePremium,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
@@ -383,11 +393,15 @@ fun VeneappiRoot(
                                     traficomPlanningChart = traficomPlanningChart,
                                     onTraficomPlanningChartChange = { traficomPlanningChart = it },
                                     onRefreshWeather = vm::refreshWeather,
+                                    aisViewModel = aisViewModel,
+                                    isPremium = true,
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             } else {
                                 RoutePremiumPaywall(
                                     billingReady = billingReady,
+                                    productsUnavailable = routePremiumProductsUnavailable,
+                                    billingDiagnostic = routePremiumBillingDiagnostic,
                                     inAppProduct = routePremiumInApp,
                                     subscriptionProduct = routePremiumSub,
                                     showTrialOffer = !routeTrialWasStarted,
@@ -434,6 +448,9 @@ fun VeneappiRoot(
                                     onBackToMap = {
                                         destination = MainDest.COMPARE
                                         vm.setRoutePickMode(RoutePickMode.None)
+                                    },
+                                    onRefreshProducts = {
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
                                     },
                                     modifier = Modifier.fillMaxSize(),
                                 )
@@ -454,6 +471,8 @@ fun VeneappiRoot(
                             } else {
                                 RoutePremiumPaywall(
                                     billingReady = billingReady,
+                                    productsUnavailable = routePremiumProductsUnavailable,
+                                    billingDiagnostic = routePremiumBillingDiagnostic,
                                     inAppProduct = routePremiumInApp,
                                     subscriptionProduct = routePremiumSub,
                                     showTrialOffer = !routeTrialWasStarted,
@@ -500,6 +519,9 @@ fun VeneappiRoot(
                                     onBackToMap = {
                                         destination = MainDest.COMPARE
                                         vm.setRoutePickMode(RoutePickMode.None)
+                                    },
+                                    onRefreshProducts = {
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
                                     },
                                     modifier = Modifier.fillMaxSize(),
                                 )
@@ -723,6 +745,8 @@ private fun ComparePane(
     onWindUnit: (WindUnit) -> Unit,
     traficomPlanningChart: Boolean,
     onTraficomPlanningChartChange: (Boolean) -> Unit,
+    aisViewModel: AisMapViewModel,
+    isPremium: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val mapLabel = stringResource(R.string.content_map)
@@ -742,7 +766,7 @@ private fun ComparePane(
                     label = { Text(stringResource(R.string.map_traficom_overlay)) },
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 )
-                MapPane(
+                MapWithAisChrome(
                     latitude = ui.latitude,
                     longitude = ui.longitude,
                     routeGeometry = ui.routeGeometry,
@@ -759,11 +783,18 @@ private fun ComparePane(
                     traficomPlanningRasterEnabled = traficomPlanningChart,
                     onMyLocation = onMyLocation,
                     mapRecenterSignal = ui.mapRecenterSignal,
-                    modifier =
+                    aisViewModel = aisViewModel,
+                    isPremium = isPremium,
+                    mapModifier =
                         Modifier
                             .weight(1f)
                             .fillMaxWidth()
                             .semantics { contentDescription = mapLabel },
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
                 )
             }
             WeatherPane(
@@ -785,7 +816,7 @@ private fun ComparePane(
                 label = { Text(stringResource(R.string.map_traficom_overlay)) },
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             )
-            MapPane(
+            MapWithAisChrome(
                 latitude = ui.latitude,
                 longitude = ui.longitude,
                 routeGeometry = ui.routeGeometry,
@@ -802,11 +833,17 @@ private fun ComparePane(
                 traficomPlanningRasterEnabled = traficomPlanningChart,
                 onMyLocation = onMyLocation,
                 mapRecenterSignal = ui.mapRecenterSignal,
-                modifier =
+                aisViewModel = aisViewModel,
+                isPremium = isPremium,
+                mapModifier =
                     Modifier
                         .fillMaxWidth()
                         .weight(0.52f)
                         .semantics { contentDescription = mapLabel },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(0.52f),
             )
             WeatherPane(
                 ui = ui,
@@ -1656,6 +1693,8 @@ private fun RoutePane(
     traficomPlanningChart: Boolean,
     onTraficomPlanningChartChange: (Boolean) -> Unit,
     onRefreshWeather: () -> Unit,
+    aisViewModel: AisMapViewModel,
+    isPremium: Boolean,
     modifier: Modifier = Modifier,
 ) {
     var showRouteDisclaimer by remember { mutableStateOf(false) }
@@ -1853,7 +1892,7 @@ private fun RoutePane(
                                                 .weight(1f)
                                                 .fillMaxWidth(),
                                     ) {
-                                        MapPane(
+                                        MapWithAisChrome(
                                             latitude = ui.latitude,
                                             longitude = ui.longitude,
                                             routeGeometry = ui.routeGeometry,
@@ -1865,10 +1904,13 @@ private fun RoutePane(
                                             traficomPlanningRasterEnabled = traficomPlanningChart,
                                             onMyLocation = onMyLocation,
                                             mapRecenterSignal = ui.mapRecenterSignal,
-                                            modifier =
+                                            aisViewModel = aisViewModel,
+                                            isPremium = isPremium,
+                                            mapModifier =
                                                 Modifier
                                                     .fillMaxSize()
                                                     .semantics { contentDescription = mapLabel },
+                                            modifier = Modifier.fillMaxSize(),
                                         )
                                         RouteMapTopOverlay(
                                             onOpenDisclaimer = { showRouteDisclaimer = true },
@@ -1920,7 +1962,7 @@ private fun RoutePane(
                                                 .weight(1f)
                                                 .fillMaxWidth(),
                                     ) {
-                                        MapPane(
+                                        MapWithAisChrome(
                                             latitude = ui.latitude,
                                             longitude = ui.longitude,
                                             routeGeometry = ui.routeGeometry,
@@ -1932,10 +1974,13 @@ private fun RoutePane(
                                             traficomPlanningRasterEnabled = traficomPlanningChart,
                                             onMyLocation = onMyLocation,
                                             mapRecenterSignal = ui.mapRecenterSignal,
-                                            modifier =
+                                            aisViewModel = aisViewModel,
+                                            isPremium = isPremium,
+                                            mapModifier =
                                                 Modifier
                                                     .fillMaxSize()
                                                     .semantics { contentDescription = mapLabel },
+                                            modifier = Modifier.fillMaxSize(),
                                         )
                                         RouteMapTopOverlay(
                                             onOpenDisclaimer = { showRouteDisclaimer = true },
@@ -1982,7 +2027,7 @@ private fun RoutePane(
                                         .weight(1f)
                                         .fillMaxWidth(),
                             ) {
-                                MapPane(
+                                MapWithAisChrome(
                                     latitude = ui.latitude,
                                     longitude = ui.longitude,
                                     routeGeometry = ui.routeGeometry,
@@ -1994,10 +2039,13 @@ private fun RoutePane(
                                     traficomPlanningRasterEnabled = traficomPlanningChart,
                                     onMyLocation = onMyLocation,
                                     mapRecenterSignal = ui.mapRecenterSignal,
-                                    modifier =
+                                    aisViewModel = aisViewModel,
+                                    isPremium = isPremium,
+                                    mapModifier =
                                         Modifier
                                             .fillMaxSize()
                                             .semantics { contentDescription = mapLabel },
+                                    modifier = Modifier.fillMaxSize(),
                                 )
                                 RouteMapTopOverlay(
                                     onOpenDisclaimer = { showRouteDisclaimer = true },
@@ -2062,6 +2110,13 @@ private fun AttributionDialog(onDismiss: () -> Unit) {
                 )
                 TextButton(onClick = { uri.openUri(WeatherSources.Smhi.licenseUrl) }) {
                     Text(stringResource(R.string.attribution_smhi_link))
+                }
+                Text(
+                    stringResource(R.string.attribution_digitraffic_ais),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                TextButton(onClick = { uri.openUri("https://meri.digitraffic.fi/") }) {
+                    Text(stringResource(R.string.attribution_digitraffic_ais_link))
                 }
             }
         },

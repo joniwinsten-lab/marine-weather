@@ -11,6 +11,7 @@
 | Privacy policy (public URL) | [privacy.html](privacy.html) → `https://joniwinsten-lab.github.io/marine-weather/privacy.html` |
 | Store listing copy (EN) | [store-listing-en.md](store-listing-en.md) |
 | Data safety answers | [data-safety-play-console.md](data-safety-play-console.md) |
+| In-app products & prices | [play-billing-products.md](play-billing-products.md) |
 | Play icon 512×512 | [play-store-icon-512.png](play-store-icon-512.png) |
 
 ## Release signing (one-time setup)

@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,10 +28,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.android.billingclient.api.ProductDetails
 import fi.veneappi.app.R
+import fi.veneappi.app.billing.lifetimeFormattedPrice
+import fi.veneappi.app.billing.subscriptionFormattedPrice
 
 @Composable
 fun RoutePremiumPaywall(
     billingReady: Boolean,
+    productsUnavailable: Boolean,
+    billingDiagnostic: String = "",
     inAppProduct: ProductDetails?,
     subscriptionProduct: ProductDetails?,
     showTrialOffer: Boolean,
@@ -39,23 +44,21 @@ fun RoutePremiumPaywall(
     onSubscribeMonthly: () -> Unit,
     onRestorePurchases: () -> Unit,
     onBackToMap: () -> Unit,
+    onRefreshProducts: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val lifetimePrice = inAppProduct?.oneTimePurchaseOfferDetails?.formattedPrice
-    val monthlyPrice =
-        subscriptionProduct
-            ?.subscriptionOfferDetails
-            ?.firstOrNull()
-            ?.pricingPhases
-            ?.pricingPhaseList
-            ?.firstOrNull()
-            ?.formattedPrice
+    LaunchedEffect(Unit) {
+        onRefreshProducts()
+    }
+
+    val lifetimePrice = inAppProduct?.lifetimeFormattedPrice()
+    val monthlyPrice = subscriptionProduct?.subscriptionFormattedPrice()
     val lifetimeReady = billingReady && inAppProduct != null && lifetimePrice != null
     val monthlyReady =
         billingReady &&
             subscriptionProduct != null &&
             monthlyPrice != null &&
-            subscriptionProduct.subscriptionOfferDetails?.isNotEmpty() == true
+            !subscriptionProduct.subscriptionOfferDetails.isNullOrEmpty()
 
     Box(modifier.fillMaxSize()) {
         Column(
@@ -180,6 +183,25 @@ fun RoutePremiumPaywall(
         Spacer(Modifier.height(20.dp))
         OutlinedButton(onClick = onBackToMap) {
             Text(stringResource(R.string.route_premium_back_map))
+        }
+        if (productsUnavailable) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                stringResource(R.string.route_premium_prices_unavailable),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+            )
+            if (billingDiagnostic.isNotBlank()) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    billingDiagnostic,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                )
+            }
         }
         Spacer(Modifier.height(20.dp))
         Text(

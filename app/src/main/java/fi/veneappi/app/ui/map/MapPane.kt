@@ -53,6 +53,9 @@ import fi.veneappi.app.data.radar.FmiRadarConfig
 import fi.veneappi.app.data.radar.RadarDisplayKind
 import fi.veneappi.app.domain.GeoMath
 import fi.veneappi.app.domain.Harbor
+import fi.veneappi.app.domain.ais.AisVesselDisplay
+import fi.veneappi.app.domain.ais.MapViewport
+import kotlin.math.hypot
 import kotlinx.coroutines.delay
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
@@ -110,6 +113,11 @@ private const val STORM_STYLE_DEBOUNCE_MS = 50L
 private var stormGeoLastImageUrl: String? = null
 private const val HARBOR_SOURCE_ID = "veneappi_harbor_pts"
 private const val HARBOR_LAYER_ID = "veneappi_harbor_layer"
+private const val AIS_POINT_SOURCE_ID = "veneappi_ais_point_source"
+private const val AIS_POINT_LAYER_ID = "veneappi_ais_point_layer"
+private const val AIS_VECTOR_SOURCE_ID = "veneappi_ais_vector_source"
+private const val AIS_VECTOR_LAYER_ID = "veneappi_ais_vector_layer"
+private const val AIS_HIT_RADIUS_PX = 32f
 
 private const val DEFAULT_ZOOM = 12.5
 /** Storm radar: wide regional view (≈5 zoom-out steps from compare map). */
@@ -143,6 +151,11 @@ fun MapPane(
     showZoomButtons: Boolean = true,
     onMyLocation: (() -> Unit)? = null,
     mapRecenterSignal: Long = 0L,
+    aisVessels: List<AisVesselDisplay> = emptyList(),
+    aisEnabled: Boolean = false,
+    aisRenderGeneration: Int = 0,
+    onMapViewportChange: ((MapViewport) -> Unit)? = null,
+    onAisVesselSelected: ((AisVesselDisplay) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -176,6 +189,10 @@ fun MapPane(
     val latestStormRadar by rememberUpdatedState(stormRadarOverlay)
     val latestLightning by rememberUpdatedState(lightningStrikes)
     val latestHarbors by rememberUpdatedState(harbors)
+    val latestAisVessels by rememberUpdatedState(aisVessels)
+    val latestAisEnabled by rememberUpdatedState(aisEnabled)
+    val latestOnAisSelected by rememberUpdatedState(onAisVesselSelected)
+    val latestOnViewportChange by rememberUpdatedState(onMapViewportChange)
 
     val zoomInDesc = stringResource(R.string.map_zoom_in)
     val zoomOutDesc = stringResource(R.string.map_zoom_out)
@@ -210,6 +227,21 @@ fun MapPane(
             MapLibreMap.OnCameraIdleListener {
                 mapView.removeCallbacks(scaleRunnable)
                 mapView.postDelayed(scaleRunnable, SCALE_DEBOUNCE_MS)
+                val map = mapRef
+                val onViewport = latestOnViewportChange
+                if (map != null && onViewport != null) {
+                    runCatching {
+                        val bounds = map.projection.visibleRegion.latLngBounds
+                        val zoom = map.cameraPosition.zoom.toDouble()
+                        onViewport(
+                            MapViewport.fromLatLngBounds(
+                                southWest = bounds.southWest,
+                                northEast = bounds.northEast,
+                                zoom = zoom,
+                            ),
+                        )
+                    }
+                }
             }
         }
 
@@ -269,10 +301,31 @@ fun MapPane(
                             val cb = latestMapClick
                             if (cb != null) {
                                 cb(latLng.latitude, latLng.longitude)
-                                true
-                            } else {
-                                false
+                                return@addOnMapClickListener true
                             }
+                            if (latestAisEnabled && latestAisVessels.isNotEmpty()) {
+                                val screen = map.projection.toScreenLocation(latLng)
+                                var best: Pair<AisVesselDisplay, Float>? = null
+                                for (vessel in latestAisVessels) {
+                                    if (!vessel.latitude.isFinite() || !vessel.longitude.isFinite()) continue
+                                    val pt =
+                                        map.projection.toScreenLocation(
+                                            LatLng(vessel.latitude, vessel.longitude),
+                                        )
+                                    val dist = hypot(pt.x - screen.x, pt.y - screen.y)
+                                    if (dist > AIS_HIT_RADIUS_PX) continue
+                                    val current = best
+                                    if (current == null || dist < current.second) {
+                                        best = vessel to dist
+                                    }
+                                }
+                                val hit = best?.first
+                                if (hit != null) {
+                                    latestOnAisSelected?.invoke(hit)
+                                    return@addOnMapClickListener true
+                                }
+                            }
+                            false
                         }
                         }
                     }
@@ -339,6 +392,29 @@ fun MapPane(
             LaunchedEffect(mapRef, harbors) {
                 val map = mapRef ?: return@LaunchedEffect
                 map.getStyle { style -> updateHarborLayer(style, harbors) }
+            }
+            LaunchedEffect(mapRef, styleReady, aisEnabled, aisVessels, aisRenderGeneration) {
+                val map = mapRef ?: return@LaunchedEffect
+                if (!styleReady) return@LaunchedEffect
+                map.getStyle { style ->
+                    updateAisLayer(style, aisVessels, aisEnabled)
+                }
+            }
+            LaunchedEffect(mapRef, styleReady, aisEnabled) {
+                if (!aisEnabled) return@LaunchedEffect
+                val map = mapRef ?: return@LaunchedEffect
+                if (!styleReady) return@LaunchedEffect
+                val onViewport = latestOnViewportChange ?: return@LaunchedEffect
+                runCatching {
+                    val bounds = map.projection.visibleRegion.latLngBounds
+                    onViewport(
+                        MapViewport.fromLatLngBounds(
+                            southWest = bounds.southWest,
+                            northEast = bounds.northEast,
+                            zoom = map.cameraPosition.zoom.toDouble(),
+                        ),
+                    )
+                }
             }
         }
 
@@ -1024,6 +1100,80 @@ private fun updateRouteSlotMarkers(
             PropertyFactory.circleStrokeWidth(2f),
         )
     style.addLayerAbove(slotLayer, ROUTE_LAYER_ID)
+}
+
+private fun updateAisLayer(
+    style: Style,
+    vessels: List<AisVesselDisplay>,
+    enabled: Boolean,
+) {
+    if (!enabled || vessels.isEmpty()) {
+        removeIfPresent(style, AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID)
+        removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
+        return
+    }
+
+    val pointFeatures =
+        vessels.mapNotNull { vessel ->
+            if (!vessel.latitude.isFinite() || !vessel.longitude.isFinite()) return@mapNotNull null
+            Feature.fromGeometry(Point.fromLngLat(vessel.longitude, vessel.latitude))
+        }
+    val vectorFeatures =
+        vessels.mapNotNull { vessel ->
+            val end = vessel.courseVectorEnd() ?: return@mapNotNull null
+            val line =
+                LineString.fromLngLats(
+                    listOf(
+                        Point.fromLngLat(vessel.longitude, vessel.latitude),
+                        Point.fromLngLat(end.second, end.first),
+                    ),
+                )
+            Feature.fromGeometry(line)
+        }
+
+    removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
+    if (vectorFeatures.isNotEmpty()) {
+        style.addSource(GeoJsonSource(AIS_VECTOR_SOURCE_ID, FeatureCollection.fromFeatures(vectorFeatures)))
+        val vectorLayer =
+            LineLayer(AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID).withProperties(
+                PropertyFactory.lineColor("#40B8FF"),
+                PropertyFactory.lineWidth(4f),
+                PropertyFactory.lineOpacity(0.92f),
+                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+            )
+        insertAisLayerBelowPin(style, vectorLayer)
+    }
+
+    removeIfPresent(style, AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID)
+    if (pointFeatures.isNotEmpty()) {
+        style.addSource(GeoJsonSource(AIS_POINT_SOURCE_ID, FeatureCollection.fromFeatures(pointFeatures)))
+        val pointLayer =
+            CircleLayer(AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID).withProperties(
+                PropertyFactory.circleRadius(9f),
+                PropertyFactory.circleColor("#007AF2"),
+                PropertyFactory.circleOpacity(1f),
+                PropertyFactory.circleStrokeColor("#FFFFFF"),
+                PropertyFactory.circleStrokeWidth(2.5f),
+            )
+        if (style.getLayer(AIS_VECTOR_LAYER_ID) != null) {
+            style.addLayerAbove(pointLayer, AIS_VECTOR_LAYER_ID)
+        } else {
+            insertAisLayerBelowPin(style, pointLayer)
+        }
+    }
+}
+
+private fun insertAisLayerBelowPin(
+    style: Style,
+    layer: org.maplibre.android.style.layers.Layer,
+) {
+    if (style.getLayer(PIN_LAYER_ID) != null) {
+        style.addLayerBelow(layer, PIN_LAYER_ID)
+    } else if (style.getLayer(TRAFICOM_LAYER_ID) != null) {
+        style.addLayerAbove(layer, TRAFICOM_LAYER_ID)
+    } else {
+        style.addLayer(layer)
+    }
 }
 
 private fun removeIfPresent(

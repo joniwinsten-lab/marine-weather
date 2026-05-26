@@ -5,10 +5,15 @@
     <string name="nav_route">Reittisuunnittelu</string>
     <string name="nav_premium_mark">(Premium)</string>
     <string name="route_premium_title">Premium</string>
-    <string name="route_premium_body">Avaa reittisuunnittelu sääennusteineen reitin varrella ja 12 päivän tuuliennuste. Kartta ja säävertailu, tutka, meritekstiyhteenveto ja pistemäiset ennusteet pysyvät ilmaisina.</string>
+    <string name="route_premium_body">Avaa reittisuunnittelu sääennusteineen reitin varrella, AIS-alukset kartalla ja 12 päivän tuuliennuste. Kartta ja säävertailu, tutka, meritekstiyhteenveto ja pistemäiset ennusteet pysyvät ilmaisina.</string>
+    <string name="ais_chip">AIS-alukset</string>
+    <string name="ais_chip_accessibility">AIS-alusten sijainnit kartalla</string>
+    <string name="ais_premium_required_title">Premium-ominaisuus</string>
+    <string name="ais_premium_required_body">AIS-alusten sijainnit (Fintraffic Digitraffic) sisältyvät samaan reitti-premium-ostoon kuin reittisuunnittelu ja 12 päivän tuuliennuste.</string>
     <string name="route_premium_buy_once">Osta kerralla — %1$s</string>
     <string name="route_premium_subscribe_monthly">Tilaa — %1$s / kk</string>
     <string name="route_premium_price_loading">…</string>
+    <string name="route_premium_prices_unavailable">Hintoja ei saatu Google Playstä. Asenna sovellus Playn suljetun testauksen linkistä, käytä samaa Google-tiliä kuin testaajana, ja varmista että route_premium_lifetime ja marine_weather_premium ovat Active Play Consolessa.</string>
     <string name="route_premium_sub_recurring_hint">Tilaus uusiutuu Google Playssa automaattisesti, kunnes peruutat sen.</string>
     <string name="route_premium_restore">Palauta ostot</string>
     <string name="route_premium_back_map">Takaisin kartalle</string>

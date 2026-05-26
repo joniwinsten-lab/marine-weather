@@ -67,8 +67,8 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 
 | Type | Product ID |
 |------|------------|
-| One-time | `route-premium-lifetime` |
-| Subscription | `route-premium-monthly` |
+| One-time | `route_premium_lifetime` |
+| Subscription | `marine_weather_premium` (base plan `route-premium-monthly`) |
 
 ## Privacy policy URL
 

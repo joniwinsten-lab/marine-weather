@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import fi.veneappi.app.data.ais.DigitrafficAisRepository
 import fi.veneappi.app.data.harbors.OverpassHarborClient
 import fi.veneappi.app.data.lightning.CompositeLightningRepository
 import fi.veneappi.app.data.lightning.FmiLightningRepository
@@ -112,6 +113,8 @@ class AppContainer(
     val userPreferencesRepository = UserPreferencesRepository(application)
 
     val overpassHarborClient = OverpassHarborClient(jsonParser = json)
+
+    val digitrafficAisRepository = DigitrafficAisRepository(json = json)
 
     val billingManager = BillingManager(application)
 
