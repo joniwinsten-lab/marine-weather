@@ -1,0 +1,42 @@
+---
+description: Keep Android and iOS in sync via docs/feature-parity.md on every user-facing change
+alwaysApply: true
+---
+
+# Feature parity (Android ↔ iOS)
+
+**Canonical tracker:** `docs/feature-parity.md` in this repository.
+
+## When to update (mandatory)
+
+Update `docs/feature-parity.md` whenever you change:
+
+- Navigation, tabs, premium gates
+- Map overlays, storm radar, marine text, route, AIS, offline behaviour
+- Billing, trial, paywall copy
+- User-visible strings / locales (en, fi, sv, nb)
+- Public API usage or shared constants (URLs, bounds, zoom limits)
+
+## How to update
+
+1. Find or add a row (`ID` column, e.g. `MAP-02`).
+2. Set Android column: `sync` | `android-only` | `partial` | `deferred` | `exception`.
+3. Set iOS column to match reality (read iOS repo or `../marine-weather-ios` if needed).
+4. Append one line to **Changelog** (date, platform `android`, ID, short summary).
+5. Refresh **Last parity audit** date if you audited multiple rows.
+
+## Status rules
+
+- Do **not** set both platforms to `sync` until behaviour matches.
+- If only Android is done → `android-only` on iOS column until iOS is ported.
+- Intentional differences → `exception` + Notes.
+
+## Sibling repo
+
+- iOS: `/Users/Safelight/marine-weather-ios`
+- After Android-only work, note in matrix that iOS needs the same change.
+
+## Do not
+
+- Duplicate the full matrix into iOS repo (only a pointer file there).
+- Skip parity update because the change "seems small".
