@@ -47,7 +47,7 @@ Ilman aktiivista base plania + hintaa Play palauttaa usein virheen **NO_ELIGIBLE
 ## Mitä sovellus tekee
 
 1. Yhdistää Google Play Billingiin käynnistyksessä
-2. Kysyy `route_premium_lifetime` (INAPP) ja `route_premium_monthly` (SUBS)
+2. Kysyy `route_premium_lifetime` (INAPP) ja `marine_weather_premium` (SUBS)
 3. Näyttää `formattedPrice` paywallissa
 
 Jos hinnat puuttuvat, paywallissa voi näkyä punainen ohje ja rivi **billingDiagnostic** (esim. `unfetched=route_premium_lifetime:NO_ELIGIBLE_OFFER`).

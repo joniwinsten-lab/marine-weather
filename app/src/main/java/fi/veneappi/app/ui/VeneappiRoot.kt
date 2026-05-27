@@ -188,6 +188,8 @@ fun VeneappiRoot(
     stormVm: StormMapViewModel,
 ) {
     val ui by vm.ui.collectAsState(initial = VeneappiUiState())
+    val weatherConnectivity by vm.weatherConnectivityStatus.collectAsState()
+    val offlinePackUi by vm.offlinePackUi.collectAsState()
     val stormUi by stormVm.stormUi.collectAsState()
     val windUnit by vm.windUnit.collectAsState(initial = WindUnit.MetersPerSecond)
     val context = LocalContext.current
@@ -199,6 +201,8 @@ fun VeneappiRoot(
         app.appContainer.billingManager.routePremiumProductsUnavailable.collectAsState(initial = false)
     val routePremiumBillingDiagnostic by
         app.appContainer.billingManager.routePremiumProductQueryDiagnostic.collectAsState(initial = "")
+    val routePremiumProductQueryFinished by
+        app.appContainer.billingManager.routePremiumProductQueryFinished.collectAsState(initial = false)
     val routePremiumInApp by app.appContainer.billingManager.routePremiumInAppProduct.collectAsState()
     val routePremiumSub by app.appContainer.billingManager.routePremiumSubscriptionProduct.collectAsState()
     val routeTrialWasStarted by
@@ -238,12 +242,16 @@ fun VeneappiRoot(
     }
 
     Scaffold { padding ->
-        Row(
+        Column(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .padding(padding),
         ) {
+            OfflineStatusBanner(status = weatherConnectivity)
+            Row(
+                modifier = Modifier.fillMaxSize(),
+            ) {
             if (useNavigationRail) {
                 NavigationRail(modifier = Modifier.fillMaxHeight()) {
                     DestinationRailItem(
@@ -395,12 +403,24 @@ fun VeneappiRoot(
                                     onRefreshWeather = vm::refreshWeather,
                                     aisViewModel = aisViewModel,
                                     isPremium = true,
+                                    offlinePackUi = offlinePackUi,
+                                    onDownloadOfflinePack = {
+                                        vm.downloadOfflinePackForRoute(
+                                            mapOf(
+                                                "NO" to context.getString(R.string.marine_text_country_no),
+                                                "SE" to context.getString(R.string.marine_text_country_se),
+                                                "FI" to context.getString(R.string.marine_text_country_fi),
+                                                "EE" to context.getString(R.string.marine_text_country_ee),
+                                            ),
+                                        )
+                                    },
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             } else {
                                 RoutePremiumPaywall(
                                     billingReady = billingReady,
                                     productsUnavailable = routePremiumProductsUnavailable,
+                                    productQueryFinished = routePremiumProductQueryFinished,
                                     billingDiagnostic = routePremiumBillingDiagnostic,
                                     inAppProduct = routePremiumInApp,
                                     subscriptionProduct = routePremiumSub,
@@ -444,6 +464,7 @@ fun VeneappiRoot(
                                     },
                                     onRestorePurchases = {
                                         app.appContainer.billingManager.syncPurchasesAndAcknowledge()
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
                                     },
                                     onBackToMap = {
                                         destination = MainDest.COMPARE
@@ -472,6 +493,7 @@ fun VeneappiRoot(
                                 RoutePremiumPaywall(
                                     billingReady = billingReady,
                                     productsUnavailable = routePremiumProductsUnavailable,
+                                    productQueryFinished = routePremiumProductQueryFinished,
                                     billingDiagnostic = routePremiumBillingDiagnostic,
                                     inAppProduct = routePremiumInApp,
                                     subscriptionProduct = routePremiumSub,
@@ -515,6 +537,7 @@ fun VeneappiRoot(
                                     },
                                     onRestorePurchases = {
                                         app.appContainer.billingManager.syncPurchasesAndAcknowledge()
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
                                     },
                                     onBackToMap = {
                                         destination = MainDest.COMPARE
@@ -648,6 +671,7 @@ fun VeneappiRoot(
                         )
                     }
                 }
+            }
             }
         }
     }
@@ -1380,6 +1404,8 @@ private fun RouteWeatherRightPane(
     exportEnabled: Boolean,
     onExportGpx: () -> Unit,
     onExportPdf: () -> Unit,
+    offlinePackUi: OfflinePackUiState,
+    onDownloadOfflinePack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -1402,6 +1428,12 @@ private fun RouteWeatherRightPane(
             enabled = exportEnabled,
             onExportGpx = onExportGpx,
             onExportPdf = onExportPdf,
+            modifier = Modifier.padding(top = 4.dp),
+        )
+        OfflineRoutePackCard(
+            enabled = exportEnabled && ui.routeGeometry.size >= 2,
+            packState = offlinePackUi,
+            onDownload = onDownloadOfflinePack,
             modifier = Modifier.padding(top = 4.dp),
         )
         Row(
@@ -1695,6 +1727,8 @@ private fun RoutePane(
     onRefreshWeather: () -> Unit,
     aisViewModel: AisMapViewModel,
     isPremium: Boolean,
+    offlinePackUi: OfflinePackUiState,
+    onDownloadOfflinePack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showRouteDisclaimer by remember { mutableStateOf(false) }
@@ -1936,6 +1970,8 @@ private fun RoutePane(
                                     exportEnabled = exportReady,
                                     onExportGpx = onExportGpx,
                                     onExportPdf = onExportPdf,
+                                    offlinePackUi = offlinePackUi,
+                                    onDownloadOfflinePack = onDownloadOfflinePack,
                                     modifier =
                                         Modifier
                                             .weight(0.42f)
@@ -2006,6 +2042,8 @@ private fun RoutePane(
                                     exportEnabled = exportReady,
                                     onExportGpx = onExportGpx,
                                     onExportPdf = onExportPdf,
+                                    offlinePackUi = offlinePackUi,
+                                    onDownloadOfflinePack = onDownloadOfflinePack,
                                     modifier =
                                         Modifier
                                             .fillMaxWidth()

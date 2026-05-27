@@ -16,6 +16,9 @@ Requires SSH as `root@94.237.38.55`. Files land in `/var/www/marine-weather/`. N
 
 ## Contents
 
-- `index.html` — feature overview, screenshot gallery, free vs premium
+- `index.html` — English (default)
+- `fi/`, `sv/`, `nb/`, `et/` — Finnish, Swedish, Norwegian, Estonian landing pages
+- Language switcher in header on all pages
+- `privacy.html` — privacy policy (English; linked from all locales)
 - `privacy.html` — privacy policy (same text as `docs/privacy.html`)
 - `assets/screenshots/` — tablet screenshots from the app

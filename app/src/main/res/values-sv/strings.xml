@@ -9,6 +9,13 @@
     <string name="route_premium_buy_once">Köp en gång — %1$s</string>
     <string name="route_premium_subscribe_monthly">Prenumerera — %1$s / månad</string>
     <string name="route_premium_price_loading">…</string>
+    <string name="route_premium_billing_connecting">Ansluter till Google Play…</string>
+    <string name="route_premium_billing_querying">Hämtar priser från Google Play…</string>
+    <string name="route_premium_billing_querying_detail">App %1$s — väntar på produktinfo från Play.</string>
+    <string name="route_premium_billing_still_waiting">App %1$s — Play svarar inte (20 s). Installera från länken för stängd testning, inte adb. Rensa Play Butiks cache. Huawei: full Google Play krävs.</string>
+    <string name="route_premium_billing_fallback_detail">App %1$s — Play returnerade inga priser. Installera från länken för stängd testning (inte adb). Samma Google-konto som testare.</string>
+    <string name="route_premium_no_play_store">Google Play Butik är inte installerad</string>
+    <string name="route_premium_no_play_store_detail">Priser kräver Google Play. Installera från stängd testning på en enhet med Play Butik.</string>
     <string name="route_premium_prices_unavailable">Priserna kunde inte hämtas från Google Play. Installera från länken för stängd testning, använd samma Google-konto som testare, och kontrollera att route_premium_lifetime och marine_weather_premium är Active i Play Console.</string>
     <string name="route_premium_sub_recurring_hint">Prenumerationer förnyas automatiskt i Google Play tills du avslutar dem.</string>
     <string name="route_premium_restore">Återställ köp</string>

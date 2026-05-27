@@ -12,6 +12,7 @@
 | Store listing copy (EN) | [store-listing-en.md](store-listing-en.md) |
 | Data safety answers | [data-safety-play-console.md](data-safety-play-console.md) |
 | In-app products & prices | [play-billing-products.md](play-billing-products.md) |
+| **Production-ready snapshot (0.2.14)** | [snapshot-production-ready.md](snapshot-production-ready.md) |
 | Play icon 512×512 | [play-store-icon-512.png](play-store-icon-512.png) |
 
 ## Release signing (one-time setup)

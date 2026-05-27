@@ -5,7 +5,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
-/** HTTP client for Fintraffic Digitraffic Marine AIS API (requires `Digitraffic-User` header). */
+/**
+ * HTTP client for Fintraffic Digitraffic Marine AIS API (requires `Digitraffic-User` header).
+ *
+ * Do not set `Accept-Encoding: gzip` manually — OkHttp adds transparent gzip and decompresses
+ * the body. A manual header leaves gzip bytes in the body and breaks JSON parsing.
+ */
 class DigitrafficHttpClient(
     okHttpClient: OkHttpClient? = null,
 ) {
@@ -13,7 +18,7 @@ class DigitrafficHttpClient(
         okHttpClient
             ?: OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(90, TimeUnit.SECONDS)
                 .build()
 
     fun getBytes(url: String): ByteArray {
@@ -21,7 +26,6 @@ class DigitrafficHttpClient(
             Request.Builder()
                 .url(url)
                 .header("Digitraffic-User", AisConfig.DIGITRAFFIC_USER)
-                .header("Accept-Encoding", "gzip")
                 .header("Accept", "application/json")
                 .build()
         client.newCall(request).execute().use { response ->

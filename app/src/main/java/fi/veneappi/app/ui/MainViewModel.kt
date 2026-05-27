@@ -18,8 +18,12 @@ import fi.veneappi.app.domain.SourceId
 import fi.veneappi.app.domain.UnifiedForecast
 import fi.veneappi.app.domain.UnifiedTimePoint
 import fi.veneappi.app.domain.WindUnit
+import fi.veneappi.app.data.net.NetworkConnectivityMonitor
 import fi.veneappi.app.data.net.WeatherRepository
+import fi.veneappi.app.data.offline.OfflineAreaPackDownloader
 import fi.veneappi.app.data.prefs.UserPreferencesRepository
+import fi.veneappi.app.domain.ForecastFreshness
+import fi.veneappi.app.domain.ForecastStaleLevel
 import fi.veneappi.app.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -31,6 +35,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 enum class RoutePickMode {
@@ -72,12 +77,44 @@ class MainViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val overpassHarborClient: OverpassHarborClient,
     private val premiumAccess: PremiumAccess,
+    private val networkConnectivityMonitor: NetworkConnectivityMonitor,
+    private val offlineAreaPackDownloader: OfflineAreaPackDownloader,
 ) : ViewModel() {
     private val _ui = MutableStateFlow(VeneappiUiState())
     val ui: StateFlow<VeneappiUiState> = _ui.asStateFlow()
 
     private val _harborsUi = MutableStateFlow(HarborsUiState())
     val harborsUi: StateFlow<HarborsUiState> = _harborsUi.asStateFlow()
+
+    private val _weatherLoadMeta = MutableStateFlow(WeatherConnectivityStatus())
+    private val _offlinePackUi = MutableStateFlow(OfflinePackUiState())
+    val offlinePackUi: StateFlow<OfflinePackUiState> = _offlinePackUi.asStateFlow()
+
+    val weatherConnectivityStatus: StateFlow<WeatherConnectivityStatus> =
+        combine(
+            networkConnectivityMonitor.isOnline,
+            _ui,
+            _weatherLoadMeta,
+        ) { online, uiState, meta ->
+            val forecasts = uiState.forecasts
+            val oldest =
+                ForecastFreshness.oldestFetchedUtc(forecasts) ?: meta.oldestFetchedUtc
+            val stale =
+                oldest?.let { ForecastFreshness.staleLevel(it) }
+                    ?: ForecastStaleLevel.Fresh
+            WeatherConnectivityStatus(
+                isOnline = online,
+                anyFromCache = meta.anyFromCache,
+                allSourcesFailed =
+                    forecasts.isNotEmpty() && forecasts.values.all { it.isFailure },
+                staleLevel = stale,
+                oldestFetchedUtc = oldest,
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = WeatherConnectivityStatus(),
+        )
 
     private var routeWeatherJob: Job? = null
 
@@ -106,12 +143,54 @@ class MainViewModel(
             val lat = _ui.value.latitude
             val lon = _ui.value.longitude
             _ui.value = _ui.value.copy(loadingWeather = true)
-            val results = weatherRepository.loadAll(lat, lon)
+            val report = weatherRepository.loadAllWithReport(lat, lon)
+            val results = report.forecasts()
+            val oldest = ForecastFreshness.oldestFetchedUtc(results)
+            _weatherLoadMeta.value =
+                WeatherConnectivityStatus(
+                    isOnline = networkConnectivityMonitor.isOnline.value,
+                    anyFromCache = report.anyServedFromCache,
+                    allSourcesFailed = report.allSourcesFailed,
+                    staleLevel =
+                        oldest?.let { ForecastFreshness.staleLevel(it) }
+                            ?: ForecastStaleLevel.Fresh,
+                    oldestFetchedUtc = oldest,
+                )
             _ui.value =
                 _ui.value.copy(
                     forecasts = results,
                     loadingWeather = false,
                 )
+        }
+    }
+
+    fun downloadOfflinePackForRoute(marineTitlesByCountry: Map<String, String>) {
+        val geom = _ui.value.routeGeometry
+        if (geom.size < 2 || _offlinePackUi.value.downloading) return
+        viewModelScope.launch {
+            _offlinePackUi.value = OfflinePackUiState(downloading = true)
+            try {
+                val result =
+                    offlineAreaPackDownloader.downloadRoutePack(
+                        routeGeometry = geom,
+                        marineTitlesByCountry = marineTitlesByCountry,
+                    ) { progress ->
+                        _offlinePackUi.value =
+                            OfflinePackUiState(
+                                downloading = true,
+                                stepKey = progress.stepKey,
+                                current = progress.current,
+                                total = progress.total,
+                            )
+                    }
+                _offlinePackUi.value =
+                    OfflinePackUiState(
+                        lastSuccessWeatherSamples = result.weatherSamples,
+                        lastSuccessRouteVertices = result.routeVertices,
+                    )
+            } catch (_: Exception) {
+                _offlinePackUi.value = OfflinePackUiState(lastFailed = true)
+            }
         }
     }
 
@@ -460,6 +539,8 @@ class MainViewModel(
                 userPreferencesRepository = container.userPreferencesRepository,
                 overpassHarborClient = container.overpassHarborClient,
                 premiumAccess = container.premiumAccess,
+                networkConnectivityMonitor = container.networkConnectivityMonitor,
+                offlineAreaPackDownloader = container.offlineAreaPackDownloader,
             ) as T
         }
     }

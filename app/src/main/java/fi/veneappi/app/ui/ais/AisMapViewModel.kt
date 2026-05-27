@@ -184,7 +184,7 @@ class AisMapViewModel(
             if (_isEnabled.value) {
                 _lastError.value = e.message ?: e.javaClass.simpleName
                 _streamMode.value = AisStreamMode.Error
-                log("fetch failed: ${_lastError.value}")
+                Log.w(TAG, "fetch failed: ${_lastError.value}", e)
             }
         }
         _isLoading.value = false
@@ -221,9 +221,7 @@ class AisMapViewModel(
             kotlin.math.abs(a.northLongitude - b.northLongitude) < 0.015
 
     private fun log(message: String) {
-        if (BuildConfig.DEBUG) {
-            Log.w(TAG, message)
-        }
+        Log.i(TAG, message)
     }
 
     override fun onCleared() {

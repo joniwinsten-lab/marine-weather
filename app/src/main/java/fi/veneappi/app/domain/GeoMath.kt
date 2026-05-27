@@ -128,4 +128,57 @@ object GeoMath {
         }
         return pts.last()
     }
+
+    data class LatLonBounds(
+        val minLat: Double,
+        val minLon: Double,
+        val maxLat: Double,
+        val maxLon: Double,
+    )
+
+    /** Axis-aligned bounds around polyline vertices with padding in degrees. */
+    fun boundsAroundPolyline(
+        pts: List<Pair<Double, Double>>,
+        paddingDeg: Double = 0.12,
+    ): LatLonBounds? {
+        if (pts.isEmpty()) return null
+        var minLat = pts[0].first
+        var maxLat = minLat
+        var minLon = pts[0].second
+        var maxLon = minLon
+        for ((lat, lon) in pts.drop(1)) {
+            minLat = minOf(minLat, lat)
+            maxLat = maxOf(maxLat, lat)
+            minLon = minOf(minLon, lon)
+            maxLon = maxOf(maxLon, lon)
+        }
+        return LatLonBounds(
+            minLat = minLat - paddingDeg,
+            minLon = minLon - paddingDeg,
+            maxLat = maxLat + paddingDeg,
+            maxLon = maxLon + paddingDeg,
+        )
+    }
+
+    /**
+     * Sample points along route for offline prefetch — at most [maxPoints], roughly every [spacingNm].
+     */
+    fun samplePointsAlongRoute(
+        pts: List<Pair<Double, Double>>,
+        maxPoints: Int = 24,
+        spacingNm: Double = 25.0,
+    ): List<Pair<Double, Double>> {
+        if (pts.isEmpty()) return emptyList()
+        if (pts.size == 1) return pts
+        val totalM = polylineLengthMeters(pts)
+        val totalNm = metersToNauticalMiles(totalM)
+        if (totalNm < 1e-3) return listOf(pts.first(), pts.last()).distinct()
+        val spacingM = spacingNm * 1852.0
+        val countBySpacing = (totalM / spacingM).toInt().coerceAtLeast(1) + 1
+        val count = minOf(maxPoints, countBySpacing).coerceAtLeast(2)
+        return (0 until count).map { i ->
+            val frac = i.toDouble() / (count - 1).coerceAtLeast(1)
+            pointAlongPolyline(pts, frac)
+        }
+    }
 }

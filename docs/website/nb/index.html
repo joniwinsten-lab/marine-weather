@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Marine Weather — Østersjøkart, MET Norway / SMHI / FMI-prognoser, radar, ruteplanlegging, AIS og offline-rutepakker for Android-nettbrett." />
+  <title>Marine Weather — Kart, prognoser og ruteplanlegging</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="alternate" hreflang="en" href="../" />
+  <link rel="alternate" hreflang="fi" href="../fi/" />
+  <link rel="alternate" hreflang="sv" href="../sv/" />
+  <link rel="alternate" hreflang="nb" href="./" />
+  <link rel="alternate" hreflang="et" href="../et/" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="./">Marine Weather</a>
+      <nav class="nav" aria-label="Hovedmeny">
+        <a href="#features">Funksjoner</a>
+        <a href="#offline">Offline</a>
+        <a href="#screenshots">Skjermbilder</a>
+        <a href="#premium">Premium</a>
+        <a href="../privacy.html">Personvern</a>
+        <a class="nav-cta" href="mailto:support@safelight.fi">Kontakt</a>
+        <select class="lang-select" aria-label="Språk" onchange="if(this.value) window.location.href=this.value">
+          <option value="../">EN</option>
+          <option value="../fi/">FI</option>
+          <option value="../sv/">SV</option>
+          <option value="./" selected>NO</option>
+          <option value="../et/">ET</option>
+        </select>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Android-nettbrett · Liggende · Google Play</p>
+          <h1>Planlegg Østersjøturer med ett kart, tre værtjenester og verktøy for svakt signal til sjøs</h1>
+          <p class="lead">
+            Marine Weather kombinerer åpne sjøkart med prognoser fra MET Norway, SMHI og FMI —
+            stormradar, lyn, nasjonale sjøværttekster, premium ruteplanlegging med AIS-fartøy
+            og offline-rutepakker du kan laste ned i havn før avreise.
+          </p>
+          <ul class="hero-bullets">
+            <li>Sammenlign vind nå og +3 / +6 / +12 t på ethvert punkt på kartet</li>
+            <li>Traficoms planleggingskart med MapLibre</li>
+            <li>Tydelig status når data er offline, cachet eller gammel</li>
+            <li>App på engelsk, finsk, svensk og norsk bokmål</li>
+          </ul>
+          <p class="hero-note">
+            <strong>Kun planleggingshjelp</strong> — erstatter ikke offisielle kart, sertifisert AIS-utstyr eller regler.
+          </p>
+        </div>
+        <figure class="hero-shot">
+          <img src="../assets/screenshots/map-weather-compare.png" alt="Kart med MET Norway, SMHI og FMI" width="1280" height="800" loading="eager" />
+        </figure>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <h2>Hva appen gjør</h2>
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Kart og vær</h3>
+            <p>Trykk lenge på kartet for å velge punkt. Se vind, retning og vindkast fra tre modeller. m/s eller knop. Prognoser lagres på enheten — siste vellykkede henting vises også uten nett.</p>
+          </article>
+          <article class="card">
+            <h3>Stormradar og lyn</h3>
+            <p>Animert regnradar og lynnedslag fra åpne data (FMI, MET Norway, SMHI). Tidslinje. Krever nett under visning.</p>
+          </article>
+          <article class="card">
+            <h3>Sjøværttekst (4 land)</h3>
+            <p>Korte sammendrag for Norge, Sverige, Finland og Estland ved kartets midtpunkt, med lenker til fullstendige prognoser.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Ruteplanlegging <span class="badge">Premium</span></h3>
+            <p>Tegn rute, sett fart og sammenlign vær ved fire punkter langs sporet. Eksporter GPX eller PDF-plan.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>12-dagers vind <span class="badge">Premium</span></h3>
+            <p>Daglig vindsammenligning fra MET Norway, SMHI og FMI for lengre planlegging.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>AIS-fartøy <span class="badge">Premium</span></h3>
+            <p>Fintraffic Digitraffic-fartøy på kartet (Kart og vær og Rute). Trykk for hastighet, kurs og detaljer. Live-data — krever tilkobling.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Offline-rutepakke <span class="badge">Premium</span></h3>
+            <p>I havn med Wi‑Fi: last kartfliser og prognoser langs ruten (~25&nbsp;nm mellom, alle tre kilder). AIS og radar krever nett.</p>
+          </article>
+          <article class="card">
+            <h3>Tilkobling og dataalder</h3>
+            <p>Banner viser offline, cache eller gammel prognose (6&nbsp;t / 12&nbsp;t).</p>
+          </article>
+          <article class="card">
+            <h3>Ingen konto</h3>
+            <p>Gratis funksjoner uten innlogging. Posisjonen blir på enheten. Premium via Google Play.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="offline" class="section section-alt">
+      <div class="wrap">
+        <h2>Til sjøs og tregt nett</h2>
+        <p class="section-intro">
+          Mobildekningen på Østersjøen er ujevn. Forbered i havn og bruk planleggingsdata når lenken faller bort — appen er ikke en full offline-plotter.
+        </p>
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Automatisk prognose-cache</h3>
+            <p>Vellykkede hentinger lagres. Ved nettverksfeil vises siste prognose med tidsstempel.</p>
+          </article>
+          <article class="card">
+            <h3>Statusbanner</h3>
+            <p>Se med en gang: ikke nett, cache brukes, prognose kan være gammel eller alle kilder feilet.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Last rute offline <span class="badge">Premium</span></h3>
+            <p>Når ruten er klar, trykk <strong>Last offline</strong> med Wi‑Fi. Kartfliser og vær langs sporet hentes på forhånd.</p>
+          </article>
+        </div>
+        <p class="fine-print">
+          Offline-pakke er planleggingshjelp. Live AIS, radar, lyn og sjøtekst krever tilkobling. Ha alltid offisielle kart og utstyr.
+        </p>
+      </div>
+    </section>
+
+    <section id="screenshots" class="section">
+      <div class="wrap">
+        <h2>Skjermbilder</h2>
+        <p class="section-intro">For liggende Android-nettbrett (minst 600&nbsp;dp bredde).</p>
+        <div class="gallery">
+          <figure>
+            <img src="../assets/screenshots/map-weather-compare.png" alt="Prognoser per kilde" loading="lazy" />
+            <figcaption>Prognoser — MET Norway, SMHI, FMI</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/route-planning.png" alt="Ruteplanlegging" loading="lazy" />
+            <figcaption>Ruteplanlegging med vær</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/wind-outlook.png" alt="12-dagers vind" loading="lazy" />
+            <figcaption>12-dagers vind (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/radar-lightning.png" alt="Regnradar og lyn" loading="lazy" />
+            <figcaption>Regnradar og lyn</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/marine-text-forecast.png" alt="Sjøværttekst fire land" loading="lazy" />
+            <figcaption>Sjøværttekst — 4 land</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="premium" class="section section-alt">
+      <div class="wrap">
+        <h2>Gratis vs Premium</h2>
+        <div class="compare">
+          <div class="compare-col">
+            <h3>Gratis</h3>
+            <ul>
+              <li>Kart og punktprognoser (3 kilder)</li>
+              <li>Stormradar og lyn</li>
+              <li>Sjøværttekst (4 land)</li>
+              <li>m/s eller knop</li>
+              <li>Prognose-cache og offline-banner</li>
+              <li>Traficom-planleggingskart</li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col-premium">
+            <h3>Premium <span class="badge">Google Play</span></h3>
+            <ul>
+              <li>Ruteplanlegging med vær</li>
+              <li>12-dagers vind</li>
+              <li>AIS-fartøy på kartet</li>
+              <li>Offline-rutepakke</li>
+              <li>Eksporter GPX eller PDF</li>
+              <li>3 dagers prøve, deretter engangskjøp eller abonnement</li>
+            </ul>
+          </div>
+        </div>
+        <p class="fine-print">
+          Premium er valgfritt. Priser vises i Play før kjøp.
+          Produkt-ID: <code>route_premium_lifetime</code>, <code>marine_weather_premium</code>.
+          Pakke: <code>fi.veneappi.app</code>
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-cta">
+      <div class="wrap cta-box">
+        <h2>Skaff appen</h2>
+        <p>
+          Marine Weather er på Google Play for Android-nettbrett (lukket testing utvides mot offentlig lansering).
+          Installer via testlenke eller søk når appen listes offentlig.
+        </p>
+        <p class="cta-links">
+          <a href="mailto:support@safelight.fi">support@safelight.fi</a>
+          ·
+          <a href="../privacy.html">Personvernregler</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Marine Weather · <a href="../privacy.html">Personvern</a> · <a href="mailto:support@safelight.fi">Support</a></p>
+      <p class="footer-small">Åpent vær- og kartdata: FMI, MET Norway, SMHI, Fintraffic Digitraffic (AIS) m.fl. Se attribusjon i appen.</p>
+    </div>
+  </footer>
+</body>
+</html>

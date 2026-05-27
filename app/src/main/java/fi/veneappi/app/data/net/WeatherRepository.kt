@@ -14,32 +14,46 @@ class WeatherRepository(
     private val cacheDao: ForecastCacheDao,
     private val json: Json,
 ) {
-    suspend fun loadAll(lat: Double, lon: Double): Map<SourceId, Result<UnifiedForecast>> {
+    suspend fun loadAll(lat: Double, lon: Double): Map<SourceId, Result<UnifiedForecast>> =
+        loadAllWithReport(lat, lon).forecasts()
+
+    suspend fun loadAllWithReport(
+        lat: Double,
+        lon: Double,
+    ): WeatherLoadReport {
         val keyBase = "${roundKey(lat)}_${roundKey(lon)}"
-        val metCached = readCache(SourceId.MET_NORWAY, keyBase)
-        val smhiCached = readCache(SourceId.SMHI, keyBase)
-        val fmiCached = readCache(SourceId.FMI, keyBase)
-
-        val met =
-            runCatching { http.fetchMetNorway(lat, lon) }
-                .onSuccess { cacheDao.upsert(cacheRow(SourceId.MET_NORWAY, keyBase, it)) }
-                .recoverCatching { ex -> metCached ?: throw ex }
-
-        val smhi =
-            runCatching { http.fetchSmhi(lat, lon) }
-                .onSuccess { cacheDao.upsert(cacheRow(SourceId.SMHI, keyBase, it)) }
-                .recoverCatching { ex -> smhiCached ?: throw ex }
-
-        val fmi =
-            runCatching { http.fetchFmi(lat, lon) }
-                .onSuccess { cacheDao.upsert(cacheRow(SourceId.FMI, keyBase, it)) }
-                .recoverCatching { ex -> fmiCached ?: throw ex }
-
-        return mapOf(
-            SourceId.MET_NORWAY to met,
-            SourceId.SMHI to smhi,
-            SourceId.FMI to fmi,
+        val met = loadOne(SourceId.MET_NORWAY, keyBase) { http.fetchMetNorway(lat, lon) }
+        val smhi = loadOne(SourceId.SMHI, keyBase) { http.fetchSmhi(lat, lon) }
+        val fmi = loadOne(SourceId.FMI, keyBase) { http.fetchFmi(lat, lon) }
+        return WeatherLoadReport(
+            mapOf(
+                SourceId.MET_NORWAY to met,
+                SourceId.SMHI to smhi,
+                SourceId.FMI to fmi,
+            ),
         )
+    }
+
+    private suspend fun loadOne(
+        id: SourceId,
+        keyBase: String,
+        fetch: suspend () -> UnifiedForecast,
+    ): SourceWeatherOutcome {
+        val cached = readCache(id, keyBase)
+        val network =
+            runCatching { fetch() }
+                .onSuccess { cacheDao.upsert(cacheRow(id, keyBase, it)) }
+        return when {
+            network.isSuccess ->
+                SourceWeatherOutcome(Result.success(network.getOrThrow()), servedFromCache = false)
+            cached != null ->
+                SourceWeatherOutcome(Result.success(cached), servedFromCache = true)
+            else ->
+                SourceWeatherOutcome(
+                    Result.failure(network.exceptionOrNull() ?: IllegalStateException("no data")),
+                    servedFromCache = false,
+                )
+        }
     }
 
     private suspend fun readCache(

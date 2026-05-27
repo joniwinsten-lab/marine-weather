@@ -22,8 +22,10 @@ import fi.veneappi.app.ui.map.MapTileWarmup
 import fi.veneappi.app.data.radar.FmiRadarRepository
 import fi.veneappi.app.data.radar.MetNorwayRadarRepository
 import fi.veneappi.app.data.radar.SmhiRadarRepository
+import fi.veneappi.app.data.net.NetworkConnectivityMonitor
 import fi.veneappi.app.data.net.WeatherHttpClient
 import fi.veneappi.app.data.net.WeatherRepository
+import fi.veneappi.app.data.offline.OfflineAreaPackDownloader
 import fi.veneappi.app.data.prefs.UserPreferencesRepository
 import fi.veneappi.app.data.room.VeneappiDatabase
 import kotlinx.serialization.json.Json
@@ -111,6 +113,16 @@ class AppContainer(
     val mapTileWarmup = MapTileWarmup()
 
     val userPreferencesRepository = UserPreferencesRepository(application)
+
+    val networkConnectivityMonitor = NetworkConnectivityMonitor(application)
+
+    val offlineAreaPackDownloader =
+        OfflineAreaPackDownloader(
+            weatherRepository = weatherRepository,
+            mapTileWarmup = mapTileWarmup,
+            marineTextRepository = marineTextRepository,
+            packDao = database.offlineAreaPackDao(),
+        )
 
     val overpassHarborClient = OverpassHarborClient(jsonParser = json)
 

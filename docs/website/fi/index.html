@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Marine Weather — Itämeren merikartat, MET Norway / SMHI / FMI -ennusteet, tutka, reittisuunnittelu, AIS ja offline-reittipaketit Android-tableteille." />
+  <title>Marine Weather — Kartta, ennusteet ja reittisuunnittelu</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="alternate" hreflang="en" href="../" />
+  <link rel="alternate" hreflang="fi" href="./" />
+  <link rel="alternate" hreflang="sv" href="../sv/" />
+  <link rel="alternate" hreflang="nb" href="../nb/" />
+  <link rel="alternate" hreflang="et" href="../et/" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="./">Marine Weather</a>
+      <nav class="nav" aria-label="Päävalikko">
+        <a href="#features">Ominaisuudet</a>
+        <a href="#offline">Offline</a>
+        <a href="#screenshots">Kuvakaappaukset</a>
+        <a href="#premium">Premium</a>
+        <a href="../privacy.html">Tietosuoja</a>
+        <a class="nav-cta" href="mailto:support@safelight.fi">Yhteystiedot</a>
+        <select class="lang-select" aria-label="Kieli" onchange="if(this.value) window.location.href=this.value">
+          <option value="../">EN</option>
+          <option value="./" selected>FI</option>
+          <option value="../sv/">SV</option>
+          <option value="../nb/">NO</option>
+          <option value="../et/">ET</option>
+        </select>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Android-tabletti · Vaakakuva · Google Play</p>
+          <h1>Suunnittele Itämeren matkat yhdellä kartalla, kolmella sääpalvelulla ja työkaluilla heikolle signaalille</h1>
+          <p class="lead">
+            Marine Weather yhdistää avoimet merikartat MET Norway-, SMHI- ja FMI-ennusteisiin —
+            myrskytutkan, salaman, kansalliset meritekstit, premium-reittisuunnittelun AIS-aluksilla
+            ja offline-reittipaketit, jotka voit ladata satamassa ennen lähtöä.
+          </p>
+          <ul class="hero-bullets">
+            <li>Vertaa tuulta nyt ja +3 / +6 / +12 h missä tahansa karttapisteessä</li>
+            <li>Traficomin suunnittelukartat MapLibre-kartalla</li>
+            <li>Selkeä tila kun data on offline, välimuistissa tai vanhentunut</li>
+            <li>Sovelluksessa suomi, englanti, ruotsi ja norja (bokmål)</li>
+          </ul>
+          <p class="hero-note">
+            <strong>Vain suunnitteluapu</strong> — ei korvaa virallisia karttoja, sertifioitua AIS-laitetta tai säännöksiä.
+          </p>
+        </div>
+        <figure class="hero-shot">
+          <img src="../assets/screenshots/map-weather-compare.png" alt="Kartta ja MET Norway-, SMHI- ja FMI-ennusteet" width="1280" height="800" loading="eager" />
+        </figure>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <h2>Mitä sovellus tekee</h2>
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Kartta ja sää</h3>
+            <p>Valitse piste pitämällä karttaa painettuna. Näe tuuli, suunta ja puuskat kolmesta mallista. m/s tai solmua. Ennusteet tallentuvat laitteelle — viimeisin onnistunut haku näkyy myös ilman verkkoa.</p>
+          </article>
+          <article class="card">
+            <h3>Myrskytutka ja salama</h3>
+            <p>Sadetutka ja salamat avoimesta datasta (FMI, MET Norway, SMHI). Aikajana. Vaatii verkon katselun aikana.</p>
+          </article>
+          <article class="card">
+            <h3>Meriteksti (4 maata)</h3>
+            <p>Lyhyet merialue-yhteenvedot Norjalle, Ruotsille, Suomelle ja Virolle kartan keskipisteen mukaan, linkit virallisiin teksteihin.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Reittisuunnittelu <span class="badge">Premium</span></h3>
+            <p>Piirrä reitti, aseta nopeus ja vertaa säätä neljässä pisteessä (lähtö, ⅓, ⅔, ETA). Vie GPX tai PDF-suunnitelma.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>12 päivän tuuli <span class="badge">Premium</span></h3>
+            <p>Päivittäinen tuulivertailu MET Norway-, SMHI- ja FMI-lähteistä pidemmälle suunnittelulle.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>AIS-alukset <span class="badge">Premium</span></h3>
+            <p>Fintraffic Digitraffic -aluksien sijainnit kartalla (Kartta &amp; sää ja Reitti). Napauta alusta nähdäksesi nopeuden, kurssin ja tiedot. Live-data — vaatii yhteyden.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Offline-reittipaketti <span class="badge">Premium</span></h3>
+            <p>Satamassa WiFi:llä: lataa karttalaatikot ja ennusteet reitin varrelle (~25&nbsp;nm välein, kaikki kolme lähdettä). AIS ja tutka tarvitsevat verkon.</p>
+          </article>
+          <article class="card">
+            <h3>Yhteys ja datan ikä</h3>
+            <p>Banneri kertoo offline-tilasta, välimuistista tai vanhentuneesta ennusteesta (6&nbsp;h / 12&nbsp;h).</p>
+          </article>
+          <article class="card">
+            <h3>Ei tiliä</h3>
+            <p>Ilmaiset ominaisuudet ilman kirjautumista. Sijainti pysyy laitteella. Premium Google Play -laskutuksella.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="offline" class="section section-alt">
+      <div class="wrap">
+        <h2>Merellä ja hitaalla verkolla</h2>
+        <p class="section-intro">
+          Itämeren mobiiliverkko on epätasainen. Voit valmistautua satamassa ja käyttää suunnitteludataa signaalin heikentyessä — sovellus ei kuitenkaan ole täysi offline-navigaattori.
+        </p>
+        <div class="feature-grid">
+          <article class="card">
+            <h3>Automaattinen ennuste-välimuisti</h3>
+            <p>Onnistuneet haut tallennetaan tabletille. Verkon katketessa näytetään viimeisin ennuste aikaleimalla.</p>
+          </article>
+          <article class="card">
+            <h3>Tilabanneri</h3>
+            <p>Näet heti: ei verkkoa, käytetään välimuistia, ennuste voi olla vanha tai kaikki lähteet epäonnistuivat.</p>
+          </article>
+          <article class="card card-premium">
+            <h3>Lataa reitti offlineen <span class="badge">Premium</span></h3>
+            <p>Kun reitti on valmis, paina <strong>Lataa offlineen</strong> WiFi:llä. Sovellus hakee karttalaatikot ja sääpisteet reitin varrelta.</p>
+          </article>
+        </div>
+        <p class="fine-print">
+          Offline-paketti on suunnitteluapu. Live AIS, tutka, salama ja meritekstin päivitys vaativat yhteyden. Ota mukaan viralliset kartat ja varusteet.
+        </p>
+      </div>
+    </section>
+
+    <section id="screenshots" class="section">
+      <div class="wrap">
+        <h2>Kuvakaappaukset</h2>
+        <p class="section-intro">Suunniteltu vaakasuuntaisille Android-tableteille (vähintään 600&nbsp;dp leveys).</p>
+        <div class="gallery">
+          <figure>
+            <img src="../assets/screenshots/map-weather-compare.png" alt="Ennusteet lähteittäin" loading="lazy" />
+            <figcaption>Ennusteet — MET Norway, SMHI, FMI</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/route-planning.png" alt="Reittisuunnittelu" loading="lazy" />
+            <figcaption>Reittisuunnittelu säällä</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/wind-outlook.png" alt="12 päivän tuuli" loading="lazy" />
+            <figcaption>12 päivän tuuli (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/radar-lightning.png" alt="Sadetutka ja salama" loading="lazy" />
+            <figcaption>Sadetutka ja salama</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/marine-text-forecast.png" alt="Meriteksti neljästä maasta" loading="lazy" />
+            <figcaption>Meriteksti — 4 maata</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="premium" class="section section-alt">
+      <div class="wrap">
+        <h2>Ilmainen vs Premium</h2>
+        <div class="compare">
+          <div class="compare-col">
+            <h3>Ilmainen</h3>
+            <ul>
+              <li>Kartta ja piste-ennusteet (3 lähdettä)</li>
+              <li>Myrskytutka ja salama</li>
+              <li>Meriteksti (4 maata)</li>
+              <li>m/s tai solmua</li>
+              <li>Ennuste-välimuisti ja offline-banneri</li>
+              <li>Traficom-suunnittelukartta</li>
+            </ul>
+          </div>
+          <div class="compare-col compare-col-premium">
+            <h3>Premium <span class="badge">Google Play</span></h3>
+            <ul>
+              <li>Reittisuunnittelu säällä</li>
+              <li>12 päivän tuuli</li>
+              <li>AIS-alukset kartalla</li>
+              <li>Offline-reittipaketti</li>
+              <li>GPX- tai PDF-vienti</li>
+              <li>3 päivän kokeilu, sitten kertamaksu tai tilaus</li>
+            </ul>
+          </div>
+        </div>
+        <p class="fine-print">
+          Premium on vapaaehtoinen. Hinnat näkyvät Playssa ennen ostoa.
+          Tuotteet: <code>route_premium_lifetime</code>, <code>marine_weather_premium</code>.
+          Paketti: <code>fi.veneappi.app</code>
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-cta">
+      <div class="wrap cta-box">
+        <h2>Hanki sovellus</h2>
+        <p>
+          Marine Weather on Google Playssa Android-tableteille (suljettu testaus laajenee kohti julkista julkaisua).
+          Asenna testaajalinkistä tai etsi sovellus, kun se on julkisesti listattu.
+        </p>
+        <p class="cta-links">
+          <a href="mailto:support@safelight.fi">support@safelight.fi</a>
+          ·
+          <a href="../privacy.html">Tietosuojakäytäntö</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 Marine Weather · <a href="../privacy.html">Tietosuoja</a> · <a href="mailto:support@safelight.fi">Tuki</a></p>
+      <p class="footer-small">Avoin sää- ja karttadata: FMI, MET Norway, SMHI, Fintraffic Digitraffic (AIS) jne. Katso sovelluksen attribuutiot.</p>
+    </div>
+  </footer>
+</body>
+</html>
