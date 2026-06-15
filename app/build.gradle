@@ -20,8 +20,8 @@ android {
         applicationId 'fi.veneappi.app'
         minSdk 26
         targetSdk 35
-        versionCode 21
-        versionName '0.2.19'
+        versionCode 22
+        versionName '0.3.0-phone-audit'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField 'String', 'WEATHER_USER_AGENT', '"MarineWeather/0.1.0 (fi.veneappi.app; planning app)"'
         buildConfigField 'boolean', 'ENABLE_OSRM_DEMO', 'false'

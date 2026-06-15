@@ -4,10 +4,10 @@
 
 | | |
 |---|---|
-| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.2.19** (`versionCode` 21) |
+| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.0-phone-audit** (`versionCode` 22) on `feature/phone-audit`; **main** / Play **0.2.19** |
 | **iOS** | `/Users/Safelight/marine-weather-ios` · marketing **0.3.0** |
 | **Technical porting map** | iOS: `docs/ios-porting-inventory.md` (API URLs, file paths) |
-| **Last parity audit** | 2026-05-24 |
+| **Last parity audit** | 2026-06-15 |
 
 ---
 
@@ -112,14 +112,14 @@ Billing intent (store IDs differ by platform):
 | SPLASH-01 | Branded splash | Free | sync | sync | | 2026-05-24 |
 | HARBOR-01 | Harbors (Overpass) on map | — | deferred | deferred | Android code exists; not in nav | 2026-05-24 |
 | DIST-01 | Store distribution | n/a | sync | android-only | Play published; App Store pending dev account | 2026-05-24 |
-| PLAT-01 | Target devices | n/a | exception | exception | Android tablet≥600dp; iOS iPad-only | 2026-05-24 |
+| PLAT-01 | Target devices | n/a | partial | exception | `feature/phone-audit`: phones enabled (manifest); P0 landscape nav-rail clip; Play/main still tablet≥600dp | 2026-06-15 |
 | PLAT-02 | OSRM demo routing | n/a | exception | n/a | Android debug only, disabled in release | 2026-05-24 |
 
 ### Quick audit
 
 Count rows where status is **not** `sync` / `deferred` / `exception` / `n/a`:
 
-- `partial`: **1** (BILL-01 — iOS billing not live in store)
+- `partial`: **2** (BILL-01 — iOS billing not live; PLAT-01 — Android phone audit branch)
 - `android-only`: **1** (DIST-01 — expected until App Store)
 
 **Product features:** in sync. **Ship blocker:** App Store Connect + TestFlight (DIST-01).
@@ -132,6 +132,7 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-15 | android | PLAT-01 | Phase 0 phone audit: manifest/orientation unlock, safe window insets (branch only) |
 | 2026-06-09 | android | BILL-03 | Paywall: explicit local trial + subscription terms (Play policy) |
 | 2026-05-24 | iOS | MAP-02 | Traficom overlay → `Merikarttasarjat public` mosaic (was `Merikarttasarja B`) |
 | 2026-05-24 | both | — | Parity doc created; baseline audit at Android 0.2.18 / iOS 0.3.0 |
