@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.2.18** (`versionCode` 20) |
+| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.2.19** (`versionCode` 21) |
 | **iOS** | `/Users/Safelight/marine-weather-ios` · marketing **0.3.0** |
 | **Technical porting map** | iOS: `docs/ios-porting-inventory.md` (API URLs, file paths) |
 | **Last parity audit** | 2026-05-24 |
@@ -106,7 +106,7 @@ Billing intent (store IDs differ by platform):
 | OFF-02 | Offline route pack (tiles+weather+marine) | Premium | sync | sync | No Traficom tiles in pack | 2026-05-24 |
 | BILL-01 | Lifetime + monthly IAP | Premium | sync | partial | Play live; ASC products not live | 2026-05-24 |
 | BILL-02 | Restore purchases | Premium | sync | sync | | 2026-05-24 |
-| BILL-03 | Paywall + billing diagnostics | Premium | sync | sync | | 2026-05-24 |
+| BILL-03 | Paywall + billing diagnostics | Premium | sync | sync | Play trial/sub terms on paywall (0.2.19) | 2026-06-09 |
 | LOC-01 | en / fi / sv / nb | — | sync | sync | | 2026-05-24 |
 | LOC-02 | Attribution dialog (MET, SMHI, FMI, Traficom, AIS) | Free | sync | sync | | 2026-05-24 |
 | SPLASH-01 | Branded splash | Free | sync | sync | | 2026-05-24 |
@@ -132,6 +132,7 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-09 | android | BILL-03 | Paywall: explicit local trial + subscription terms (Play policy) |
 | 2026-05-24 | iOS | MAP-02 | Traficom overlay → `Merikarttasarjat public` mosaic (was `Merikarttasarja B`) |
 | 2026-05-24 | both | — | Parity doc created; baseline audit at Android 0.2.18 / iOS 0.3.0 |
 

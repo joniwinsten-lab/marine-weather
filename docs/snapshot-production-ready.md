@@ -73,7 +73,8 @@ git show snapshot/production-ready-0.2.14:app/build.gradle
 | Snapshot | Purpose |
 |----------|---------|
 | `snapshot/pre-offline-2026-05-19` | Before offline banner + route area pack |
-| `snapshot/production-ready-0.2.14` | **Current — go-to for production** |
+| `snapshot/production-ready-0.2.14` | Closed-test production baseline (git tag) |
+| **`snapshots/production-0.2.19/`** | **Live on Google Play** — local folder copy (see [snapshots/README.md](../snapshots/README.md)) |
 
 ## Notes before production
 
