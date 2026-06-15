@@ -1,0 +1,354 @@
+/* A5 print flyer — Marine Weather (matches website dark theme) */
+
+:root {
+  --bg: #0c1220;
+  --bg-alt: #111a2e;
+  --surface: #162238;
+  --text: #e8eef8;
+  --muted: #9aa8c4;
+  --accent: #5b9fd4;
+  --accent-soft: rgba(91, 159, 212, 0.15);
+  --border: rgba(255, 255, 255, 0.1);
+  --radius: 8px;
+  --page-h: 210mm;
+  --page-w: 148mm;
+}
+
+@page {
+  size: A5 portrait;
+  margin: 7mm;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 9pt;
+  line-height: 1.35;
+  color: var(--text);
+  background: #060a12;
+}
+
+.sheet {
+  width: var(--page-w);
+  height: var(--page-h);
+  margin: 10px auto;
+  padding: 7mm 8mm 6mm;
+  background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 3.5mm;
+  overflow: hidden;
+}
+
+.flyer-header {
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  margin: 0 0 1.5mm;
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.flyer-header h1 {
+  margin: 0 0 2mm;
+  font-size: 20pt;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 9.5pt;
+  color: var(--muted);
+}
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5mm;
+  margin: 2.5mm 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-chips li {
+  font-size: 6.8pt;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.8mm 2.2mm;
+}
+
+/* Main body grows to fill page */
+.flyer-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5mm;
+  min-height: 0;
+}
+
+/* Screenshots */
+.flyer-shots {
+  flex: 1.15;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm;
+  min-height: 0;
+}
+
+.shot {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.shot figcaption {
+  flex-shrink: 0;
+  margin-top: 1.5mm;
+  font-size: 7pt;
+  color: var(--muted);
+  text-align: center;
+}
+
+.shot-wide {
+  flex: 0.55;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.shot-wide img {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.shot-wide figcaption {
+  flex-shrink: 0;
+  margin-top: 1.5mm;
+  font-size: 7pt;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Free / Premium columns */
+.flyer-grid {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm;
+}
+
+.flyer-col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3.5mm;
+}
+
+.flyer-col-premium {
+  border-color: rgba(91, 159, 212, 0.35);
+  background: linear-gradient(145deg, var(--surface), var(--accent-soft));
+}
+
+.flyer-col h2 {
+  margin: 0 0 2.5mm;
+  font-size: 8.5pt;
+  font-weight: 700;
+}
+
+.flyer-col h2 .badge {
+  display: inline-block;
+  margin-left: 1mm;
+  font-size: 6pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.4mm 1.2mm;
+  border-radius: 3px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  vertical-align: middle;
+}
+
+.flyer-col ul {
+  margin: 0;
+  padding-left: 4mm;
+}
+
+.flyer-col li {
+  margin-bottom: 1mm;
+  font-size: 8pt;
+  color: var(--muted);
+}
+
+.flyer-col li:last-child {
+  margin-bottom: 0;
+}
+
+.flyer-col-premium li {
+  color: var(--text);
+}
+
+/* QR + download row */
+.flyer-cta {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4mm;
+  align-items: center;
+  padding: 4mm;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.flyer-qr img {
+  display: block;
+  width: 32mm;
+  height: 32mm;
+  border-radius: 4px;
+  background: #fff;
+  padding: 1.5mm;
+}
+
+.cta-copy {
+  min-width: 0;
+}
+
+.qr-caption {
+  margin: 0 0 1.5mm;
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.qr-hint {
+  margin: 0 0 3mm;
+  font-size: 7.5pt;
+  color: var(--muted);
+}
+
+.store-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5mm;
+}
+
+.btn-store {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 28mm;
+  padding: 2mm 3.5mm;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 8.5pt;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.btn-store-play {
+  color: #fff;
+  background: linear-gradient(180deg, #3d8fd4 0%, #2a6fad 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.btn-store-ios {
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.btn-store-sub {
+  margin-top: 0.6mm;
+  font-size: 6.5pt;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Footer */
+.flyer-footer {
+  flex-shrink: 0;
+  padding-top: 2.5mm;
+  border-top: 1px solid var(--border);
+  font-size: 7pt;
+  color: var(--muted);
+  text-align: center;
+}
+
+.web {
+  margin: 0 0 1.5mm;
+  font-size: 8pt;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.disclaimer {
+  margin: 0 0 1mm;
+  font-size: 6.5pt;
+  line-height: 1.3;
+}
+
+.contact {
+  margin: 0;
+  font-size: 6.8pt;
+}
+
+@media print {
+  body {
+    background: var(--bg);
+  }
+
+  .sheet {
+    width: 100%;
+    height: 196mm;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    page-break-after: avoid;
+  }
+}

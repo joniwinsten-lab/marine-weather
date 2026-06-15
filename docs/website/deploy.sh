@@ -11,4 +11,4 @@ rsync -avz --delete \
   --exclude deploy.sh \
   --exclude '.DS_Store'
 
-echo "Deployed to http://${HOST}/marine-weather/"
+echo "Deployed to https://safelight.fi/marine-weather/ (and http://${HOST}/marine-weather/)"

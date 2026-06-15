@@ -1,0 +1,7 @@
+# Add to /etc/nginx/sites-enabled/safelight.fi inside the HTTPS server { } block,
+# alongside reino-locations.conf and miksu-locations.conf:
+
+    include /etc/nginx/snippets/marine-weather-locations.conf;
+
+# Then: nginx -t && systemctl reload nginx
+# Live: https://safelight.fi/marine-weather/
