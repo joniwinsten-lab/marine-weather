@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.0-phone-audit** (`versionCode` 22) on `feature/phone-audit`; **main** / Play **0.2.19** |
+| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.1-phone-layout** (`versionCode` 23) on `feature/phone-audit`; **main** / Play **0.2.19** |
 | **iOS** | `/Users/Safelight/marine-weather-ios` · marketing **0.3.0** |
 | **Technical porting map** | iOS: `docs/ios-porting-inventory.md` (API URLs, file paths) |
 | **Last parity audit** | 2026-06-15 |

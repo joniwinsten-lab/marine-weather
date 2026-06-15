@@ -67,7 +67,7 @@ Save screenshots to `docs/phone-audit/screenshots/` (gitignored) or attach to is
 
 **Status (2026-06-15):** 30 screenshots captured via `scripts/capture-phone-audit-screenshots.py` on `Phone_Small`, `Phone_Medium`, `Phone_Large`. See `docs/phone-audit/screenshots/README.md`.
 
-**P0 (landscape):** On phones with ~1080px landscape height, the 5th nav-rail item (Storm radar) is clipped and not tappable at native resolution.
+**P0 (landscape):** ~~Storm nav-rail clipped on short phones~~ → fixed in 0.3.1: bottom bar when `screenHeightDp < 420` (see [phone-audit-phase2.md](phone-audit-phase2.md)).
 
 ## Exit gate (phase 0 → phase 1)
 

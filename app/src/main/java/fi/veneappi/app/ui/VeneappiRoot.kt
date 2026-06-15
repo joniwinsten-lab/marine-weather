@@ -215,8 +215,12 @@ fun VeneappiRoot(
     var destination by remember { mutableStateOf(MainDest.COMPARE) }
     var showAttribution by remember { mutableStateOf(false) }
     var traficomPlanningChart by remember { mutableStateOf(true) }
+    val configuration = LocalConfiguration.current
     val useNavigationRail =
-        LocalConfiguration.current.screenWidthDp >= UiBreakpoints.NAVIGATION_RAIL_MIN_WIDTH_DP
+        configuration.screenWidthDp >= UiBreakpoints.NAVIGATION_RAIL_MIN_WIDTH_DP &&
+            configuration.screenHeightDp >= UiBreakpoints.NAVIGATION_RAIL_MIN_HEIGHT_DP
+    val railCompactLabels =
+        configuration.screenHeightDp < UiBreakpoints.NAVIGATION_RAIL_COMPACT_MAX_HEIGHT_DP
 
     LaunchedEffect(ui.latitude, ui.longitude) {
         app.appContainer.applicationScope.launch {
@@ -257,98 +261,19 @@ fun VeneappiRoot(
                 modifier = Modifier.fillMaxSize(),
             ) {
             if (useNavigationRail) {
-                NavigationRail(modifier = Modifier.fillMaxHeight()) {
-                    DestinationRailItem(
-                        selected = destination == MainDest.COMPARE,
-                        onClick = {
-                            destination = MainDest.COMPARE
-                            vm.setRoutePickMode(RoutePickMode.None)
-                        },
-                        icon = {
-                            Icon(
-                                Icons.Default.Map,
-                                contentDescription = stringResource(R.string.content_map),
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(R.string.nav_compare),
-                                style = MaterialTheme.typography.labelSmall,
-                                textAlign = TextAlign.Center,
-                                maxLines = 4,
-                                softWrap = true,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
-                            )
-                        },
-                    )
-                    DestinationRailItem(
-                        selected = destination == MainDest.ROUTE,
-                        onClick = { destination = MainDest.ROUTE },
-                        icon = {
-                            NavPremiumBadgeIcon(
-                                baseImageVector = Icons.Default.Navigation,
-                                baseContentDescription = stringResource(R.string.nav_route),
-                                isUnlocked = isRoutePremium,
-                            )
-                        },
-                        label = { NavPremiumStackLabel(stringResource(R.string.nav_route), forRail = true) },
-                    )
-                    DestinationRailItem(
-                        selected = destination == MainDest.EXTENDED_WIND,
-                        onClick = { destination = MainDest.EXTENDED_WIND },
-                        icon = {
-                            NavPremiumBadgeIcon(
-                                baseImageVector = Icons.Outlined.CalendarMonth,
-                                baseContentDescription = stringResource(R.string.route_tab_extended_wind),
-                                isUnlocked = isRoutePremium,
-                            )
-                        },
-                        label = { NavPremiumStackLabel(stringResource(R.string.route_tab_extended_wind), forRail = true) },
-                    )
-                    DestinationRailItem(
-                        selected = destination == MainDest.MARINE_TEXT,
-                        onClick = { destination = MainDest.MARINE_TEXT },
-                        icon = {
-                            Icon(
-                                Icons.Outlined.Waves,
-                                contentDescription = stringResource(R.string.marine_nav_cd),
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(R.string.nav_marine_four_seas),
-                                style = MaterialTheme.typography.labelSmall,
-                                textAlign = TextAlign.Center,
-                                maxLines = 4,
-                                softWrap = true,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
-                            )
-                        },
-                    )
-                    DestinationRailItem(
-                        selected = destination == MainDest.STORM_RADAR,
-                        onClick = { destination = MainDest.STORM_RADAR },
-                        icon = {
-                            Icon(
-                                Icons.Outlined.Thunderstorm,
-                                contentDescription = stringResource(R.string.storm_nav_cd),
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(R.string.nav_storm_radar),
-                                style = MaterialTheme.typography.labelSmall,
-                                textAlign = TextAlign.Center,
-                                maxLines = 4,
-                                softWrap = true,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
-                            )
-                        },
-                    )
-                }
+                ScrollableDestinationRail(
+                    destination = destination,
+                    isRoutePremium = isRoutePremium,
+                    compactLabels = railCompactLabels,
+                    onCompare = {
+                        destination = MainDest.COMPARE
+                        vm.setRoutePickMode(RoutePickMode.None)
+                    },
+                    onRoute = { destination = MainDest.ROUTE },
+                    onWind = { destination = MainDest.EXTENDED_WIND },
+                    onMarine = { destination = MainDest.MARINE_TEXT },
+                    onStorm = { destination = MainDest.STORM_RADAR },
+                )
             }
 
             Column(
@@ -711,7 +636,9 @@ private fun NavPremiumBadgeIcon(
 private fun NavPremiumStackLabel(
     title: String,
     forRail: Boolean = false,
+    showLabel: Boolean = true,
 ) {
+    if (!showLabel) return
     val columnModifier =
         if (forRail) {
             Modifier.widthIn(max = NavigationRailItemLabelMaxWidth)
@@ -752,13 +679,148 @@ private fun DestinationRailItem(
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
     label: @Composable () -> Unit,
+    showLabel: Boolean = true,
 ) {
     NavigationRailItem(
         selected = selected,
         onClick = onClick,
         icon = icon,
-        label = label,
+        label = if (showLabel) label else ({ }),
     )
+}
+
+@Composable
+private fun ScrollableDestinationRail(
+    destination: MainDest,
+    isRoutePremium: Boolean,
+    compactLabels: Boolean,
+    onCompare: () -> Unit,
+    onRoute: () -> Unit,
+    onWind: () -> Unit,
+    onMarine: () -> Unit,
+    onStorm: () -> Unit,
+) {
+    val scrollState = rememberScrollState()
+    val showLabels = !compactLabels
+    LaunchedEffect(destination) {
+        if (destination == MainDest.STORM_RADAR && scrollState.maxValue > 0) {
+            scrollState.animateScrollTo(scrollState.maxValue)
+        }
+    }
+    NavigationRail(modifier = Modifier.fillMaxHeight()) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            DestinationRailItem(
+                selected = destination == MainDest.COMPARE,
+                onClick = onCompare,
+                showLabel = showLabels,
+                icon = {
+                    Icon(
+                        Icons.Default.Map,
+                        contentDescription = stringResource(R.string.content_map),
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.nav_compare),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 4,
+                        softWrap = true,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.ROUTE,
+                onClick = onRoute,
+                showLabel = showLabels,
+                icon = {
+                    NavPremiumBadgeIcon(
+                        baseImageVector = Icons.Default.Navigation,
+                        baseContentDescription = stringResource(R.string.nav_route),
+                        isUnlocked = isRoutePremium,
+                    )
+                },
+                label = {
+                    NavPremiumStackLabel(
+                        stringResource(R.string.nav_route),
+                        forRail = true,
+                        showLabel = showLabels,
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.EXTENDED_WIND,
+                onClick = onWind,
+                showLabel = showLabels,
+                icon = {
+                    NavPremiumBadgeIcon(
+                        baseImageVector = Icons.Outlined.CalendarMonth,
+                        baseContentDescription = stringResource(R.string.route_tab_extended_wind),
+                        isUnlocked = isRoutePremium,
+                    )
+                },
+                label = {
+                    NavPremiumStackLabel(
+                        stringResource(R.string.route_tab_extended_wind),
+                        forRail = true,
+                        showLabel = showLabels,
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.MARINE_TEXT,
+                onClick = onMarine,
+                showLabel = showLabels,
+                icon = {
+                    Icon(
+                        Icons.Outlined.Waves,
+                        contentDescription = stringResource(R.string.marine_nav_cd),
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.nav_marine_four_seas),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 4,
+                        softWrap = true,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.STORM_RADAR,
+                onClick = onStorm,
+                showLabel = showLabels,
+                icon = {
+                    Icon(
+                        Icons.Outlined.Thunderstorm,
+                        contentDescription = stringResource(R.string.storm_nav_cd),
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.nav_storm_radar),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 4,
+                        softWrap = true,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
+                    )
+                },
+            )
+        }
+    }
 }
 
 @Composable
@@ -910,7 +972,9 @@ private fun WeatherPane(
     val refreshDesc = stringResource(R.string.weather_refresh)
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val fitThreeSources = maxWidth >= UiBreakpoints.WEATHER_PANE_DENSE_MIN_WIDTH_DP.dp
+        val fitThreeSources =
+            maxWidth >= UiBreakpoints.WEATHER_PANE_DENSE_MIN_WIDTH_DP.dp &&
+                maxHeight >= UiBreakpoints.WEATHER_PANE_DENSE_MIN_HEIGHT_DP.dp
         if (fitThreeSources) {
             Column(
                 modifier =
@@ -1012,10 +1076,10 @@ private fun WeatherPane(
     } else {
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-                    .verticalScroll(rememberScrollState()),
+                modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
