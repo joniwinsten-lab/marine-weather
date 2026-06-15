@@ -56,7 +56,7 @@ Physical tablet (e.g. Honor ELN-L09) remains the gold standard before Play relea
 
 **Tablet regression: PASS** for layout and navigation on the Medium_Tablet class viewport. Safe to proceed with phone layout work (phase 2); no tablet-specific code rollback needed.
 
-**Follow-up (infra):** Investigate `Medium_Tablet` AVD crash separately; use tablet proxy or hardware for CI screenshots until fixed.
+**Follow-up (infra):** `Medium_Tablet` AVD may still lack network/DNS — cold boot with `-dns-server 8.8.8.8` if needed. Prefetch no longer crashes the app when FMI radar host is unreachable (0.3.3).
 
 ## Regenerate
 

@@ -132,8 +132,8 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-15 | android | — | Fix storm radar prefetch crash when FMI host unreachable (network/DNS) |
 | 2026-06-15 | android | PLAT-01 | Phase 2b: route weather scroll on phones, paywall padding, rail height 480dp, audit screenshots |
-| 2026-06-15 | android | PLAT-01 | Phase 2 phone layout: scrollable rail, bottom bar on short landscape, weather pane scroll |
 | 2026-06-15 | android | PLAT-01 | Phase 0 phone audit: manifest/orientation unlock, safe window insets (branch only) |
 | 2026-06-09 | android | BILL-03 | Paywall: explicit local trial + subscription terms (Play policy) |
 | 2026-05-24 | iOS | MAP-02 | Traficom overlay → `Merikarttasarjat public` mosaic (was `Merikarttasarja B`) |

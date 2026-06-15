@@ -31,3 +31,7 @@ done
 
 echo "Emulators starting. Logs: /tmp/emulator-Phone_*.log"
 echo "Wait ~60s then: adb devices"
+echo ""
+echo "After boot, reset stuck landscape (e.g. after screenshot capture):"
+echo '  adb -s emulator-5554 shell settings put system accelerometer_rotation 1'
+echo '  adb -s emulator-5554 shell settings put system user_rotation 0'

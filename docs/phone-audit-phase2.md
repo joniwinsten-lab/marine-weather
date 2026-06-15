@@ -18,7 +18,7 @@
 | PHN-04 | P1 | Portrait compare: weather cards need scroll | Fixed via PHN-03 (0.3.1) |
 | PHN-05 | P2 | Landscape rail labels truncated | Fixed — bottom bar on phones (0.3.2) |
 | PHN-06 | P2 | Route pane portrait controls density | Fixed 0.3.2 — scroll route weather + paywall padding |
-| PHN-07 | infra | `Medium_Tablet` AVD crash on launch | Use tablet proxy — see tablet-regression doc |
+| PHN-07 | infra | `Medium_Tablet` AVD crash on launch | Emulator had no DNS; fixed prefetch crash on network errors (0.3.3) |
 
 ## Verify
 

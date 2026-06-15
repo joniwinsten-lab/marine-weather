@@ -63,6 +63,14 @@ def set_rotation(serial: str, rotation: int) -> None:
     time.sleep(1.5)
 
 
+def restore_rotation(serial: str) -> None:
+    """Re-enable auto-rotate and portrait after audit capture (do not leave emulators landscape-locked)."""
+    adb(serial, "shell", "settings", "put", "system", "accelerometer_rotation", "1", check=False)
+    adb(serial, "shell", "settings", "put", "system", "user_rotation", "0", check=False)
+    adb(serial, "shell", "wm", "size", "reset", check=False)
+    time.sleep(0.5)
+
+
 def launch_app(serial: str) -> None:
     adb(serial, "shell", "am", "force-stop", PACKAGE.split("/")[0], check=False)
     time.sleep(0.5)
@@ -261,6 +269,8 @@ def main() -> None:
                 if pending_restore is not None:
                     restore_display_size(serial, pending_restore)
                     pending_restore = None
+
+            restore_rotation(serial)
 
     readme = OUT / "README.md"
     readme.write_text(

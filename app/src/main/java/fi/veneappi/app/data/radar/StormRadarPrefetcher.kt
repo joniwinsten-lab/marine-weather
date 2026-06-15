@@ -33,11 +33,13 @@ class StormRadarPrefetcher(
         scheduledJob?.cancel()
         scheduledJob =
             scope.launch {
-                delay(PREFETCH_DEBOUNCE_MS)
-                val snapshot = peek(lat, lon)
-                if (snapshot != null && !snapshot.isExpired()) return@launch
-                if (inflightKey == key) return@launch
-                fetchAndCache(lat, lon)
+                runCatching {
+                    delay(PREFETCH_DEBOUNCE_MS)
+                    val snapshot = peek(lat, lon)
+                    if (snapshot != null && !snapshot.isExpired()) return@runCatching
+                    if (inflightKey == key) return@runCatching
+                    fetchAndCache(lat, lon)
+                }
             }
     }
 
@@ -76,7 +78,10 @@ class StormRadarPrefetcher(
         lon: Double,
     ): StormRadarPrefetch =
         withContext(Dispatchers.IO) {
-            val latestOverlay = radarRepository.loadActiveOverlay(lat, lon)
+            val latestOverlay =
+                runCatching {
+                    radarRepository.loadActiveOverlay(lat, lon)
+                }.getOrNull()
             val sourceLabel = latestOverlay?.sourceLabel ?: "FMI"
             val frames =
                 runCatching {
