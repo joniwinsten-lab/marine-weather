@@ -69,13 +69,15 @@
     <string name="route_premium_no_play_store">Google Play Store is not installed</string>
     <string name="route_premium_no_play_store_detail">In-app prices require Google Play. Install the app from Play closed testing on a device with Play Store.</string>
     <string name="route_premium_prices_unavailable">Prices could not be loaded from Google Play. Install from the Play closed-test link, use the same Google account as your tester, and confirm route_premium_lifetime and marine_weather_premium are Active in Play Console.</string>
-    <string name="route_premium_sub_recurring_hint">Subscriptions renew automatically in Google Play until you cancel.</string>
+    <string name="route_premium_sub_terms">%1$s/month, billed through Google Play. Renews automatically each month until you cancel in Google Play → Subscriptions. Google Play shows the final price and any offers in the checkout.</string>
+    <string name="route_premium_manage_subscription">Manage subscription in Google Play</string>
     <string name="route_premium_restore">Restore purchases</string>
     <string name="route_premium_back_map">Back to map</string>
     <string name="route_premium_purchase_unavailable">Could not start purchase. Check your connection, update Google Play, or try again after installing from Play.</string>
-    <string name="route_premium_trial_cta">Start 3-day free trial</string>
+    <string name="route_premium_trial_cta">Try Premium free for 3 days (no subscription)</string>
     <string name="route_premium_trial_already_used">Trial was already started on this device.</string>
-    <string name="route_premium_trial_play_note">The in-app trial unlocks route features locally—Google Play does not charge your card when it ends. Final prices and renewal rules are shown at purchase in Play.</string>
+    <string name="route_premium_trial_terms">Trial terms:\n• 3 days from when you tap — once per device\n• No payment method required; Google Play does not start a subscription\n• After 3 days, Premium locks until you purchase separately\n• To continue: Buy once — %1$s, or Subscribe — %2$s/month\n• Nothing to cancel — you are not enrolled in a paid plan</string>
+    <string name="route_premium_trial_terms_no_prices">Trial terms:\n• 3 days from when you tap — once per device\n• No payment method required; Google Play does not start a subscription\n• After 3 days, Premium locks until you buy once or subscribe (prices shown below when loaded)\n• Nothing to cancel — you are not enrolled in a paid plan</string>
     <string name="route_premium_cd_lock">Premium</string>
     <string name="nav_premium">Premium</string>
     <string name="nav_harbors">Harbors &amp; marinas</string>
@@ -134,7 +136,7 @@
     <string name="map_my_location">Go to my location</string>
     <string name="map_no_gps_fix">No recent GPS position. Go outdoors or enable location, then try again.</string>
     <string name="map_traficom_overlay">Traficom nautical (planning)</string>
-    <string name="attribution_traficom_charts">When enabled, the map shows Traficom open raster nautical charts (Merikarttasarja B, Web Mercator). Creative Commons BY 4.0 — not for navigational use; not an official ENC.</string>
+    <string name="attribution_traficom_charts">When enabled, the map shows Traficom open planning nautical charts (Finnish coast, Web Mercator). Creative Commons BY 4.0 — not for navigational use; not an official ENC.</string>
     <string name="attribution_traficom_cc_link">CC BY 4.0 (Finnish)</string>
     <string name="metric_temp_c">%1$.1f °C</string>
     <string name="metric_wind_ms">%1$.1f m/s</string>

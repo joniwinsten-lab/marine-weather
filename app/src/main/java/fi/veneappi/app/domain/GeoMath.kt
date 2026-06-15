@@ -2,6 +2,7 @@ package fi.veneappi.app.domain
 
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.ln
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -56,6 +57,30 @@ object GeoMath {
     }
 
     fun metersToNauticalMiles(m: Double): Double = m / 1852.0
+
+    /**
+     * Web Mercator zoom (512 px world width at z=0) so that [centimeterInPixels] on screen
+     * spans [nmPerCentimeter] nautical miles at [latitude].
+     */
+    fun zoomForNmPerCentimeter(
+        latitude: Double,
+        nmPerCentimeter: Double,
+        centimeterInPixels: Float,
+    ): Double {
+        if (centimeterInPixels <= 0f || nmPerCentimeter <= 0.0 || !nmPerCentimeter.isFinite()) {
+            return 12.5
+        }
+        val metersPerCm = nmPerCentimeter * 1852.0
+        val metersPerPixel = metersPerCm / centimeterInPixels
+        if (metersPerPixel <= 0.0 || !metersPerPixel.isFinite()) return 12.5
+        val latRad = Math.toRadians(latitude.coerceIn(-85.0, 85.0))
+        val worldCircumferenceM = 40_075_016.686
+        val worldPxAtZoom0 = 512.0
+        val scale =
+            cos(latRad) * worldCircumferenceM / (worldPxAtZoom0 * metersPerPixel)
+        if (scale <= 0.0 || !scale.isFinite()) return 12.5
+        return (ln(scale) / ln(2.0)).coerceIn(3.0, 18.0)
+    }
 
     /** Great-circle destination from start, bearing (° true), distance (nm). */
     fun destinationPoint(

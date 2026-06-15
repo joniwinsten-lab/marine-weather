@@ -17,13 +17,15 @@
     <string name="route_premium_no_play_store">Google Play Butik är inte installerad</string>
     <string name="route_premium_no_play_store_detail">Priser kräver Google Play. Installera från stängd testning på en enhet med Play Butik.</string>
     <string name="route_premium_prices_unavailable">Priserna kunde inte hämtas från Google Play. Installera från länken för stängd testning, använd samma Google-konto som testare, och kontrollera att route_premium_lifetime och marine_weather_premium är Active i Play Console.</string>
-    <string name="route_premium_sub_recurring_hint">Prenumerationer förnyas automatiskt i Google Play tills du avslutar dem.</string>
+    <string name="route_premium_sub_terms">%1$s/månad, debiteras via Google Play. Förnyas automatiskt varje månad tills du avslutar i Google Play → Prenumerationer. Google Play visar slutpris och eventuella erbjudanden i kassan.</string>
+    <string name="route_premium_manage_subscription">Hantera prenumeration i Google Play</string>
     <string name="route_premium_restore">Återställ köp</string>
     <string name="route_premium_back_map">Tillbaka till kartan</string>
     <string name="route_premium_purchase_unavailable">Köpet kunde inte startas. Kontrollera nätverket, uppdatera Google Play eller försök igen efter installation från Play Butik.</string>
-    <string name="route_premium_trial_cta">Starta 3 dagars gratis prov</string>
+    <string name="route_premium_trial_cta">Prova Premium gratis i 3 dagar (ingen prenumeration)</string>
     <string name="route_premium_trial_already_used">Provperioden har redan startats på den här enheten.</string>
-    <string name="route_premium_trial_play_note">Appens provperiod låser upp ruttfunktioner lokalt—Google Play debiterar inte kortet automatiskt när provet tar slut. Slutliga priser och förnyelseregler visas vid köp i Play.</string>
+    <string name="route_premium_trial_terms">Provvillkor:\n• 3 dagar från tryck — en gång per enhet\n• Inget betalsätt krävs; Google Play startar ingen prenumeration\n• Efter 3 dagar låses Premium tills du köper separat\n• Fortsätt: Köp en gång — %1$s, eller Prenumerera — %2$s/månad\n• Inget att avsluta — du ingår inte i en betald plan</string>
+    <string name="route_premium_trial_terms_no_prices">Provvillkor:\n• 3 dagar från tryck — en gång per enhet\n• Inget betalsätt krävs; Google Play startar ingen prenumeration\n• Efter 3 dagar låses Premium tills du köper eller prenumererar (priser nedan när de laddats)\n• Inget att avsluta — du ingår inte i en betald plan</string>
     <string name="route_premium_cd_lock">Premiumfunktion</string>
     <string name="nav_premium">Premium</string>
     <string name="nav_harbors">Hamnar</string>
@@ -62,7 +64,7 @@
     <string name="map_my_location">Min position</string>
     <string name="map_no_gps_fix">Ingen färsk GPS-position. Prova utomhus eller slå på plats.</string>
     <string name="map_traficom_overlay">Traficom sjökort (planering)</string>
-    <string name="attribution_traficom_charts">När påslaget visas Traficoms öppna rastersjökort (Merikarttasarja B, Web Mercator). CC BY 4.0 — inte för navigering; inte officiell ENC.</string>
+    <string name="attribution_traficom_charts">När påslaget visas Traficoms öppna planeringssjökort (Finlands kust, Web Mercator). CC BY 4.0 — inte för navigering; inte officiell ENC.</string>
     <string name="attribution_traficom_cc_link">CC BY 4.0 (finska)</string>
     <string name="metric_temp_c">%1$.1f °C</string>
     <string name="metric_wind_ms">%1$.1f m/s</string>

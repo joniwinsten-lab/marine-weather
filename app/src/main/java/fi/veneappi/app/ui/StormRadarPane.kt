@@ -42,7 +42,6 @@ import fi.veneappi.app.data.radar.minutesBeforeNow
 import fi.veneappi.app.data.radar.nowFrameIndex
 import fi.veneappi.app.data.radar.radarFrameRole
 import fi.veneappi.app.ui.map.MapPane
-import fi.veneappi.app.ui.map.STORM_MAP_ZOOM
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -155,7 +154,6 @@ fun StormRadarPane(
                 onMapClick = null,
                 traficomPlanningRasterEnabled = false,
                 isStormMap = true,
-                initialZoom = STORM_MAP_ZOOM,
                 stormRadarOverlay = if (stormUi.radarEnabled) stormUi.radarOverlay else null,
                 lightningStrikes =
                     if (stormUi.lightningEnabled) {

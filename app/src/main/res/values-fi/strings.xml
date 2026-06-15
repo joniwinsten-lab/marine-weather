@@ -21,13 +21,15 @@
     <string name="route_premium_no_play_store">Google Play Kauppaa ei ole asennettu</string>
     <string name="route_premium_no_play_store_detail">Hinnat vaativat Google Playn. Asenna sovellus Playn suljetusta testauksesta laitteella, jossa on Play Kauppa.</string>
     <string name="route_premium_prices_unavailable">Hintoja ei saatu Google Playstä. Asenna sovellus Playn suljetun testauksen linkistä, käytä samaa Google-tiliä kuin testaajana, ja varmista että route_premium_lifetime ja marine_weather_premium ovat Active Play Consolessa.</string>
-    <string name="route_premium_sub_recurring_hint">Tilaus uusiutuu Google Playssa automaattisesti, kunnes peruutat sen.</string>
+    <string name="route_premium_sub_terms">%1$s/kk, laskutus Google Playn kautta. Uusiutuu automaattisesti kuukausittain, kunnes peruutat Google Playssa → Tilaukset. Google Play näyttää lopullisen hinnan ja tarjoukset kassalla.</string>
+    <string name="route_premium_manage_subscription">Hallitse tilausta Google Playssa</string>
     <string name="route_premium_restore">Palauta ostot</string>
     <string name="route_premium_back_map">Takaisin kartalle</string>
     <string name="route_premium_purchase_unavailable">Ostoa ei voitu aloittaa. Tarkista verkko, päivitä Google Play tai kokeile uudelleen Play-kaupan asennuksella.</string>
-    <string name="route_premium_trial_cta">Aloita 3 päivän ilmainen kokeilu</string>
+    <string name="route_premium_trial_cta">Kokeile Premiumia 3 päivää (ei tilausta)</string>
     <string name="route_premium_trial_already_used">Kokeilu on jo käytetty tällä laitteella.</string>
-    <string name="route_premium_trial_play_note">Sovelluksen kokeilu avaa reitti-ominaisuudet paikallisesti—Google Play ei veloita korttia automaattisesti kokeilun päätyttyä. Lopulliset hinnat ja uusimissäännöt näkyvät Playssa ostohetkellä.</string>
+    <string name="route_premium_trial_terms">Kokeilun ehdot:\n• 3 päivää napautuksesta — kerran laitteella\n• Maksutapaa ei tarvita; Google Play ei aloita tilausta\n• 3 päivän jälkeen Premium lukittuu, kunnes ostat erikseen\n• Jatkaaksesi: Osta kerralla — %1$s tai Tilaa — %2$s/kk\n• Ei peruutettavaa — et ole maksullisessa tilauksessa</string>
+    <string name="route_premium_trial_terms_no_prices">Kokeilun ehdot:\n• 3 päivää napautuksesta — kerran laitteella\n• Maksutapaa ei tarvita; Google Play ei aloita tilausta\n• 3 päivän jälkeen Premium lukittuu, kunnes ostat kerralla tai tilaat (hinnat alla kun ladattu)\n• Ei peruutettavaa — et ole maksullisessa tilauksessa</string>
     <string name="route_premium_cd_lock">Premium-ominaisuus</string>
     <string name="nav_premium">Premium</string>
     <string name="nav_harbors">Satamat</string>
@@ -86,7 +88,7 @@
     <string name="map_my_location">Oma sijainti</string>
     <string name="map_no_gps_fix">Ei tuoretta GPS-sijaintia. Kokeile ulkona tai ota sijainti käyttöön.</string>
     <string name="map_traficom_overlay">Traficomin merikartta (suunnittelu)</string>
-    <string name="attribution_traficom_charts">Kun päällä, kartalla näkyy Traficomin avoin rasterimerikartta (Merikarttasarja B, Web Mercator). CC BY 4.0 — ei navigointiin; ei virallinen ENC.</string>
+    <string name="attribution_traficom_charts">Kun päällä, kartalla näkyy Traficomin avoimet suunnittelumerikartat (koko Suomen rannikko, Web Mercator). CC BY 4.0 — ei navigointiin; ei virallinen ENC.</string>
     <string name="attribution_traficom_cc_link">CC BY 4.0 (suomeksi)</string>
     <string name="metric_temp_c">%1$.1f °C</string>
     <string name="metric_wind_ms">%1$.1f m/s</string>

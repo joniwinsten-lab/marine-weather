@@ -1,6 +1,9 @@
 package fi.veneappi.app.ui
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +67,7 @@ fun RoutePremiumPaywall(
         onRefreshProducts()
     }
 
+    val priceLoading = stringResource(R.string.route_premium_price_loading)
     val lifetimePrice = inAppProduct?.lifetimeFormattedPrice()
     val monthlyPrice = subscriptionProduct?.subscriptionFormattedPrice()
     val lifetimeReady = billingReady && inAppProduct != null && lifetimePrice != null
@@ -128,7 +133,26 @@ fun RoutePremiumPaywall(
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 }
-                Spacer(Modifier.height(10.dp))
+                Text(
+                    text =
+                        if (lifetimeReady && monthlyReady) {
+                            stringResource(
+                                R.string.route_premium_trial_terms,
+                                lifetimePrice!!,
+                                monthlyPrice!!,
+                            )
+                        } else {
+                            stringResource(R.string.route_premium_trial_terms_no_prices)
+                        },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Start,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                )
+                Spacer(Modifier.height(12.dp))
             }
             Box(
                 modifier =
@@ -144,7 +168,7 @@ fun RoutePremiumPaywall(
                     Text(
                         stringResource(
                             R.string.route_premium_buy_once,
-                            lifetimePrice ?: stringResource(R.string.route_premium_price_loading),
+                            lifetimePrice ?: priceLoading,
                         ),
                     )
                 }
@@ -174,7 +198,7 @@ fun RoutePremiumPaywall(
                     Text(
                         stringResource(
                             R.string.route_premium_subscribe_monthly,
-                            monthlyPrice ?: stringResource(R.string.route_premium_price_loading),
+                            monthlyPrice ?: priceLoading,
                         ),
                     )
                 }
@@ -190,11 +214,14 @@ fun RoutePremiumPaywall(
                 )
             }
             Text(
-                stringResource(R.string.route_premium_sub_recurring_hint),
-                style = MaterialTheme.typography.labelSmall,
+                stringResource(
+                    R.string.route_premium_sub_terms,
+                    monthlyPrice ?: priceLoading,
+                ),
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 6.dp, start = 12.dp, end = 12.dp),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(top = 8.dp, start = 12.dp, end = 12.dp),
             )
 
             if (pricesPending) {
@@ -211,6 +238,14 @@ fun RoutePremiumPaywall(
             }
 
             Spacer(Modifier.height(12.dp))
+            if (playStoreInstalled) {
+                TextButton(
+                    onClick = { openPlaySubscriptions(context, context.packageName) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(stringResource(R.string.route_premium_manage_subscription))
+                }
+            }
             OutlinedButton(onClick = onRestorePurchases) {
                 Text(stringResource(R.string.route_premium_restore))
             }
@@ -218,15 +253,20 @@ fun RoutePremiumPaywall(
             OutlinedButton(onClick = onBackToMap) {
                 Text(stringResource(R.string.route_premium_back_map))
             }
-            Spacer(Modifier.height(20.dp))
-            Text(
-                stringResource(R.string.route_premium_trial_play_note),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
         }
     }
+}
+
+private fun openPlaySubscriptions(
+    context: Context,
+    packageName: String,
+) {
+    val uri =
+        Uri.parse(
+            "https://play.google.com/store/account/subscriptions?package=$packageName",
+        )
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    runCatching { context.startActivity(intent) }
 }
 
 @Composable

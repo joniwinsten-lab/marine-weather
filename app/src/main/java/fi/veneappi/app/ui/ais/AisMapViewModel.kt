@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import fi.veneappi.app.BuildConfig
 import fi.veneappi.app.data.ais.DigitrafficAisRepository
 import fi.veneappi.app.domain.ais.AisConfig
 import fi.veneappi.app.domain.ais.AisVesselDisplay
@@ -17,6 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** Premium AIS overlay: REST poll (~60 s) + debounced reload on viewport change. */
 class AisMapViewModel(
@@ -41,11 +42,12 @@ class AisMapViewModel(
     val mapRenderGeneration: StateFlow<Int> = _mapRenderGeneration.asStateFlow()
 
     private var pollJob: Job? = null
-    private var refreshJob: Job? = null
     private var viewportJob: Job? = null
     private var fleetByMmsi: Map<Int, AisVesselDisplay> = emptyMap()
     private var lastViewport: MapViewport? = null
     private var appIsActive = true
+    private var pollCycle = 0
+    private val refreshMutex = Mutex()
 
     fun setSceneActive(active: Boolean) {
         if (appIsActive == active) return
@@ -77,6 +79,7 @@ class AisMapViewModel(
         if (enabled) {
             _streamMode.value = AisStreamMode.Connecting
             _lastError.value = null
+            pollCycle = 0
             bootstrap()
         } else {
             tearDown()
@@ -96,7 +99,6 @@ class AisMapViewModel(
         scheduleViewportRefresh()
     }
 
-    /** Use map centre (from app state) until MapLibre reports visible bounds. */
     fun ensureFallbackViewport(
         latitude: Double,
         longitude: Double,
@@ -105,17 +107,17 @@ class AisMapViewModel(
         if (lastViewport != null) return
         lastViewport = MapViewport.aroundCenter(latitude, longitude, zoom)
         if (_isEnabled.value) {
-            scheduleRestRefresh()
+            viewModelScope.launch { refreshFromNetwork(fullFetch = true) }
         }
     }
 
     fun refreshNow() {
         if (!_isEnabled.value) return
-        scheduleRestRefresh()
+        viewModelScope.launch { refreshFromNetwork(fullFetch = pollCycle == 0) }
     }
 
     private fun bootstrap() {
-        scheduleRestRefresh()
+        viewModelScope.launch { refreshFromNetwork(fullFetch = true) }
         startPollingIfNeeded()
     }
 
@@ -124,11 +126,10 @@ class AisMapViewModel(
         _lastError.value = null
         pollJob?.cancel()
         pollJob = null
-        refreshJob?.cancel()
-        refreshJob = null
         viewportJob?.cancel()
         viewportJob = null
         fleetByMmsi = emptyMap()
+        pollCycle = 0
         _vessels.value = emptyList()
     }
 
@@ -137,7 +138,7 @@ class AisMapViewModel(
         viewportJob =
             viewModelScope.launch {
                 delay(AisConfig.VIEWPORT_REFRESH_DEBOUNCE_MS)
-                refreshFromNetwork()
+                refreshFromNetwork(fullFetch = pollCycle == 0)
             }
     }
 
@@ -147,47 +148,70 @@ class AisMapViewModel(
             viewModelScope.launch {
                 while (isActive) {
                     delay(AisConfig.REST_POLL_INTERVAL_SECONDS * 1000L)
-                    if (_isEnabled.value && appIsActive) {
-                        refreshFromNetwork()
-                    }
+                    if (!_isEnabled.value || !appIsActive) continue
+                    val fullFetch =
+                        pollCycle == 0 ||
+                            pollCycle % AisConfig.METADATA_REFRESH_EVERY_N_POLLS == 0
+                    refreshFromNetwork(fullFetch = fullFetch)
                 }
             }
     }
 
-    private fun scheduleRestRefresh() {
-        refreshJob?.cancel()
-        refreshJob =
-            viewModelScope.launch {
-                refreshFromNetwork()
+    private suspend fun refreshFromNetwork(fullFetch: Boolean) {
+        if (!_isEnabled.value) return
+        val viewport = lastViewport ?: return
+
+        refreshMutex.withLock {
+            if (!_isEnabled.value) return
+            if (!_isLoading.value) _isLoading.value = true
+            val started = System.currentTimeMillis()
+            runCatching {
+                val updates =
+                    if (fullFetch) {
+                        repository.fetchAllVessels()
+                    } else {
+                        repository.fetchLocationUpdates()
+                    }
+                val filtered = AisViewportFilter.filter(updates, viewport)
+                mergeFleet(filtered, preserveMetadata = !fullFetch)
+            }.onSuccess { fleet ->
+                if (_isEnabled.value) {
+                    _lastError.value = null
+                    fleetByMmsi = fleet.associateBy { it.mmsi }
+                    publishMap()
+                    pollCycle++
+                    val elapsed = System.currentTimeMillis() - started
+                    log("loaded ${fleet.size} vessels (${if (fullFetch) "full" else "positions"}) in ${elapsed}ms")
+                }
+            }.onFailure { e ->
+                if (_isEnabled.value) {
+                    _lastError.value = e.message ?: e.javaClass.simpleName
+                    _streamMode.value = AisStreamMode.Error
+                    Log.w(TAG, "fetch failed: ${_lastError.value}", e)
+                }
             }
+            _isLoading.value = false
+        }
     }
 
-    private suspend fun refreshFromNetwork() {
-        if (!_isEnabled.value) return
-        val viewport = lastViewport
-        if (!_isLoading.value) _isLoading.value = true
-        runCatching {
-            val all = repository.fetchAllVessels()
-            if (viewport != null) {
-                AisViewportFilter.filter(all, viewport)
-            } else {
-                emptyList()
-            }
-        }.onSuccess { fleet ->
-            if (_isEnabled.value) {
-                _lastError.value = null
-                fleetByMmsi = fleet.associateBy { it.mmsi }
-                publishMap()
-                log("loaded ${fleet.size} vessels in viewport")
-            }
-        }.onFailure { e ->
-            if (_isEnabled.value) {
-                _lastError.value = e.message ?: e.javaClass.simpleName
-                _streamMode.value = AisStreamMode.Error
-                Log.w(TAG, "fetch failed: ${_lastError.value}", e)
-            }
+    /** Merge new positions; keep names/metadata from previous poll when positions-only. */
+    private fun mergeFleet(
+        incoming: List<AisVesselDisplay>,
+        preserveMetadata: Boolean,
+    ): List<AisVesselDisplay> {
+        if (!preserveMetadata) return incoming
+        return incoming.map { vessel ->
+            val prev = fleetByMmsi[vessel.mmsi] ?: return@map vessel
+            vessel.copy(
+                name = prev.name,
+                callSign = prev.callSign,
+                destination = prev.destination,
+                imo = prev.imo,
+                draughtTenthsM = prev.draughtTenthsM,
+                shipTypeCode = prev.shipTypeCode,
+                etaRaw = prev.etaRaw,
+            )
         }
-        _isLoading.value = false
     }
 
     private fun publishMap() {

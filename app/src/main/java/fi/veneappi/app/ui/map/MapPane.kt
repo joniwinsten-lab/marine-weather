@@ -120,16 +120,25 @@ private const val AIS_VECTOR_LAYER_ID = "veneappi_ais_vector_layer"
 private const val AIS_HIT_RADIUS_PX = 32f
 
 private const val DEFAULT_ZOOM = 12.5
-/** Storm radar: wide regional view (≈5 zoom-out steps from compare map). */
-internal const val STORM_MAP_ZOOM = 5.5
+/** Storm radar opens at scale bar target: 1 cm on screen ≈ 4 nm. */
+private const val STORM_RADAR_NM_PER_CM = 4.0
 private const val STORM_MAP_MIN_ZOOM = 4.5
+
+private fun stormRadarTargetZoom(
+    latitude: Double,
+    displayMetrics: android.util.DisplayMetrics,
+): Double {
+    val oneCmPx =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_MM,
+            10f,
+            displayMetrics,
+        )
+    return GeoMath.zoomForNmPerCentimeter(latitude, STORM_RADAR_NM_PER_CM, oneCmPx)
+}
 private const val MIN_KEEP_ZOOM = 8.5
 private const val TAG = "MapPane"
 private const val SCALE_DEBOUNCE_MS = 200L
-
-/** Traficom open WMTS — Merikarttasarja B (Gulf of Finland incl. Helsinki). */
-private const val TRAFICOM_TILE_URL =
-    "https://julkinen.traficom.fi/rasteripalvelu/wmts/rest/Traficom:Merikarttasarja%20B/default/WGS84_Pseudo-Mercator/WGS84_Pseudo-Mercator:{z}/{y}/{x}?format=image/png"
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
@@ -360,13 +369,13 @@ fun MapPane(
                     prevTraficomRaster != null && prevTraficomRaster != traficomPlanningRasterEnabled
                 prevTraficomRaster = traficomPlanningRasterEnabled
                 map.getStyle { style ->
-                    ensureTraficomRaster(style, traficomPlanningRasterEnabled)
+                    val traficomLayerChanged = ensureTraficomRaster(style, traficomPlanningRasterEnabled)
                     val rasterAnchor = bottomRasterAnchorLayerId(style)
                     updateRoute(
                         style,
                         routeGeometry,
                         insertAboveLayerId = rasterAnchor,
-                        forceReorder = traficomToggled,
+                        forceReorder = traficomToggled || traficomLayerChanged,
                     )
                     updateRouteMarkers(style, routeStart, routeEnd)
                     updatePin(style, latitude, longitude)
@@ -524,9 +533,15 @@ fun MapPane(
         }
     }
 
-    LaunchedEffect(mapRef, routeGeometry, latitude, longitude, mapRecenterSignal) {
+    LaunchedEffect(mapRef, styleReady, routeGeometry, latitude, longitude, mapRecenterSignal, isStormMap) {
         val map = mapRef ?: return@LaunchedEffect
         if (!styleReady && isStormMap) return@LaunchedEffect
+        val stormZoom =
+            if (isStormMap) {
+                stormRadarTargetZoom(latitude, context.resources.displayMetrics)
+            } else {
+                null
+            }
         if (mapRecenterSignal > lastRecenterSignalHandled) {
             lastRecenterSignalHandled = mapRecenterSignal
             mapView.post {
@@ -534,10 +549,10 @@ fun MapPane(
                 val z = map.cameraPosition.zoom
                 val minZoom = if (isStormMap) STORM_MAP_MIN_ZOOM else MIN_KEEP_ZOOM
                 val keepZoom =
-                    if (z.isFinite() && z >= 2f) {
+                    if (isStormMap && stormZoom != null) {
+                        stormZoom
+                    } else if (z.isFinite() && z >= 2f) {
                         z.toDouble().coerceIn(minZoom, 18.0)
-                    } else if (isStormMap) {
-                        STORM_MAP_ZOOM
                     } else {
                         DEFAULT_ZOOM
                     }
@@ -571,7 +586,7 @@ fun MapPane(
         } else if (!initialCameraFramed) {
             val zoom =
                 when {
-                    isStormMap -> initialZoom ?: STORM_MAP_ZOOM
+                    isStormMap -> initialZoom ?: stormZoom ?: DEFAULT_ZOOM
                     initialZoom != null -> initialZoom
                     else -> DEFAULT_ZOOM
                 }
@@ -623,16 +638,32 @@ private fun bottomRasterAnchorLayerId(style: Style): String? =
         else -> null
     }
 
-/** Only adds/removes the heavy WMTS raster when the toggle actually changes — never on pan/pin updates. */
+/**
+ * Adds/removes Traficom WMTS raster, or swaps to the national mosaic when an older
+ * single-series source (e.g. Merikarttasarja B) is still on the style.
+ */
 private fun ensureTraficomRaster(
     style: Style,
     enabled: Boolean,
-) {
+): Boolean {
     val present = style.getLayer(TRAFICOM_LAYER_ID) != null
-    when {
-        enabled && !present -> addTraficomPlanningLayer(style)
-        !enabled && present -> removeIfPresent(style, TRAFICOM_LAYER_ID, TRAFICOM_SOURCE_ID)
-        else -> Unit
+    val installedUrl = (style.getSource(TRAFICOM_SOURCE_ID) as? RasterSource)?.uri
+    val needsRefresh = enabled && present && !TraficomNauticalConfig.isCurrentSource(installedUrl)
+    return when {
+        !enabled && present -> {
+            removeIfPresent(style, TRAFICOM_LAYER_ID, TRAFICOM_SOURCE_ID)
+            true
+        }
+        needsRefresh -> {
+            removeIfPresent(style, TRAFICOM_LAYER_ID, TRAFICOM_SOURCE_ID)
+            addTraficomPlanningLayer(style)
+            true
+        }
+        enabled && !present -> {
+            addTraficomPlanningLayer(style)
+            true
+        }
+        else -> false
     }
 }
 
@@ -836,10 +867,10 @@ private fun updateLightningLayer(
 
 private fun addTraficomPlanningLayer(style: Style) {
     val tileSet =
-        TileSet("2.2.0", TRAFICOM_TILE_URL).also { ts ->
-            ts.setMinZoom(5f)
-            ts.setMaxZoom(18f)
-            ts.setBounds(*floatArrayOf(17f, 58f, 32f, 71f))
+        TileSet("2.2.0", TraficomNauticalConfig.TILE_URL_TEMPLATE).also { ts ->
+            ts.setMinZoom(TraficomNauticalConfig.MIN_ZOOM)
+            ts.setMaxZoom(TraficomNauticalConfig.MAX_ZOOM)
+            ts.setBounds(*TraficomNauticalConfig.BOUNDS)
             ts.attribution =
                 "Traficom open nautical raster (CC BY 4.0). Not for navigational use."
         }
@@ -1131,22 +1162,15 @@ private fun updateAisLayer(
             Feature.fromGeometry(line)
         }
 
-    removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
-    if (vectorFeatures.isNotEmpty()) {
-        style.addSource(GeoJsonSource(AIS_VECTOR_SOURCE_ID, FeatureCollection.fromFeatures(vectorFeatures)))
-        val vectorLayer =
-            LineLayer(AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID).withProperties(
-                PropertyFactory.lineColor("#40B8FF"),
-                PropertyFactory.lineWidth(4f),
-                PropertyFactory.lineOpacity(0.92f),
-                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
-            )
-        insertAisLayerBelowPin(style, vectorLayer)
-    }
+    val pointCollection = FeatureCollection.fromFeatures(pointFeatures)
+    val vectorCollection = FeatureCollection.fromFeatures(vectorFeatures)
+    val existingPoints = style.getSourceAs<GeoJsonSource>(AIS_POINT_SOURCE_ID)
+    val existingVectors = style.getSourceAs<GeoJsonSource>(AIS_VECTOR_SOURCE_ID)
 
-    removeIfPresent(style, AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID)
-    if (pointFeatures.isNotEmpty()) {
-        style.addSource(GeoJsonSource(AIS_POINT_SOURCE_ID, FeatureCollection.fromFeatures(pointFeatures)))
+    if (existingPoints != null) {
+        existingPoints.setGeoJson(pointCollection)
+    } else if (pointFeatures.isNotEmpty()) {
+        style.addSource(GeoJsonSource(AIS_POINT_SOURCE_ID, pointCollection))
         val pointLayer =
             CircleLayer(AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID).withProperties(
                 PropertyFactory.circleRadius(9f),
@@ -1160,6 +1184,23 @@ private fun updateAisLayer(
         } else {
             insertAisLayerBelowPin(style, pointLayer)
         }
+    }
+
+    if (vectorFeatures.isEmpty()) {
+        removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
+    } else if (existingVectors != null) {
+        existingVectors.setGeoJson(vectorCollection)
+    } else {
+        removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
+        style.addSource(GeoJsonSource(AIS_VECTOR_SOURCE_ID, vectorCollection))
+        val vectorLayer =
+            LineLayer(AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID).withProperties(
+                PropertyFactory.lineColor("#40B8FF"),
+                PropertyFactory.lineWidth(4f),
+                PropertyFactory.lineOpacity(0.92f),
+                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+            )
+        insertAisLayerBelowPin(style, vectorLayer)
     }
 }
 

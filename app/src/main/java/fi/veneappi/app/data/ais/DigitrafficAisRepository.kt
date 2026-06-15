@@ -17,30 +17,19 @@ class DigitrafficAisRepository(
             explicitNulls = false
         },
 ) {
+    /** Full fetch: locations + vessel metadata (slow — use on first load). */
     suspend fun fetchAllVessels(): List<AisVesselDisplay> =
         withContext(Dispatchers.IO) {
             val locations = fetchLocations()
             val metadataByMmsi =
                 runCatching { fetchVesselMetadata() }.getOrElse { emptyMap() }
-            locations.map { loc ->
-                val meta = metadataByMmsi[loc.mmsi]
-                AisVesselDisplay(
-                    mmsi = loc.mmsi,
-                    latitude = loc.latitude,
-                    longitude = loc.longitude,
-                    name = meta?.name,
-                    callSign = meta?.callSign,
-                    destination = meta?.destination,
-                    imo = meta?.imo,
-                    draughtTenthsM = meta?.draught,
-                    shipTypeCode = meta?.shipType,
-                    etaRaw = meta?.eta,
-                    navStatusCode = loc.navStatusCode,
-                    sogKn = loc.sogKn,
-                    cogDeg = loc.cogDeg,
-                    headingDeg = loc.headingDeg,
-                )
-            }
+            locations.map { it.toDisplay(metadataByMmsi[it.mmsi]) }
+        }
+
+    /** Positions only (~7 MB) — for 60 s polling without re-downloading metadata. */
+    suspend fun fetchLocationUpdates(): List<AisVesselDisplay> =
+        withContext(Dispatchers.IO) {
+            fetchLocations().map { it.toDisplay(meta = null) }
         }
 
     private fun fetchLocations(): List<AisLocationRecord> {
@@ -82,6 +71,24 @@ class DigitrafficAisRepository(
         return heading
     }
 }
+
+private fun AisLocationRecord.toDisplay(meta: AisVesselMetaRecord?): AisVesselDisplay =
+    AisVesselDisplay(
+        mmsi = mmsi,
+        latitude = latitude,
+        longitude = longitude,
+        name = meta?.name,
+        callSign = meta?.callSign,
+        destination = meta?.destination,
+        imo = meta?.imo,
+        draughtTenthsM = meta?.draught,
+        shipTypeCode = meta?.shipType,
+        etaRaw = meta?.eta,
+        navStatusCode = navStatusCode,
+        sogKn = sogKn,
+        cogDeg = cogDeg,
+        headingDeg = headingDeg,
+    )
 
 @Serializable
 private data class AisLocationFeatureCollection(
