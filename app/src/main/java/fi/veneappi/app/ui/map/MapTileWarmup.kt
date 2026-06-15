@@ -11,8 +11,8 @@ import kotlin.math.ln
 import kotlin.math.tan
 
 /**
- * Primes HTTP / disk cache for the compare-map style and nearby tiles while the splash is visible.
- * [MapPane] is already composed underneath the splash; this reduces time-to-first-tile after fade-out.
+ * Primes shared HTTP disk cache ([MapHttp]) for the compare-map style and nearby tiles
+ * while the splash is visible. MapLibre uses the same OkHttp client via [HttpRequestUtil].
  */
 class MapTileWarmup(
     okHttpClient: OkHttpClient? = null,

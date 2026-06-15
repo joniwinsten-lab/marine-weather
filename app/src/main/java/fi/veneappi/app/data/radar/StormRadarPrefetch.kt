@@ -16,6 +16,10 @@ data class StormRadarPrefetch(
     fun isExpired(nowMs: Long = System.currentTimeMillis()): Boolean =
         nowMs - fetchedAtMs >= STALE_AFTER_MS
 
+    /** False when a network failure produced an empty shell that should not block retries. */
+    fun hasWarmContent(): Boolean =
+        frames.isNotEmpty() || latestOverlay != null || lightningStrikes.isNotEmpty()
+
     companion object {
         const val STALE_AFTER_MS = 10 * 60 * 1000L
 

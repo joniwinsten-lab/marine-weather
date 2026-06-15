@@ -18,6 +18,7 @@ import fi.veneappi.app.data.marine.MarineTextRepository
 import fi.veneappi.app.data.radar.CompositeRadarRepository
 import fi.veneappi.app.data.radar.FmiForecastRadarRepository
 import fi.veneappi.app.data.radar.StormRadarPrefetcher
+import fi.veneappi.app.ui.map.MapHttp
 import fi.veneappi.app.ui.map.MapTileWarmup
 import fi.veneappi.app.data.radar.FmiRadarRepository
 import fi.veneappi.app.data.radar.MetNorwayRadarRepository
@@ -110,7 +111,7 @@ class AppContainer(
             lightningRepository = compositeLightningRepository,
         )
 
-    val mapTileWarmup = MapTileWarmup()
+    val mapTileWarmup = MapTileWarmup(MapHttp.install(application))
 
     val userPreferencesRepository = UserPreferencesRepository(application)
 

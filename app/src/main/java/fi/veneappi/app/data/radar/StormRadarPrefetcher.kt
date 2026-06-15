@@ -36,7 +36,9 @@ class StormRadarPrefetcher(
                 runCatching {
                     delay(PREFETCH_DEBOUNCE_MS)
                     val snapshot = peek(lat, lon)
-                    if (snapshot != null && !snapshot.isExpired()) return@runCatching
+                    if (snapshot != null && !snapshot.isExpired() && snapshot.hasWarmContent()) {
+                        return@runCatching
+                    }
                     if (inflightKey == key) return@runCatching
                     fetchAndCache(lat, lon)
                 }
@@ -64,7 +66,9 @@ class StormRadarPrefetcher(
         inflightKey = key
         try {
             val bundle = loadBundle(lat, lon)
-            mutex.withLock { cache = bundle }
+            if (bundle.hasWarmContent()) {
+                mutex.withLock { cache = bundle }
+            }
             return bundle
         } finally {
             if (inflightKey == key) {

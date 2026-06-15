@@ -29,4 +29,20 @@ class StormRadarPrefetchTest {
         assertFalse(entry.isExpired(StormRadarPrefetch.STALE_AFTER_MS - 1))
         assertTrue(entry.isExpired(StormRadarPrefetch.STALE_AFTER_MS + 1))
     }
+
+    @Test
+    fun hasWarmContent_falseForEmptyFailureShell() {
+        val empty =
+            StormRadarPrefetch(
+                locationKey = "1,2",
+                fetchedAtMs = 0L,
+                frames = emptyList(),
+                latestOverlay = null,
+                sourceLabel = "FMI",
+                lightningStrikes = emptyList(),
+                lightningFetchedAtMs = 0L,
+                lightningError = "timeout",
+            )
+        assertFalse(empty.hasWarmContent())
+    }
 }

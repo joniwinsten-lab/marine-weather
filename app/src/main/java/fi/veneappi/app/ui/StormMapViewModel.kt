@@ -96,7 +96,7 @@ class StormMapViewModel(
             if (cached != null) {
                 applyPrefetch(cached, hadTimeline, previousIndex)
             }
-            if (cached != null && !cached.isExpired()) {
+            if (cached != null && !cached.isExpired() && cached.hasWarmContent()) {
                 if (wasPlaying && cached.frames.size >= 2) {
                     startAnimation()
                 }
