@@ -24,7 +24,7 @@ start_avd() {
   nohup "$EMULATOR" -avd "$avd" -dns-server 8.8.8.8,8.8.4.4 >/tmp/emulator-"$avd".log 2>&1 &
 }
 
-for avd in Phone_Small Phone_Medium Phone_Large; do
+for avd in Phone_Small Phone_Medium Phone_Large Medium_Tablet; do
   start_avd "$avd"
   sleep 3
 done

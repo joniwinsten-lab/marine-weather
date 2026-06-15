@@ -16,3 +16,4 @@ keystore.properties
 release-keystore.jks
 /snapshots/
 /docs/phone-audit/screenshots/
+/docs/phone-audit/tablet-regression/

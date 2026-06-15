@@ -40,6 +40,8 @@ References:
 | `Phone_Large` | Pixel 8 Pro | ~448×935 | Large phone |
 | `Medium_Tablet` | Tablet | landscape | Regression vs production layout |
 
+Tablet regression: see [phone-audit-tablet-regression.md](phone-audit-tablet-regression.md) — **PASS** on 2560×1600 proxy; `Medium_Tablet` AVD crashes (both builds).
+
 ```bash
 ./scripts/create-phone-audit-avds.sh   # once
 ./scripts/start-phone-audit-emulators.sh
@@ -70,5 +72,5 @@ Save screenshots to `docs/phone-audit/screenshots/` (gitignored) or attach to is
 ## Exit gate (phase 0 → phase 1)
 
 - Gap list prioritised (P0 = unusable, P1 = ugly, P2 = polish)
-- Tablet `Medium_Tablet` regression: no new breakage vs `main`
+- [x] Tablet `Medium_Tablet` regression: **PASS** on tablet proxy vs 0.2.19 — see [phone-audit-tablet-regression.md](phone-audit-tablet-regression.md)
 - Decision: ship manifest unlock as 0.2.20 internal test vs wait for layout fixes
