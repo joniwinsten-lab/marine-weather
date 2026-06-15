@@ -9,9 +9,9 @@ object UiBreakpoints {
     const val NAVIGATION_RAIL_MIN_WIDTH_DP = 600
 
     /**
-     * Minimum height for vertical rail (five destinations). Phone landscape (~390dp) uses bottom bar.
+     * Minimum height for vertical rail (five destinations). Phone landscape (~390–470dp) uses bottom bar.
      */
-    const val NAVIGATION_RAIL_MIN_HEIGHT_DP = 420
+    const val NAVIGATION_RAIL_MIN_HEIGHT_DP = 480
 
     /** Below this height, navigation rail shows icons only when rail is still used. */
     const val NAVIGATION_RAIL_COMPACT_MAX_HEIGHT_DP = 480
@@ -28,6 +28,9 @@ object UiBreakpoints {
 
     /** Dense three-stack needs enough vertical space (e.g. phone landscape side column). */
     const val WEATHER_PANE_DENSE_MIN_HEIGHT_DP = 420
+
+    /** Route weather strip: scroll cards instead of equal-height stack below this height. */
+    const val ROUTE_WEATHER_SCROLL_MAX_HEIGHT_DP = 520
 
     /** Cap readable width for extended wind table on very wide tablets. */
     const val EXTENDED_WIND_TABLE_MAX_WIDTH_DP = 960

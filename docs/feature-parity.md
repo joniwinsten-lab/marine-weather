@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.1-phone-layout** (`versionCode` 23) on `feature/phone-audit`; **main** / Play **0.2.19** |
+| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.2-phone-layout** (`versionCode` 24) on `feature/phone-audit`; **main** / Play **0.2.19** |
 | **iOS** | `/Users/Safelight/marine-weather-ios` · marketing **0.3.0** |
 | **Technical porting map** | iOS: `docs/ios-porting-inventory.md` (API URLs, file paths) |
 | **Last parity audit** | 2026-06-15 |
@@ -132,6 +132,8 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-15 | android | PLAT-01 | Phase 2b: route weather scroll on phones, paywall padding, rail height 480dp, audit screenshots |
+| 2026-06-15 | android | PLAT-01 | Phase 2 phone layout: scrollable rail, bottom bar on short landscape, weather pane scroll |
 | 2026-06-15 | android | PLAT-01 | Phase 0 phone audit: manifest/orientation unlock, safe window insets (branch only) |
 | 2026-06-09 | android | BILL-03 | Paywall: explicit local trial + subscription terms (Play policy) |
 | 2026-05-24 | iOS | MAP-02 | Traficom overlay → `Merikarttasarjat public` mosaic (was `Merikarttasarja B`) |

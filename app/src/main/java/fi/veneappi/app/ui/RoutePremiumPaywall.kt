@@ -62,6 +62,8 @@ fun RoutePremiumPaywall(
     val context = LocalContext.current
     val playStoreInstalled =
         rememberPlayStoreInstalled(context.packageManager)
+    val compact = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp < 520
+    val verticalPad = if (compact) 12.dp else 32.dp
 
     LaunchedEffect(Unit) {
         onRefreshProducts()
@@ -92,7 +94,7 @@ fun RoutePremiumPaywall(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+                .padding(horizontal = 24.dp, vertical = verticalPad),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -253,6 +255,7 @@ fun RoutePremiumPaywall(
             OutlinedButton(onClick = onBackToMap) {
                 Text(stringResource(R.string.route_premium_back_map))
             }
+            Spacer(Modifier.height(if (compact) 32.dp else 16.dp))
         }
     }
 }

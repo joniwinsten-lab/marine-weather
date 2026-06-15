@@ -43,9 +43,18 @@ def adb(serial: str, *args: str, check: bool = True) -> str:
 
 def screencap(serial: str, dest: Path) -> None:
     remote = "/sdcard/audit_cap.png"
-    adb(serial, "shell", "screencap", "-p", remote)
-    adb(serial, "pull", remote, str(dest))
-    adb(serial, "shell", "rm", remote, check=False)
+    last_error: RuntimeError | None = None
+    for attempt in range(3):
+        try:
+            adb(serial, "shell", "screencap", "-p", remote)
+            adb(serial, "pull", remote, str(dest))
+            adb(serial, "shell", "rm", remote, check=False)
+            return
+        except RuntimeError as exc:
+            last_error = exc
+            time.sleep(1.5 * (attempt + 1))
+    if last_error is not None:
+        raise last_error
 
 
 def set_rotation(serial: str, rotation: int) -> None:

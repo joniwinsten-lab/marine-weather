@@ -1476,12 +1476,14 @@ private fun RouteWeatherRightPane(
     onDownloadOfflinePack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier
-            .fillMaxSize()
-            .imePadding()
-            .padding(horizontal = 2.dp, vertical = 1.dp),
-    ) {
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        val scrollWeather = maxHeight < UiBreakpoints.ROUTE_WEATHER_SCROLL_MAX_HEIGHT_DP.dp
+        Column(
+            Modifier
+                .fillMaxSize()
+                .imePadding()
+                .padding(horizontal = 2.dp, vertical = 1.dp),
+        ) {
         RouteSpeedCompactBar(
             ui = ui,
             speedDraft = speedDraft,
@@ -1547,31 +1549,57 @@ private fun RouteWeatherRightPane(
                 modifier = Modifier.height(26.dp),
             )
         }
-        Column(
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(3.dp),
-        ) {
-            val cards =
-                listOf(
-                    Triple(SourceId.MET_NORWAY, stringResource(R.string.source_met_norway), ui.routeWeatherBySource[SourceId.MET_NORWAY]),
-                    Triple(SourceId.SMHI, stringResource(R.string.source_smhi), ui.routeWeatherBySource[SourceId.SMHI]),
-                    Triple(SourceId.FMI, stringResource(R.string.source_fmi), ui.routeWeatherBySource[SourceId.FMI]),
-                )
-            for ((id, title, result) in cards) {
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        val cards =
+            listOf(
+                Triple(SourceId.MET_NORWAY, stringResource(R.string.source_met_norway), ui.routeWeatherBySource[SourceId.MET_NORWAY]),
+                Triple(SourceId.SMHI, stringResource(R.string.source_smhi), ui.routeWeatherBySource[SourceId.SMHI]),
+                Triple(SourceId.FMI, stringResource(R.string.source_fmi), ui.routeWeatherBySource[SourceId.FMI]),
+            )
+        if (scrollWeather) {
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
+                for ((id, title, result) in cards) {
                     RouteStripForSource(
                         sourceId = id,
                         title = title,
                         result = result,
                         slotLabels = slotLabels,
                         windUnit = windUnit,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 96.dp),
                     )
                 }
             }
+        } else {
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
+            ) {
+                for ((id, title, result) in cards) {
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        RouteStripForSource(
+                            sourceId = id,
+                            title = title,
+                            result = result,
+                            slotLabels = slotLabels,
+                            windUnit = windUnit,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
+                }
+            }
+        }
         }
     }
 }

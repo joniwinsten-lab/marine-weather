@@ -15,9 +15,9 @@
 
 | ID | Priority | Issue | Status |
 |----|----------|-------|--------|
-| PHN-04 | P1 | Portrait compare: weather cards need scroll (partially visible MET card) | Improved via PHN-03 |
-| PHN-05 | P2 | Landscape rail labels truncated ("Radar & lightni…") | Icon-only mode on short height |
-| PHN-06 | P2 | Route pane portrait controls density | Deferred |
+| PHN-04 | P1 | Portrait compare: weather cards need scroll | Fixed via PHN-03 (0.3.1) |
+| PHN-05 | P2 | Landscape rail labels truncated | Fixed — bottom bar on phones (0.3.2) |
+| PHN-06 | P2 | Route pane portrait controls density | Fixed 0.3.2 — scroll route weather + paywall padding |
 | PHN-07 | infra | `Medium_Tablet` AVD crash on launch | Use tablet proxy — see tablet-regression doc |
 
 ## Verify
@@ -27,7 +27,11 @@
 python3 scripts/capture-phone-audit-screenshots.py
 ```
 
-Check `Phone_Small_landscape_storm_radar.png` — storm tab reachable without `wm size` workaround.
+Check `Phone_Small_landscape_storm_radar.png` — storm tab reachable without `wm size` workaround (0.3.2+).
+
+## Tablet regression (re-run 2026-06-15)
+
+`./scripts/run-tablet-regression.sh audit` — **10/10 OK** on 2560×1600 proxy.
 
 ## Tablet regression
 
