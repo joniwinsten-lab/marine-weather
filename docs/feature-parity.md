@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Android** | `/Users/Safelight/Veneappi` · `versionName` **0.3.2-phone-layout** (`versionCode` 24) on `feature/phone-audit`; **main** / Play **0.2.19** |
+| **Android** | `/Users/Safelight/Veneappi` · open beta **0.3.1** (`versionCode` 27); Play production **0.2.19** |
 | **iOS** | `/Users/Safelight/marine-weather-ios` · marketing **0.3.0** |
 | **Technical porting map** | iOS: `docs/ios-porting-inventory.md` (API URLs, file paths) |
 | **Last parity audit** | 2026-06-15 |
@@ -112,7 +112,7 @@ Billing intent (store IDs differ by platform):
 | SPLASH-01 | Branded splash | Free | sync | sync | | 2026-05-24 |
 | HARBOR-01 | Harbors (Overpass) on map | — | deferred | deferred | Android code exists; not in nav | 2026-05-24 |
 | DIST-01 | Store distribution | n/a | sync | android-only | Play published; App Store pending dev account | 2026-05-24 |
-| PLAT-01 | Target devices | n/a | partial | exception | `feature/phone-audit`: phones enabled (manifest); P0 landscape nav-rail clip; Play/main still tablet≥600dp | 2026-06-15 |
+| PLAT-01 | Target devices | n/a | partial | exception | Android 0.3.1: phones + tablets; iOS iPad-only | 2026-06-16 |
 | PLAT-02 | OSRM demo routing | n/a | exception | n/a | Android debug only, disabled in release | 2026-05-24 |
 
 ### Quick audit
@@ -132,6 +132,7 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-16 | android | PLAT-01 | Play store listing EN: phones + tablets, portrait/landscape (0.3.1) |
 | 2026-06-15 | android | PLAT-01 | Release 0.3.0 AAB (versionCode 26) for Play internal/open phone testing |
 | 2026-06-15 | android | — | Fix storm radar prefetch crash when FMI host unreachable (network/DNS) |
 | 2026-06-15 | android | PLAT-01 | Phase 2b: route weather scroll on phones, paywall padding, rail height 480dp, audit screenshots |

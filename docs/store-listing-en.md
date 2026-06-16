@@ -5,10 +5,10 @@ Use **Marine Weather** as the app name everywhere. Default store language: **Eng
 ## Short description (max 80 characters)
 
 ```
-Baltic maps, 3 forecasts, radar, route + AIS. Offline pack (Premium).
+Baltic maps & forecasts on phones and tablets. Route, AIS, offline (Premium).
 ```
 
-(68 characters)
+(76 characters)
 
 ## Full description
 
@@ -16,11 +16,12 @@ Baltic maps, 3 forecasts, radar, route + AIS. Offline pack (Premium).
 Marine Weather helps you plan trips on Finnish and Baltic waters with an interactive map and forecasts from several national services side by side.
 
 FREE
-• Map with open data (landscape tablet friendly)
+• Map with open data on phones and tablets (portrait or landscape)
 • Compare point forecasts from MET Norway, SMHI, FMI and related sources
 • Storm radar and lightning overlays where open data is available
 • National marine text summaries at the map centre
 • Wind units (m/s or knots)
+• Forecast cache when signal is poor; clear offline/stale status banner
 
 PREMIUM (Google Play)
 • Route planning with weather along the route
@@ -30,19 +31,13 @@ PREMIUM (Google Play)
 • Export route as GPX or PDF
 • One-time purchase or monthly subscription — prices shown in Play before you buy
 
-ALSO FREE
-• Forecast cache when signal is poor; clear offline/stale status banner
-• Storm radar and lightning
-• National marine text summaries
-• Map & multi-source point forecasts
-
 IMPORTANT
 Open maps and forecasts are planning aids only. They do not replace official nautical charts, AIS, or regulations. Not for primary navigation.
 
 Data & privacy
-Location is used on-device to centre the map and request public weather APIs. No developer login server. See our privacy policy URL in the store listing.
+Location is used on-device to centre the map and request public weather APIs. No developer login account. Privacy policy link is provided on this store listing.
 
-Languages in app: English (default), Finnish, Swedish, Norwegian Bokmål.
+Languages in the app: English (default), Finnish, Swedish, Norwegian Bokmål.
 ```
 
 ## Category
@@ -55,8 +50,9 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 
 ## Device targeting
 
-- **Tablets** (phones filtered via `requiresSmallestWidthDp=600` in manifest)
-- Mention in store listing: **designed for landscape use on Android tablets**
+- **Phones and tablets** (Android 8.0+, API 26+)
+- Portrait and landscape; layout adapts to screen size
+- Open beta **0.3.1** removes the old tablet-only device filter (`requiresSmallestWidthDp=600`)
 
 ## Graphics checklist
 
@@ -64,7 +60,8 @@ Maps & Navigation (or Weather — pick one primary; Maps & Navigation fits route
 |-------|------|----------------|
 | App icon | 512×512 PNG | `docs/play-store-icon-512.png` |
 | Feature graphic | 1024×500 | *capture manually* |
-| Phone/tablet screenshots | min 2, landscape | *capture on device* |
+| Phone screenshots | min 2, portrait recommended | `docs/play-store-phone-screenshots/` |
+| Tablet screenshots | min 2, landscape | *capture on device* |
 
 ## In-app product IDs (must match code exactly)
 
