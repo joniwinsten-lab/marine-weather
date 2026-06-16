@@ -7,6 +7,14 @@ Sovellus hakee hinnat Play Billing Libraryllä tuotteilla:
 | Kertamaksu | `route_premium_lifetime` |
 | Tilaus | `marine_weather_premium` (peruspaketti Consolessa: `route-premium-monthly`) |
 
+## Tuotekuvakkeet (Play Console)
+
+| Product ID | Tiedosto | Koko |
+|------------|----------|------|
+| `route_premium_lifetime` | [route_premium_lifetime-icon-512.png](route_premium_lifetime-icon-512.png) | 512×512 PNG |
+
+Lataa Consolessa: **Monetize with Play** → **Products** → **One-time products** → `route_premium_lifetime` → **Icon** (valinnainen, 512×512 PNG, max 1 MB, ei tekstiä).
+
 Jos paywallissa näkyy **…**, Play ei palauttanut hintaa. Syyt ovat lähes aina Console-asetuksissa tai asennuskanavassa — ei sovelluksen “hintakytkimessä”.
 
 ## Mistä näen, onko tuote aktiivinen?
