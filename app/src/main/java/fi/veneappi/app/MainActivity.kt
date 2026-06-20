@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition { keepAndroidSplashScreen }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        (application as VeneappiApplication).appContainer.playInAppReviewCoordinator.recordAppLaunch()
         setContent {
             VeneappiApp()
         }

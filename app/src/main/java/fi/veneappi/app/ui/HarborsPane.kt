@@ -96,9 +96,7 @@ fun HarborsPane(
                 onMapClick = null,
                 traficomPlanningRasterEnabled = traficomPlanningChart,
                 onMyLocation = {
-                    if (vm.recenterToDeviceLocation(context)) {
-                        vm.refreshHarbors()
-                    }
+                    vm.recenterToDeviceLocation(context) { vm.refreshHarbors() }
                 },
                 modifier = Modifier.fillMaxSize(),
             )

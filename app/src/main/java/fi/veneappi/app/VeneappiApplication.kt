@@ -29,6 +29,7 @@ import fi.veneappi.app.data.net.WeatherRepository
 import fi.veneappi.app.data.offline.OfflineAreaPackDownloader
 import fi.veneappi.app.data.prefs.UserPreferencesRepository
 import fi.veneappi.app.data.room.VeneappiDatabase
+import fi.veneappi.app.review.PlayInAppReviewCoordinator
 import kotlinx.serialization.json.Json
 import org.maplibre.android.MapLibre
 import org.maplibre.android.WellKnownTileServer
@@ -114,6 +115,13 @@ class AppContainer(
     val mapTileWarmup = MapTileWarmup(MapHttp.install(application))
 
     val userPreferencesRepository = UserPreferencesRepository(application)
+
+    val playInAppReviewCoordinator =
+        PlayInAppReviewCoordinator(
+            applicationId = application.packageName,
+            userPreferencesRepository = userPreferencesRepository,
+            scope = applicationScope,
+        )
 
     val networkConnectivityMonitor = NetworkConnectivityMonitor(application)
 

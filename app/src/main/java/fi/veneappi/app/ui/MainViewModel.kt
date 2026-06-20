@@ -24,6 +24,7 @@ import fi.veneappi.app.data.offline.OfflineAreaPackDownloader
 import fi.veneappi.app.data.prefs.UserPreferencesRepository
 import fi.veneappi.app.domain.ForecastFreshness
 import fi.veneappi.app.domain.ForecastStaleLevel
+import fi.veneappi.app.review.PlayInAppReviewCoordinator
 import fi.veneappi.app.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -79,6 +80,7 @@ class MainViewModel(
     private val premiumAccess: PremiumAccess,
     private val networkConnectivityMonitor: NetworkConnectivityMonitor,
     private val offlineAreaPackDownloader: OfflineAreaPackDownloader,
+    private val playInAppReviewCoordinator: PlayInAppReviewCoordinator,
 ) : ViewModel() {
     private val _ui = MutableStateFlow(VeneappiUiState())
     val ui: StateFlow<VeneappiUiState> = _ui.asStateFlow()
@@ -161,6 +163,9 @@ class MainViewModel(
                     forecasts = results,
                     loadingWeather = false,
                 )
+            if (!report.allSourcesFailed) {
+                playInAppReviewCoordinator.onPositiveEngagement()
+            }
         }
     }
 
@@ -202,23 +207,32 @@ class MainViewModel(
         refreshWeather()
     }
 
-    /** Moves map center to last known device location (GPS/network). Returns false if none available. */
-    fun recenterToDeviceLocation(context: Context): Boolean {
+    /** Moves map center to a fresh device location (GPS). [onSuccess] runs on the main thread after recenter. */
+    fun recenterToDeviceLocation(
+        context: Context,
+        onSuccess: (() -> Unit)? = null,
+    ) {
         val app = context.applicationContext
-        val loc = readLastKnownLatLon(context)
-        if (loc == null) {
+        if (!hasLocationPermission(context)) {
             Toast.makeText(app, app.getString(R.string.map_no_gps_fix), Toast.LENGTH_SHORT).show()
-            return false
+            return
         }
-        val prev = _ui.value
-        _ui.value =
-            prev.copy(
-                latitude = loc.first,
-                longitude = loc.second,
-                mapRecenterSignal = prev.mapRecenterSignal + 1L,
-            )
-        refreshWeather()
-        return true
+        viewModelScope.launch {
+            val loc = readCurrentLatLon(context)
+            if (loc == null) {
+                Toast.makeText(app, app.getString(R.string.map_no_gps_fix), Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val prev = _ui.value
+            _ui.value =
+                prev.copy(
+                    latitude = loc.first,
+                    longitude = loc.second,
+                    mapRecenterSignal = prev.mapRecenterSignal + 1L,
+                )
+            refreshWeather()
+            onSuccess?.invoke()
+        }
     }
 
     fun setWindUnit(unit: WindUnit) {
@@ -541,6 +555,7 @@ class MainViewModel(
                 premiumAccess = container.premiumAccess,
                 networkConnectivityMonitor = container.networkConnectivityMonitor,
                 offlineAreaPackDownloader = container.offlineAreaPackDownloader,
+                playInAppReviewCoordinator = container.playInAppReviewCoordinator,
             ) as T
         }
     }

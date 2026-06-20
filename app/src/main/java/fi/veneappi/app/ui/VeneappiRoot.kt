@@ -139,9 +139,10 @@ fun VeneappiApp() {
     val vm: MainViewModel = viewModel(factory = MainViewModel.Factory(app.appContainer))
     val stormVm: StormMapViewModel = viewModel(factory = StormMapViewModel.Factory(app.appContainer))
     var showSplashText by remember { mutableStateOf(true) }
+        val scope = rememberCoroutineScope()
 
-        val applyLastKnown: () -> Unit = {
-            readLastKnownLatLon(activity)?.let { (lat, lon) -> vm.setMapLocation(lat, lon) }
+        val applyCurrentLocation: suspend () -> Unit = {
+            readCurrentLatLon(activity)?.let { (lat, lon) -> vm.setMapLocation(lat, lon) }
         }
         val permissionLauncher =
             rememberLauncherForActivityResult(
@@ -150,8 +151,17 @@ fun VeneappiApp() {
                 val ok =
                     granted[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                         granted[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-                if (ok) applyLastKnown()
+                if (ok) {
+                    scope.launch { applyCurrentLocation() }
+                }
             }
+
+        LaunchedEffect(vm, showSplashText) {
+            if (showSplashText) return@LaunchedEffect
+            app.appContainer.playInAppReviewCoordinator.reviewEligible.collect {
+                app.appContainer.playInAppReviewCoordinator.requestReviewFlow(activity)
+            }
+        }
 
         LaunchedEffect(vm) {
             val fineGranted =
@@ -161,7 +171,7 @@ fun VeneappiApp() {
                 ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED
             if (fineGranted || coarseGranted) {
-                applyLastKnown()
+                applyCurrentLocation()
             } else {
                 permissionLauncher.launch(
                     arrayOf(
