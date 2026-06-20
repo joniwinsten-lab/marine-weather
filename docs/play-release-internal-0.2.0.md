@@ -11,7 +11,7 @@
 ```
 First internal test build for Marine Weather.
 
-Free: map & weather comparison, storm radar, marine text summaries, national forecasts at map centre.
+Free: map & weather comparison, rain radar, marine weather summaries, national forecasts at map centre.
 
 Premium (Google Play purchase or 3-day trial): route planning with weather along the route, and 12-day wind outlook.
 
@@ -23,7 +23,7 @@ Not for primary navigation — planning aid only.
 ```
 Ensimmäinen sisäisen testauksen build.
 
-Ilmaiseksi: kartta ja säävertailu, tutka, meritekstiyhteenveto.
+Ilmaiseksi: kartta ja säävertailu, sadetutka, merisää.
 
 Premium: reittisuunnittelu ja 12 päivän tuuliennuste.
 

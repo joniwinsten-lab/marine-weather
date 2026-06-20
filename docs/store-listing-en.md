@@ -19,7 +19,7 @@ FREE
 • Map with open data on phones and tablets (portrait or landscape)
 • Compare point forecasts from MET Norway, SMHI, FMI and related sources
 • Storm radar and lightning overlays where open data is available
-• National marine text summaries at the map centre
+• National marine weather summaries at the map centre
 • Wind units (m/s or knots)
 • Forecast cache when signal is poor; clear offline/stale status banner
 

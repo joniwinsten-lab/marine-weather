@@ -105,9 +105,9 @@
     <string name="route_osrm_disabled">OSRM-demo er av i denne bygget; premium-backend vil håndtere ruting.</string>
     <string name="route_tab_map_route">Kart &amp; rute</string>
     <string name="route_tab_extended_wind">Vind 12+ dager</string>
-    <string name="nav_marine_four_seas">Værvarsel\n(4 land)</string>
-    <string name="marine_nav_cd">Værvarsel for fire land</string>
-    <string name="marine_text_screen_title">Værvarsel</string>
+    <string name="nav_marine_four_seas">Havsvær\n(4 land)</string>
+    <string name="marine_nav_cd">Havsvær for fire land</string>
+    <string name="marine_text_screen_title">Havsvær</string>
     <string name="marine_text_intro">Kort sammendrag ved kartets midtpunkt (omtrent to setninger); varsler først når de finnes. Full prognose på hvert lands nettside — åpne lenken under kortet. MET Norways havområder dekker ikke Østersjøen; Finland og Sverige bruker nasjonale modeller der.</string>
     <string name="marine_text_map_hint">Kartsenter: %1$.4f°N, %2$.4f°Ø</string>
     <string name="marine_text_refresh_cd">Oppdater varsel</string>
@@ -119,7 +119,7 @@
     <string name="marine_text_empty_cell">Ingen kort oppsummering for dette kartpunktet (f.eks. Norge når kartet er over Østersjøen). Åpne lenken for full nasjonal prognose.</string>
     <string name="marine_alert_warning">Prognosen inneholder varsler</string>
     <string name="marine_alert_notice">Prognosen inneholder merknader</string>
-    <string name="nav_storm_radar">Radar og lyn</string>
+    <string name="nav_storm_radar">Regnradar og lyn</string>
     <string name="storm_nav_cd">Regnradar og lyn</string>
     <string name="storm_radar_chip_radar">Regnradar</string>
     <string name="storm_radar_chip_lightning">Lyn</string>

@@ -59,7 +59,7 @@ Testers must:
 ```
 Phone support: Marine Weather now runs on phones and tablets (portrait and landscape).
 
-Free: map & weather comparison, storm radar, marine text summaries.
+Free: map & weather comparison, rain radar, marine weather summaries.
 
 Premium: route planning with weather along the route, 12-day wind outlook, AIS, offline route pack.
 
@@ -71,7 +71,7 @@ Not for primary navigation — planning aid only.
 ```
 Puhelintuki: Marine Weather toimii nyt puhelimilla ja tableteilla (pysty- ja vaakasuunta).
 
-Ilmaiseksi: kartta ja säävertailu, tutka, meritekstiyhteenveto.
+Ilmaiseksi: kartta ja säävertailu, sadetutka, merisää.
 
 Premium: reittisuunnittelu, 12 päivän tuuliennuste, AIS, offline-reittipaketti.
 

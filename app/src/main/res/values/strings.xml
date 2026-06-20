@@ -5,7 +5,7 @@
     <string name="nav_route">Route planning</string>
     <string name="nav_premium_mark">(Premium)</string>
     <string name="route_premium_title">Premium</string>
-    <string name="route_premium_body">Unlock route planning with weather along the route, AIS ship positions on the map, and the 12-day wind outlook. Map &amp; weather comparison, storm radar, marine text summaries and point forecasts stay free.</string>
+    <string name="route_premium_body">Unlock route planning with weather along the route, AIS ship positions on the map, and the 12-day wind outlook. Map &amp; weather comparison, rain radar, marine weather and point forecasts stay free.</string>
     <string name="ais_chip">AIS vessels</string>
     <string name="ais_chip_accessibility">AIS vessel positions on map</string>
     <string name="ais_premium_required_title">Premium feature</string>
@@ -117,7 +117,7 @@
     <string name="offline_pack_download">Download for offline</string>
     <string name="offline_pack_downloading">Downloading…</string>
     <string name="offline_pack_step_tiles">Caching map tiles…</string>
-    <string name="offline_pack_step_marine">Loading marine text…</string>
+    <string name="offline_pack_step_marine">Loading marine weather…</string>
     <string name="offline_pack_step_weather">Weather %1$d / %2$d</string>
     <string name="offline_pack_step_done">Finishing…</string>
     <string name="offline_pack_step_working">Working…</string>
@@ -177,9 +177,9 @@
     <string name="route_osrm_disabled">OSRM demo is disabled in this build; premium backend will host routing.</string>
     <string name="route_tab_map_route">Map &amp; route</string>
     <string name="route_tab_extended_wind">Wind 12+ days</string>
-    <string name="nav_marine_four_seas">Weather forecast\n(4 countries)</string>
-    <string name="marine_nav_cd">Weather forecast for four countries</string>
-    <string name="marine_text_screen_title">Weather forecast</string>
+    <string name="nav_marine_four_seas">Marine weather\n(4 countries)</string>
+    <string name="marine_nav_cd">Marine weather for four countries</string>
+    <string name="marine_text_screen_title">Marine weather</string>
     <string name="marine_text_intro">Short summary at the map centre (about two sentences), with warnings highlighted when available. Full text forecasts are on each authority’s website — open the link below the card. Baltic waters are not covered by MET Norway’s sea-area product; Finland and Sweden use national models there.</string>
     <string name="marine_text_map_hint">Map centre: %1$.4f°N, %2$.4f°E</string>
     <string name="marine_text_refresh_cd">Refresh forecast</string>
@@ -191,7 +191,7 @@
     <string name="marine_text_empty_cell">No short summary for this map centre (e.g. Norwegian waters when the map is over the Baltic). Open the link for the full national forecast.</string>
     <string name="marine_alert_warning">Forecast contains warnings</string>
     <string name="marine_alert_notice">Forecast contains notices</string>
-    <string name="nav_storm_radar">Radar &amp; lightning</string>
+    <string name="nav_storm_radar">Rain radar &amp; lightning</string>
     <string name="storm_nav_cd">Rain radar and lightning</string>
     <string name="storm_radar_chip_radar">Rain radar</string>
     <string name="storm_radar_chip_lightning">Lightning</string>

@@ -35,8 +35,8 @@ Whenever you change **user-facing** behaviour, premium gates, APIs, offline rule
 | Feature | Free | Premium |
 |---------|:----:|:-------:|
 | Map + 3-source weather compare | ✓ | |
-| Storm radar & lightning | ✓ | |
-| Marine text (4 countries) | ✓ | |
+| Rain radar & lightning | ✓ | |
+| Marine weather (4 countries) | ✓ | |
 | Route planning + weather along route | | ✓ |
 | 12-day wind outlook | | ✓ |
 | AIS overlay (Digitraffic) | | ✓ |
@@ -71,13 +71,13 @@ Billing intent (store IDs differ by platform):
 
 | ID | Feature | Tier | Android | iOS | Notes | Updated |
 |----|---------|------|---------|-----|-------|---------|
-| NAV-01 | 5 tabs: Compare, Route, 12-day wind, Marine text, Storm | — | sync | sync | Premium badges on Route + 12-day | 2026-05-24 |
+| NAV-01 | 5 tabs: Compare, Route, 12-day wind, Marine weather, Rain radar | — | sync | sync | Premium badges on Route + 12-day | 2026-06-09 |
 | MAP-01 | OpenFreeMap Liberty basemap | Free | sync | sync | Same style URL | 2026-05-24 |
 | MAP-02 | Traficom nautical WMTS (`Merikarttasarjat public`) | Free | sync | sync | zoom 5–15, bounds 17–32°E, 58–71°N | 2026-05-24 |
 | MAP-03 | Forecast location pin (long-press) | Free | sync | sync | | 2026-05-24 |
 | MAP-04 | Scale bar | Free | sync | sync | | 2026-05-24 |
 | MAP-05 | Map tile warmup on launch / splash | Free | sync | sync | | 2026-05-24 |
-| MAP-06 | Shared map center across tabs | Free | sync | sync | | 2026-05-24 |
+| MAP-06 | Shared map center across tabs | Free | sync | android-only | Fresh Fused Location on my-location + startup (not stale cache); iOS port pending | 2026-06-17 |
 | MAP-07 | Route overlay on Compare map | Premium | sync | sync | Premium gate | 2026-05-24 |
 | WTH-01 | MET + SMHI + FMI compact compare | Free | sync | sync | User-Agent on all HTTP | 2026-05-24 |
 | WTH-02 | Forecast time strip / slot picker | Free | sync | sync | | 2026-05-24 |
@@ -89,7 +89,7 @@ Billing intent (store IDs differ by platform):
 | STORM-03 | Lightning FMI WFS + SMHI CSV | Free | sync | sync | Filtered by frame time | 2026-05-24 |
 | STORM-04 | FMI HARMONIE GRIB on timeline | Free | sync | sync | | 2026-05-24 |
 | STORM-05 | Animation play/pause/step + slider | Free | sync | sync | | 2026-05-24 |
-| MAR-01 | Marine text 2×2 country grid | Free | sync | sync | MET, SMHI, FMI, EE | 2026-05-24 |
+| MAR-01 | Marine weather 2×2 country grid | Free | sync | sync | MET, SMHI, FMI, EE | 2026-05-24 |
 | MAR-02 | Summarizer + alert classifier | Free | sync | sync | | 2026-05-24 |
 | MAR-03 | Open full forecast in browser | Free | sync | sync | | 2026-05-24 |
 | RTE-01 | Route draw + Väylä fairway routing | Premium | sync | sync | Great-circle fallback both | 2026-05-24 |
@@ -114,6 +114,7 @@ Billing intent (store IDs differ by platform):
 | DIST-01 | Store distribution | n/a | sync | android-only | Play published; App Store pending dev account | 2026-05-24 |
 | PLAT-01 | Target devices | n/a | partial | exception | Android 0.3.1: phones + tablets; iOS iPad-only | 2026-06-16 |
 | PLAT-02 | OSRM demo routing | n/a | exception | n/a | Android debug only, disabled in release | 2026-05-24 |
+| GROWTH-01 | Play in-app review prompt | Free | android-only | deferred | After 3 launches + 2 successful weather loads; once per install; friends build off | 2026-06-16 |
 
 ### Quick audit
 
@@ -132,9 +133,11 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-17 | android | MAP-06 | Release 0.3.2 AAB (versionCode 28): fresh GPS on my-location + startup |
+| 2026-06-16 | android | GROWTH-01 | Play In-App Review after engagement thresholds; non-blocking, friends build disabled |
 | 2026-06-16 | android | PLAT-01 | Play store listing EN: phones + tablets, portrait/landscape (0.3.1) |
 | 2026-06-15 | android | PLAT-01 | Release 0.3.0 AAB (versionCode 26) for Play internal/open phone testing |
-| 2026-06-15 | android | — | Fix storm radar prefetch crash when FMI host unreachable (network/DNS) |
+| 2026-06-15 | android | — | Fix rain radar prefetch crash when FMI host unreachable (network/DNS) |
 | 2026-06-15 | android | PLAT-01 | Phase 2b: route weather scroll on phones, paywall padding, rail height 480dp, audit screenshots |
 | 2026-06-15 | android | PLAT-01 | Phase 0 phone audit: manifest/orientation unlock, safe window insets (branch only) |
 | 2026-06-09 | android | BILL-03 | Paywall: explicit local trial + subscription terms (Play policy) |

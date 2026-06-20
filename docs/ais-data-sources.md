@@ -20,7 +20,7 @@ Bundled with existing route premium (`PremiumAccess.isPremium`) — no separate 
 |-----|----------|
 | Map & weather (Compare) | Visible; locked when not premium |
 | Route planning | Chip without lock when tab unlocked |
-| Storm radar / Extended wind / Marine text | No AIS layer |
+| Storm radar / Extended wind / Marine weather | No AIS layer |
 
 ## Android code
 

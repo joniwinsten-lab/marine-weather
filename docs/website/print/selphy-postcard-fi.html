@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <title>Marine Weather — Canon SELPHY postikortti (tulosta)</title>
+  <link rel="stylesheet" href="print-selphy-postcard.css" />
+</head>
+<body class="flyer flyer-fi selphy">
+  <p class="print-hint" aria-hidden="true">
+    <strong>Canon SELPHY (postikortti P, 100×148 mm)</strong><br />
+    Borderless leikkaa reunoilta ~3–5 mm — sisältö on sisäänvedetty turva-alueelle.<br />
+    Paperi: KP-36IP / KC-36IP. Tulostus: Postcard (P), <em>Borderless</em>. Tai käytä valmista PNG:ää SELPHY Photo Layoutissa.<br />
+    Tämä laatikko ei tulostu.
+  </p>
+
+  <article class="sheet" aria-label="Marine Weather esite — SELPHY postikortti">
+    <header class="flyer-header">
+      <div class="flyer-brand">
+        <img
+          class="flyer-app-icon"
+          src="../assets/app-icon-128.png"
+          width="128"
+          height="128"
+          alt="Marine Weather -sovelluksen kuvake"
+        />
+        <h1>Marine Weather</h1>
+      </div>
+    </header>
+
+    <section class="selphy-shots" aria-label="Kuvakaappaukset">
+      <figure>
+        <img src="../assets/screenshots/map-weather-compare.png" alt="" />
+        <figcaption>Kartta &amp; 3 lähdettä</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/screenshots/radar-lightning.png" alt="" />
+        <figcaption>Tutka &amp; salama</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/screenshots/route-planning.png" alt="" />
+        <figcaption>Reitti (Premium)</figcaption>
+      </figure>
+    </section>
+
+    <section class="flyer-grid" aria-label="Ominaisuudet">
+      <div class="flyer-col">
+        <h2>Ilmainen</h2>
+        <ul>
+          <li>Kartta &amp; tuulivertailu (+3 / +6 / +12 h)</li>
+          <li>Sadetutka &amp; salamat</li>
+          <li>Merisää: FI, SE, NO, EE</li>
+          <li>Traficom-suunnittelukartat</li>
+        </ul>
+      </div>
+      <div class="flyer-col flyer-col-premium">
+        <h2>Premium <span class="badge">Google Play</span></h2>
+        <ul>
+          <li>Reitti + sää 4 pisteessä</li>
+          <li>12 päivän tuulinäkymä</li>
+          <li>AIS-alukset kartalla</li>
+          <li>Offline-reittipaketti</li>
+          <li>GPX- ja PDF-vienti</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="flyer-cta flyer-cta-full" aria-label="Lataa sovellus">
+      <div class="flyer-qr-row">
+        <img
+          class="flyer-app-icon cta-app-icon"
+          src="../assets/app-icon-128.png"
+          width="160"
+          height="160"
+          alt=""
+        />
+        <img
+          class="flyer-qr-img"
+          src="../assets/qr-play-store.png"
+          width="160"
+          height="160"
+          alt="QR-koodi Google Play"
+        />
+      </div>
+      <p class="qr-caption">Lataa Google Playstä</p>
+      <p class="qr-hint">Skannaa QR-koodi puhelimella</p>
+      <span class="btn-store-play">Google Play</span>
+      <p class="web">http://www.safelight.fi/marine-weather</p>
+    </section>
+  </article>
+  <script>
+    if (location.search.includes("export=png")) {
+      document.body.classList.add("export-png");
+    }
+  </script>
+</body>
+</html>

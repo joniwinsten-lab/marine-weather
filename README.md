@@ -1,6 +1,6 @@
 # Marine Weather
 
-Android app for marine planning: multi-source weather on a map, storm radar, and premium route planning (`fi.veneappi.app`).
+Android app for marine planning: multi-source weather on a map, rain radar, and premium route planning (`fi.veneappi.app`).
 
 ## Build
 

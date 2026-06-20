@@ -1,0 +1,317 @@
+/* Canon SELPHY postcard (P size) — 100 × 148 mm after perforation
+   Spec: https://cam.start.canon/en/P001/manual/html/UG-07_Reference_0070.html
+   Borderless overspray: keep all text/graphics inside --safe-inset (5.5mm tested). */
+
+:root {
+  --bg: #0c1220;
+  --bg-alt: #111a2e;
+  --surface: #162238;
+  --text: #e8eef8;
+  --muted: #9aa8c4;
+  --accent: #5b9fd4;
+  --accent-soft: rgba(91, 159, 212, 0.15);
+  --border: rgba(255, 255, 255, 0.1);
+  --radius: 4px;
+  --page-w: 100mm;
+  --page-h: 148mm;
+  --safe-inset: 5.5mm;
+}
+
+@page {
+  size: 100mm 148mm;
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 6pt;
+  line-height: 1.26;
+  color: var(--text);
+  background: #060a12;
+}
+
+.print-hint {
+  max-width: 100mm;
+  margin: 8px auto;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c8d4e8;
+  background: #1a2438;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+}
+
+.print-hint strong {
+  color: #fff;
+}
+
+.sheet {
+  width: var(--page-w);
+  height: var(--page-h);
+  margin: 0 auto 10px;
+  padding: var(--safe-inset) var(--safe-inset) 7mm;
+  background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4mm;
+  overflow: hidden;
+}
+
+.flyer-header {
+  flex-shrink: 0;
+}
+
+.flyer-brand {
+  display: flex;
+  align-items: center;
+  gap: 2.5mm;
+}
+
+.flyer-brand h1 {
+  margin: 0;
+  font-size: 16.5pt;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+.flyer-brand .flyer-app-icon {
+  display: block;
+  width: 13mm;
+  height: 13mm;
+  flex-shrink: 0;
+  border-radius: 28%;
+  object-fit: cover;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.selphy-shots {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.4mm;
+  min-height: 30mm;
+}
+
+.selphy-shots figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.selphy-shots img {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.selphy-shots figcaption {
+  flex-shrink: 0;
+  margin-top: 0.4mm;
+  font-size: 4.6pt;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.flyer-grid {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.4mm;
+}
+
+.flyer-col {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.6mm;
+}
+
+.flyer-col-premium {
+  border-color: rgba(91, 159, 212, 0.35);
+  background: linear-gradient(145deg, var(--surface), var(--accent-soft));
+}
+
+.flyer-col h2 {
+  margin: 0 0 0.8mm;
+  font-size: 6.2pt;
+  font-weight: 700;
+}
+
+.flyer-col h2 .badge {
+  display: block;
+  margin-top: 0.3mm;
+  font-size: 4.6pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+}
+
+.flyer-col ul {
+  margin: 0;
+  padding-left: 2.8mm;
+}
+
+.flyer-col li {
+  margin-bottom: 0.35mm;
+  font-size: 5.3pt;
+  color: var(--muted);
+  line-height: 1.22;
+}
+
+.flyer-col li:last-child {
+  margin-bottom: 0;
+}
+
+.flyer-col-premium li {
+  color: var(--text);
+}
+
+.flyer-cta-full {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2mm 2.2mm;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.flyer-cta-full .flyer-qr-row {
+  display: flex;
+  gap: 2mm;
+  align-items: center;
+  justify-content: center;
+}
+
+.flyer-cta-full .flyer-qr-img,
+.flyer-cta-full .cta-app-icon {
+  display: block;
+  width: 24mm;
+  height: 24mm;
+  flex-shrink: 0;
+}
+
+.flyer-cta-full .flyer-qr-img {
+  border-radius: 3px;
+  background: #fff;
+  padding: 0.8mm;
+}
+
+.flyer-cta-full .cta-app-icon {
+  border-radius: 28%;
+  object-fit: cover;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.qr-caption {
+  margin: 1.2mm 0 0.4mm;
+  font-size: 8pt;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.12;
+}
+
+.qr-hint {
+  margin: 0 0 0.8mm;
+  font-size: 5.4pt;
+  color: var(--muted);
+  line-height: 1.15;
+}
+
+.btn-store-play {
+  display: inline-block;
+  padding: 1mm 3mm;
+  border-radius: 4px;
+  font-size: 6.2pt;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, #3d8fd4 0%, #2a6fad 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.flyer-cta-full .web {
+  margin: 1.4mm 0 0;
+  font-size: 5.6pt;
+  font-weight: 600;
+  color: var(--accent);
+  word-break: break-all;
+  line-height: 1.2;
+}
+
+.disclaimer {
+  margin: 0;
+  font-size: 4.6pt;
+  line-height: 1.2;
+  color: var(--muted);
+}
+
+@media print {
+  .print-hint {
+    display: none !important;
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  .sheet {
+    width: var(--page-w);
+    height: var(--page-h);
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+body.export-png {
+  width: 1181px;
+  height: 1748px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+body.export-png .print-hint {
+  display: none !important;
+}
+
+body.export-png .sheet {
+  width: 100mm;
+  height: 148mm;
+  margin: 0;
+  transform: scale(3.125);
+  transform-origin: center center;
+  box-shadow: none;
+  border: none;
+}

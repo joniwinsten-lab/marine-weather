@@ -14,7 +14,7 @@ Before and after any **user-facing** change:
 
 Premium contract (must match iOS):
 
-- **Free:** map & weather compare, storm radar, marine text
+- **Free:** map & weather compare, rain radar, marine weather
 - **Premium:** route, 12-day wind, AIS, route on compare map, offline route pack
 
 ## Stable views (user rule)
@@ -25,3 +25,4 @@ Do not change Map & weather or Route UI unless the user asks explicitly — see 
 
 - `docs/ios-porting-inventory.md` (in iOS repo) — technical mirror
 - `docs/offline-features.md`, `docs/play-billing-products.md`
+- `.cursor/rules/terminology.mdc` — user-facing names (Sadetutka, merisää, …)

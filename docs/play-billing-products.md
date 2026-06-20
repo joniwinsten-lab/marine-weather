@@ -7,13 +7,18 @@ Sovellus hakee hinnat Play Billing Libraryllä tuotteilla:
 | Kertamaksu | `route_premium_lifetime` |
 | Tilaus | `marine_weather_premium` (peruspaketti Consolessa: `route-premium-monthly`) |
 
-## Tuotekuvakkeet (Play Console)
+## Tuotekuvakkeet ja kuvaukset (Play Console)
 
-| Product ID | Tiedosto | Koko |
-|------------|----------|------|
-| `route_premium_lifetime` | [route_premium_lifetime-icon-512.png](route_premium_lifetime-icon-512.png) | 512×512 PNG |
+| Product ID | Tyyppi | Kuvake | Kuvaus (nimi + teksti, 4 kieltä) |
+|------------|--------|--------|----------------------------------|
+| `route_premium_lifetime` | Kertamaksu | [route_premium_lifetime-icon-512.png](play-billing/route_premium_lifetime-icon-512.png) | [route_premium_lifetime-description.md](play-billing/route_premium_lifetime-description.md) |
+| `marine_weather_premium` | Tilaus | [marine_weather_premium-icon-512.png](play-billing/marine_weather_premium-icon-512.png) | [marine_weather_premium-description.md](play-billing/marine_weather_premium-description.md) |
 
-Lataa Consolessa: **Monetize with Play** → **Products** → **One-time products** → `route_premium_lifetime` → **Icon** (valinnainen, 512×512 PNG, max 1 MB, ei tekstiä).
+**Kertamaksu:** **Monetize with Play** → **Products** → **One-time products** → `route_premium_lifetime` → **Icon** + **Product details**.
+
+**Tilaus:** **Monetize with Play** → **Products** → **Subscriptions** → `marine_weather_premium` → **Icon** + **Product details** (base plan `route-premium-monthly` erikseen hinnoittelussa).
+
+Molemmissa: 512×512 PNG, max 1 MB, ei tekstiä; nimi ≤55 merkkiä, kuvaus ≤200 merkkiä per kieli.
 
 Jos paywallissa näkyy **…**, Play ei palauttanut hintaa. Syyt ovat lähes aina Console-asetuksissa tai asennuskanavassa — ei sovelluksen “hintakytkimessä”.
 

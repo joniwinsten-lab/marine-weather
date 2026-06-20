@@ -105,9 +105,9 @@
     <string name="route_osrm_disabled">OSRM-demo är avstängd i denna build; premium-backend kommer att hosta routing.</string>
     <string name="route_tab_map_route">Karta &amp; rutt</string>
     <string name="route_tab_extended_wind">Vind 12+ dagar</string>
-    <string name="nav_marine_four_seas">Väderprognos\n(4 länder)</string>
-    <string name="marine_nav_cd">Väderprognos för fyra länder</string>
-    <string name="marine_text_screen_title">Väderprognos</string>
+    <string name="nav_marine_four_seas">Havsväder\n(4 länder)</string>
+    <string name="marine_nav_cd">Havsväder för fyra länder</string>
+    <string name="marine_text_screen_title">Havsväder</string>
     <string name="marine_text_intro">Kort sammanfattning vid kartans centrum (cirka två meningar); varningar först om de finns. Full prognos på respektive myndighets webbplats — öppna länken under kortet. MET Norways havsområden täcker inte Östersjön; Finland och Sverige använder nationella modeller där.</string>
     <string name="marine_text_map_hint">Kartcentrum: %1$.4f°N, %2$.4f°Ö</string>
     <string name="marine_text_refresh_cd">Uppdatera prognos</string>
@@ -119,7 +119,7 @@
     <string name="marine_text_empty_cell">Ingen kort sammanfattning för denna kartpunkt (t.ex. Norge när kartan är över Östersjön). Öppna länken för full nationell prognos.</string>
     <string name="marine_alert_warning">Prognosen innehåller varningar</string>
     <string name="marine_alert_notice">Prognosen innehåller anmärkningar</string>
-    <string name="nav_storm_radar">Radar och blixtar</string>
+    <string name="nav_storm_radar">Regnradar och blixtar</string>
     <string name="storm_nav_cd">Regnradar och blixtar</string>
     <string name="storm_radar_chip_radar">Regnradar</string>
     <string name="storm_radar_chip_lightning">Blixtar</string>

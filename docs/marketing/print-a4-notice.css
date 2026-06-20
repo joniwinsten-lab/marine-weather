@@ -1,0 +1,212 @@
+/* A4 notice board poster — Marine Weather */
+
+:root {
+  --bg: #0c1220;
+  --bg-alt: #111a2e;
+  --text: #e8eef8;
+  --muted: #9aa8c4;
+  --accent: #5b9fd4;
+  --accent-soft: rgba(91, 159, 212, 0.18);
+  --border: rgba(255, 255, 255, 0.12);
+  --page-w: 210mm;
+  --page-h: 297mm;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 11pt;
+  line-height: 1.4;
+  color: var(--text);
+  background: #060a12;
+}
+
+.sheet {
+  width: var(--page-w);
+  min-height: var(--page-h);
+  margin: 12px auto;
+  padding: 14mm 16mm 12mm;
+  background: linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6mm;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .sheet {
+    margin: 0;
+    border: none;
+    min-height: auto;
+    page-break-after: avoid;
+  }
+}
+
+.poster-header {
+  text-align: center;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 5mm;
+}
+
+.poster-header h1 {
+  margin: 0 0 2mm;
+  font-size: 28pt;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.poster-header .tagline {
+  margin: 0;
+  font-size: 13pt;
+  color: var(--muted);
+}
+
+.poster-header .chips {
+  margin: 4mm 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3mm;
+}
+
+.poster-header .chips li {
+  font-size: 9pt;
+  font-weight: 600;
+  padding: 1.5mm 3mm;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.poster-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm;
+  flex: 1;
+}
+
+.poster-col h2 {
+  margin: 0 0 3mm;
+  font-size: 13pt;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.poster-col ul {
+  margin: 0;
+  padding-left: 5mm;
+}
+
+.poster-col li {
+  margin-bottom: 2mm;
+}
+
+.poster-col-premium {
+  padding: 4mm;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge {
+  font-size: 8pt;
+  font-weight: 600;
+  padding: 0.5mm 2mm;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #0c1220;
+  vertical-align: middle;
+}
+
+.poster-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10mm;
+  padding: 6mm;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.poster-cta img {
+  display: block;
+}
+
+.poster-qr {
+  width: 42mm;
+  height: 42mm;
+  background: white;
+  padding: 2mm;
+  border-radius: 4px;
+}
+
+.poster-icon {
+  width: 28mm;
+  height: 28mm;
+  border-radius: 12%;
+}
+
+.cta-text {
+  text-align: left;
+}
+
+.cta-text .big {
+  margin: 0 0 2mm;
+  font-size: 16pt;
+  font-weight: 700;
+}
+
+.cta-text .hint {
+  margin: 0;
+  font-size: 11pt;
+  color: var(--muted);
+}
+
+.cta-text .url {
+  margin: 3mm 0 0;
+  font-size: 9pt;
+  word-break: break-all;
+  color: var(--accent);
+}
+
+.poster-footer {
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 1px solid var(--border);
+  font-size: 8.5pt;
+  color: var(--muted);
+  text-align: center;
+}
+
+.poster-footer p {
+  margin: 0 0 1.5mm;
+}
+
+.poster-footer .disclaimer {
+  font-weight: 600;
+  color: #c9a227;
+}

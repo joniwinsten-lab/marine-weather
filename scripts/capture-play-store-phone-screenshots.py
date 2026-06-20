@@ -32,8 +32,8 @@ PKG = "fi.veneappi.app.friends"
 
 TABS = [
     ("01_compare_map_weather", r"Map\s*&", "Map & weather compare", 2.0),
-    ("02_storm_radar", r"Radar\s*&", "Storm radar & lightning", 2.5),
-    ("03_marine_text", r"Weather forecast", "National marine text", 2.0),
+    ("02_storm_radar", r"Rain radar\s*&", "Rain radar & lightning", 2.5),
+    ("03_marine_text", r"Marine weather", "National marine weather", 2.0),
     ("04_route_planning", r"Route planning", "Route planning (premium unlocked)", 3.0),
     ("05_wind_12day", r"Wind 12\+ days", "12-day wind outlook (premium unlocked)", 4.0),
 ]

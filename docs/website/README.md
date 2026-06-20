@@ -23,8 +23,11 @@ Requires SSH as `root@94.237.38.55`. Files land in `/var/www/marine-weather/`.
 - default IP vhost (`sindbad-web`) — already configured
 - `safelight.fi` HTTPS server block — see `nginx/safelight.fi-snippet.txt`
 
+Optional AIS REST proxy in the same snippet (not required for `/track/` — Digitraffic allows browser CORS with `Digitraffic-User`).
+
 ## Contents
 
+- `track/` — **AIS Seuranta** web prototype ([README](track/README.md)) at `/marine-weather/track/`
 - `index.html` — English (default); Play Store download CTA
 - `fi/`, `sv/`, `nb/`, `et/` — Finnish, Swedish, Norwegian, Estonian landing pages
 - Language switcher in header on all pages

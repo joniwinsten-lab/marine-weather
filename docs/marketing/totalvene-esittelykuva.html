@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <title>Marine Weather — esittelykuva</title>
+  <style>
+    :root {
+      --bg: #0c1220;
+      --surface: #162238;
+      --text: #e8eef8;
+      --muted: #9aa8c4;
+      --accent: #5b9fd4;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #1a1a2e;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      padding: 1rem;
+    }
+    .card {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(145deg, var(--bg) 0%, #0f1a30 55%, #132a45 100%);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 56px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      overflow: hidden;
+      position: relative;
+    }
+    .card::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91, 159, 212, 0.22), transparent 70%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 14px;
+    }
+    .app-icon {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .app-icon img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .brand-text h1 {
+      margin-bottom: 0;
+    }
+    h1 {
+      font-size: 52px;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .lead {
+      font-size: 22px;
+      line-height: 1.45;
+      color: var(--muted);
+      max-width: 34rem;
+      margin-bottom: 28px;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+      margin-bottom: 28px;
+    }
+    .chips li {
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(91, 159, 212, 0.35);
+      background: rgba(91, 159, 212, 0.12);
+      color: #c5dff5;
+    }
+    .urls {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .urls strong { color: var(--text); font-weight: 600; }
+    .panel {
+      background: rgba(22, 34, 56, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 30px;
+      align-self: center;
+    }
+    .panel h2 {
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .panel ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .panel li {
+      font-size: 17px;
+      line-height: 1.35;
+      padding-left: 1.2em;
+      position: relative;
+    }
+    .panel li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    .panel .premium {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .hint {
+      max-width: 1200px;
+      margin-top: 1rem;
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      .hint { display: none; }
+    }
+    body.export {
+      min-height: auto;
+      padding: 0;
+      background: var(--bg);
+    }
+    body.export .hint { display: none; }
+  </style>
+</head>
+<body class="export">
+  <div>
+    <article class="card" aria-label="Marine Weather esittelykuva">
+      <div>
+        <header class="brand">
+          <div class="app-icon" aria-label="Marine Weather -sovelluksen kuvake">
+            <img src="assets/ic_launcher_background_layer.png" alt="" />
+            <img src="assets/ic_launcher_foreground_layer.png" alt="" />
+          </div>
+          <div class="brand-text">
+            <p class="eyebrow">Android · Puhelin &amp; tabletti · Itämeri</p>
+            <h1>Marine Weather</h1>
+          </div>
+        </header>
+        <p class="lead">Merikartta ja kolmen lähteen säävertailu samassa näkymässä — suunnitteluapu Suomenlahden ja Itämeren vesille.</p>
+        <ul class="chips">
+          <li>FMI · SMHI · MET Norway</li>
+          <li>Sadetutka ilmaiseksi</li>
+          <li>Traficom-suunnittelukartta</li>
+        </ul>
+        <p class="urls">
+          <strong>Verkkosivu:</strong> safelight.fi/marine-weather/<br />
+          <strong>Google Play:</strong> Marine Weather (fi.veneappi.app)
+        </p>
+      </div>
+      <section class="panel">
+        <h2>Ilmaiseksi</h2>
+        <ul>
+          <li>Kartta ja piste-ennusteet (+3 / +6 / +12 h)</li>
+          <li>Sadetutka ja merisää</li>
+          <li>Tuuli m/s tai solmua</li>
+        </ul>
+        <p class="premium">
+          <strong style="color:#e8eef8">Premium:</strong> reittisuunnittelu, 12 pv tuuli, AIS, offline-reittipaketti.
+          Ei korvaa virallisia merikarttoja.
+        </p>
+      </section>
+    </article>
+    <p class="hint">
+      Tallenna PNG: Chrome / Edge → hiiren oikea klikkaus kortin päällä → “Capture node screenshot”
+      (DevTools), tai macOS: Cmd+Shift+4 ja rajaa kortti. Liitä sähköpostiin nimellä
+      <code>Marine-Weather-totalvene-esittely.png</code>.
+    </p>
+  </div>
+</body>
+</html>

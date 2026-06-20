@@ -22,7 +22,7 @@ This snapshot captures Marine Weather Android when **billing prices, AIS, offlin
 - **AIS** on map (Digitraffic REST; gzip fix applied)
 - **Offline route pack** download (compact button, no extra explanatory text)
 - **Offline / stale weather** banner and cache fallback
-- **Map & weather**, **Route**, storm radar, marine text, 12-day wind (premium)
+- **Map & weather**, **Route**, rain radar, marine weather, 12-day wind (premium)
 - **Website** locales (EN/FI/SV/NB/ET) deployed separately
 
 ## Play Console products (must match)

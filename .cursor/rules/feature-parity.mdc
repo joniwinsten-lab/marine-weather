@@ -12,7 +12,7 @@ alwaysApply: true
 Update `docs/feature-parity.md` whenever you change:
 
 - Navigation, tabs, premium gates
-- Map overlays, storm radar, marine text, route, AIS, offline behaviour
+- Map overlays, rain radar, marine weather, route, AIS, offline behaviour
 - Billing, trial, paywall copy
 - User-visible strings / locales (en, fi, sv, nb)
 - Public API usage or shared constants (URLs, bounds, zoom limits)

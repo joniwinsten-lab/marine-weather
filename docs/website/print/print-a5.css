@@ -62,6 +62,13 @@ body {
   flex-shrink: 0;
 }
 
+.flyer-header h1 {
+  margin: 0 0 2mm;
+  font-size: 20pt;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
 .eyebrow {
   margin: 0 0 1.5mm;
   font-size: 7pt;
@@ -69,13 +76,6 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
-}
-
-.flyer-header h1 {
-  margin: 0 0 2mm;
-  font-size: 20pt;
-  line-height: 1.05;
-  font-weight: 700;
 }
 
 .tagline {
@@ -246,13 +246,31 @@ body {
   border-radius: var(--radius);
 }
 
-.flyer-qr img {
+.flyer-qr-row {
+  display: flex;
+  gap: 3mm;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.flyer-qr-img,
+.flyer-app-icon {
   display: block;
   width: 32mm;
   height: 32mm;
+  flex-shrink: 0;
+}
+
+.flyer-qr-img {
   border-radius: 4px;
   background: #fff;
   padding: 1.5mm;
+}
+
+.flyer-app-icon {
+  border-radius: 28%;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .cta-copy {

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Marine Weather — seuraa tuttuja aluksia AIS:llä (Digitraffic MQTT)." />
+  <title>Seuranta — Marine Weather</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="track.css" />
+</head>
+<body class="track-body">
+  <header class="track-header">
+    <div class="track-header-inner">
+      <a class="logo" href="../fi/">Marine Weather</a>
+      <h1 class="track-title">Seuranta</h1>
+      <div class="track-header-actions">
+        <span id="mqtt-status" class="mqtt-pill mqtt-pill--off" role="status" aria-live="polite">Yhdistetään…</span>
+        <label class="map-toggle" title="Traficom-suunnittelukartta (ei navigointikäyttöön)">
+          <input type="checkbox" id="traficom-toggle" />
+          <span>Merikartta</span>
+        </label>
+        <button type="button" class="btn btn-primary" id="btn-add">Lisää alus</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="track-app" id="track-app">
+    <aside class="track-panel" id="track-panel" aria-label="Seurantalista">
+      <div class="track-panel-toolbar">
+        <div class="panel-tabs" role="tablist" aria-label="Lista">
+          <button type="button" class="panel-tab is-active" data-panel="watchlist" role="tab" aria-selected="true">Seuranta</button>
+          <button type="button" class="panel-tab" data-panel="browse" role="tab" aria-selected="false">Hae</button>
+        </div>
+        <div id="watchlist-tools">
+          <input
+            type="search"
+            id="search"
+            class="track-search"
+            placeholder="Etsi nimellä tai MMSI:llä"
+            autocomplete="off"
+            enterkeyhint="search"
+          />
+          <div class="track-filters" role="tablist" aria-label="Suodata">
+            <button type="button" class="filter-btn is-active" data-filter="all" role="tab" aria-selected="true">Kaikki</button>
+            <button type="button" class="filter-btn" data-filter="active" role="tab" aria-selected="false">Aktiiviset</button>
+            <button type="button" class="filter-btn" data-filter="stale" role="tab" aria-selected="false">Ei signaalia</button>
+          </div>
+        </div>
+        <div id="browse-tools" hidden>
+          <input
+            type="search"
+            id="browse-search"
+            class="track-search"
+            placeholder="Hae nimellä tai MMSI:llä (koko Itämeri)"
+            autocomplete="off"
+            enterkeyhint="search"
+          />
+          <div class="browse-actions">
+            <button type="button" class="btn btn-small" id="btn-refresh-nearby">Päivitä kartalta</button>
+          </div>
+          <p class="browse-hint">Näytä alukset karttanäkymän läheltä tai hae nimellä. Klikkaa riviä esikatsellaksesi — lisää seurantaan erikseen napista.</p>
+        </div>
+        <p class="track-stats" id="stats">0 alusta</p>
+      </div>
+      <ul class="vessel-list" id="vessel-list" role="listbox" aria-label="Alukset"></ul>
+    </aside>
+
+    <div class="track-map-wrap">
+      <div id="map" class="track-map" role="application" aria-label="Kartta"></div>
+      <div class="track-detail" id="detail" hidden>
+        <button type="button" class="detail-close" id="detail-close" aria-label="Sulje">×</button>
+        <div id="detail-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="track-dialog" id="add-dialog">
+    <form method="dialog" id="add-form">
+      <h2>Lisää alus</h2>
+      <p class="dialog-hint">Syötä 9-numeroinen MMSI. Data tulee Digitraffic AIS:stä.</p>
+      <label class="field">
+        <span>MMSI</span>
+        <input type="text" id="add-mmsi" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required autocomplete="off" />
+      </label>
+      <label class="field">
+        <span>Lempinimi <em>(valinnainen)</em></span>
+        <input type="text" id="add-nickname" maxlength="40" autocomplete="off" />
+      </label>
+      <p class="form-error" id="add-error" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn" id="add-cancel">Peruuta</button>
+        <button type="submit" class="btn btn-primary" id="add-submit">Lisää</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/mqtt@5.10.4/dist/mqtt.min.js"></script>
+  <script type="module" src="track.js"></script>
+</body>
+</html>

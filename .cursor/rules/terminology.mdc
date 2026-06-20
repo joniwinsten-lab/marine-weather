@@ -1,0 +1,33 @@
+---
+description: Canonical user-facing product terms (FI/EN and marketing)
+alwaysApply: true
+---
+
+# Product terminology
+
+Use these names in **all user-facing** copy (app strings, Play Store, website, marketing, emails). Do **not** use the old terms.
+
+## Finnish
+
+| Use | Do not use |
+|-----|------------|
+| **Sadetutka** | Myrskytutka, ukkostutka, tutka (when meaning precipitation radar tab) |
+| **Merisää** | Meriteksti, meritekstiyhteenveto, meritekstit |
+
+Lightning stays **salamat** / **salama**.
+
+## English
+
+| Use | Do not use |
+|-----|------------|
+| **Rain radar** | Storm radar |
+| **Marine weather** | Marine text, marine text summaries |
+
+## Swedish / Norwegian (nav & marketing)
+
+| SV | NB |
+|----|-----|
+| Regnradar | Regnradar |
+| Havsväder | Havsvær |
+
+Internal code names (`StormRadar`, `marine_text_*` keys) may stay unchanged unless refactoring.
