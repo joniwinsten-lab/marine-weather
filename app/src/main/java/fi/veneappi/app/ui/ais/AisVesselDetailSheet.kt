@@ -17,6 +17,7 @@ import fi.veneappi.app.R
 import fi.veneappi.app.domain.ais.AisConfig
 import fi.veneappi.app.domain.ais.AisFormatting
 import fi.veneappi.app.domain.ais.AisVesselDisplay
+import fi.veneappi.app.domain.ais.AisVesselMotion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +43,14 @@ fun AisVesselDetailSheet(
                 DetailRow(stringResource(R.string.ais_detail_speed), AisFormatting.formatSpeedKn(vessel.sogKn))
                 DetailRow(stringResource(R.string.ais_detail_cog), AisFormatting.formatBearing(vessel.cogDeg))
                 DetailRow(stringResource(R.string.ais_detail_heading), AisFormatting.formatHeading(vessel.headingDeg))
+                DetailRow(stringResource(R.string.ais_detail_last_seen), lastSeenLabel(vessel.lastSeenEpochMs))
+                if (!AisVesselMotion.isActive(vessel)) {
+                    Text(
+                        stringResource(R.string.ais_detail_stale_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 if (vessel.showsCourseVector) {
                     Text(
                         stringResource(
@@ -100,4 +109,19 @@ private fun DetailRow(
         "$label: $value",
         style = MaterialTheme.typography.bodyMedium,
     )
+}
+
+@Composable
+private fun lastSeenLabel(lastSeenEpochMs: Long?): String {
+    if (lastSeenEpochMs == null) return stringResource(R.string.ais_last_seen_none)
+    val delta = System.currentTimeMillis() - lastSeenEpochMs
+    return when {
+        delta < 60_000L -> stringResource(R.string.ais_last_seen_just_now)
+        delta < 3_600_000L ->
+            stringResource(R.string.ais_last_seen_min, (delta / 60_000L).toInt())
+        delta < 86_400_000L ->
+            stringResource(R.string.ais_last_seen_hours, (delta / 3_600_000L).toInt())
+        else ->
+            stringResource(R.string.ais_last_seen_days, (delta / 86_400_000L).toInt())
+    }
 }

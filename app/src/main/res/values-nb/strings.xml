@@ -178,4 +178,11 @@
     <string name="units_kn">knop</string>
     <string name="content_map">Kart</string>
     <string name="content_weather_compare">Værsammenligning</string>
+    <string name="ais_detail_last_seen">Siste AIS-oppdatering</string>
+    <string name="ais_last_seen_none">Ingen signal</string>
+    <string name="ais_last_seen_just_now">Akkurat nå</string>
+    <string name="ais_last_seen_min">%1$d min siden</string>
+    <string name="ais_last_seen_hours">%1$d t siden</string>
+    <string name="ais_last_seen_days">%1$d d siden</string>
+    <string name="ais_detail_stale_hint">Ingen AIS-signal på over 30 minutter — posisjonen kan være utdatert.</string>
 </resources>

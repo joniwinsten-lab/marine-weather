@@ -72,6 +72,10 @@ fun AisMapChip(
                 tint = MaterialTheme.colorScheme.primary,
             )
         } else when (streamMode) {
+            AisStreamMode.Live ->
+                androidx.compose.foundation.Canvas(Modifier.size(8.dp)) {
+                    drawCircle(color = androidx.compose.ui.graphics.Color(0xFF43A047))
+                }
             AisStreamMode.RestOnly ->
                 androidx.compose.foundation.Canvas(Modifier.size(8.dp)) {
                     drawCircle(color = androidx.compose.ui.graphics.Color(0xFF2E7D32))

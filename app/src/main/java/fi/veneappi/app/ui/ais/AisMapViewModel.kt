@@ -4,11 +4,18 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import fi.veneappi.app.data.ais.AisMqttConnectionState
+import fi.veneappi.app.data.ais.AisMqttMessageParser
+import fi.veneappi.app.data.ais.AisSubscriptionManager
+import fi.veneappi.app.data.ais.DigitrafficAisMqttClient
 import fi.veneappi.app.data.ais.DigitrafficAisRepository
 import fi.veneappi.app.domain.ais.AisConfig
+import fi.veneappi.app.domain.ais.AisMqttConfig
 import fi.veneappi.app.domain.ais.AisVesselDisplay
+import fi.veneappi.app.domain.ais.AisVesselMotion
 import fi.veneappi.app.domain.ais.AisViewportFilter
 import fi.veneappi.app.domain.ais.MapViewport
+import fi.veneappi.app.domain.ais.applyMqttUpdate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +26,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-/** Premium AIS overlay: REST poll (~60 s) + debounced reload on viewport change. */
+/** Premium AIS overlay: REST bootstrap + Digitraffic MQTT live (viewport MMSI subscriptions). */
 class AisMapViewModel(
     private val repository: DigitrafficAisRepository,
+    private val mqttClient: DigitrafficAisMqttClient = DigitrafficAisMqttClient(),
+    private val mqttParser: AisMqttMessageParser = AisMqttMessageParser(),
+    private val subscriptionManager: AisSubscriptionManager = AisSubscriptionManager(mqttClient),
 ) : ViewModel() {
     private val _isEnabled = MutableStateFlow(false)
     val isEnabled: StateFlow<Boolean> = _isEnabled.asStateFlow()
@@ -43,11 +53,43 @@ class AisMapViewModel(
 
     private var pollJob: Job? = null
     private var viewportJob: Job? = null
+    private var mqttMessagesJob: Job? = null
+    private var mqttConnectionJob: Job? = null
+    private var publishThrottleJob: Job? = null
     private var fleetByMmsi: Map<Int, AisVesselDisplay> = emptyMap()
     private var lastViewport: MapViewport? = null
     private var appIsActive = true
     private var pollCycle = 0
     private val refreshMutex = Mutex()
+    private val fleetMutex = Mutex()
+
+    init {
+        mqttMessagesJob =
+            viewModelScope.launch {
+                mqttClient.messages.collect { message ->
+                    handleMqttMessage(message.topic, message.payload)
+                }
+            }
+        mqttConnectionJob =
+            viewModelScope.launch {
+                mqttClient.connectionState.collect { state ->
+                    when (state) {
+                        AisMqttConnectionState.Connected -> {
+                            subscriptionManager.clearLocalState()
+                            syncMqttSubscriptions()
+                            updateStreamMode()
+                        }
+                        AisMqttConnectionState.Disconnected,
+                        AisMqttConnectionState.Error,
+                        -> {
+                            subscriptionManager.clearLocalState()
+                            updateStreamMode()
+                        }
+                        AisMqttConnectionState.Connecting -> Unit
+                    }
+                }
+            }
+    }
 
     fun setSceneActive(active: Boolean) {
         if (appIsActive == active) return
@@ -57,10 +99,10 @@ class AisMapViewModel(
             _streamMode.value = AisStreamMode.Connecting
             bootstrap()
         } else {
-            pollJob?.cancel()
-            pollJob = null
+            stopPolling()
             viewportJob?.cancel()
             viewportJob = null
+            viewModelScope.launch { disconnectMqtt() }
             _streamMode.value = AisStreamMode.Off
         }
     }
@@ -117,17 +159,24 @@ class AisMapViewModel(
     }
 
     private fun bootstrap() {
-        viewModelScope.launch { refreshFromNetwork(fullFetch = true) }
+        viewModelScope.launch {
+            refreshFromNetwork(fullFetch = true)
+            if (_isEnabled.value && appIsActive) {
+                connectMqttIfNeeded()
+            }
+        }
         startPollingIfNeeded()
     }
 
     private fun tearDown() {
         _streamMode.value = AisStreamMode.Off
         _lastError.value = null
-        pollJob?.cancel()
-        pollJob = null
+        stopPolling()
         viewportJob?.cancel()
         viewportJob = null
+        publishThrottleJob?.cancel()
+        publishThrottleJob = null
+        viewModelScope.launch { disconnectMqtt() }
         fleetByMmsi = emptyMap()
         pollCycle = 0
         _vessels.value = emptyList()
@@ -147,14 +196,46 @@ class AisMapViewModel(
         pollJob =
             viewModelScope.launch {
                 while (isActive) {
-                    delay(AisConfig.REST_POLL_INTERVAL_SECONDS * 1000L)
+                    delay(pollIntervalMs())
                     if (!_isEnabled.value || !appIsActive) continue
-                    val fullFetch =
-                        pollCycle == 0 ||
-                            pollCycle % AisConfig.METADATA_REFRESH_EVERY_N_POLLS == 0
-                    refreshFromNetwork(fullFetch = fullFetch)
+                    if (mqttClient.isConnected) {
+                        refreshFromNetwork(fullFetch = true)
+                    } else {
+                        val fullFetch =
+                            pollCycle == 0 ||
+                                pollCycle % AisConfig.METADATA_REFRESH_EVERY_N_POLLS == 0
+                        refreshFromNetwork(fullFetch = fullFetch)
+                    }
                 }
             }
+    }
+
+    private fun stopPolling() {
+        pollJob?.cancel()
+        pollJob = null
+    }
+
+    private fun pollIntervalMs(): Long =
+        if (mqttClient.isConnected) {
+            AisConfig.REST_METADATA_POLL_INTERVAL_SECONDS_WHEN_MQTT_LIVE * 1000L
+        } else {
+            AisConfig.REST_POLL_INTERVAL_SECONDS * 1000L
+        }
+
+    private suspend fun connectMqttIfNeeded() {
+        if (!_isEnabled.value || !appIsActive || mqttClient.isConnected) return
+        runCatching {
+            mqttClient.connect()
+            syncMqttSubscriptions()
+        }.onFailure { e ->
+            log("mqtt connect failed: ${e.message}")
+            updateStreamMode()
+        }
+    }
+
+    private suspend fun disconnectMqtt() {
+        subscriptionManager.clearLocalState()
+        mqttClient.disconnect()
     }
 
     private suspend fun refreshFromNetwork(fullFetch: Boolean) {
@@ -182,11 +263,20 @@ class AisMapViewModel(
                     pollCycle++
                     val elapsed = System.currentTimeMillis() - started
                     log("loaded ${fleet.size} vessels (${if (fullFetch) "full" else "positions"}) in ${elapsed}ms")
+                    if (appIsActive && !mqttClient.isConnected) {
+                        connectMqttIfNeeded()
+                    } else {
+                        syncMqttSubscriptions()
+                    }
                 }
             }.onFailure { e ->
                 if (_isEnabled.value) {
                     _lastError.value = e.message ?: e.javaClass.simpleName
-                    _streamMode.value = AisStreamMode.Error
+                    if (fleetByMmsi.isEmpty()) {
+                        _streamMode.value = AisStreamMode.Error
+                    } else {
+                        updateStreamMode()
+                    }
                     Log.w(TAG, "fetch failed: ${_lastError.value}", e)
                 }
             }
@@ -214,25 +304,72 @@ class AisMapViewModel(
         }
     }
 
-    private fun publishMap() {
-        val viewport = lastViewport
-        if (viewport == null) {
-            _vessels.value = emptyList()
-            if (_isEnabled.value) {
-                _streamMode.value = AisStreamMode.Connecting
+    private suspend fun handleMqttMessage(
+        topic: String,
+        payload: ByteArray,
+    ) {
+        if (!_isEnabled.value) return
+        val update = mqttParser.parseMessage(topic, payload) ?: return
+        var changed = false
+        fleetMutex.withLock {
+            val prev = fleetByMmsi[update.mmsi] ?: return
+            val merged = prev.applyMqttUpdate(update)
+            if (merged != prev) {
+                fleetByMmsi = fleetByMmsi + (update.mmsi to merged)
+                changed = true
             }
+        }
+        if (changed) {
+            scheduleThrottledPublish()
+        }
+    }
+
+    private fun scheduleThrottledPublish() {
+        if (publishThrottleJob?.isActive == true) return
+        publishThrottleJob =
+            viewModelScope.launch {
+                delay(AisMqttConfig.MAP_PUBLISH_THROTTLE_MS)
+                publishMap()
+            }
+    }
+
+    private suspend fun syncMqttSubscriptions() {
+        if (!mqttClient.isConnected || !_isEnabled.value) return
+        subscriptionManager.sync(fleetByMmsi.keys)
+        log("mqtt subscriptions: ${subscriptionManager.subscribedCount}")
+    }
+
+    private     fun publishMap() {
+        _vessels.value = fleetByMmsi.values.toList()
+        _mapRenderGeneration.value = _mapRenderGeneration.value + 1
+        updateStreamMode()
+    }
+
+    /** Dead-reckoning map refresh (~1 s) while MQTT live and vessels are moving. */
+    fun tickLiveMapRender() {
+        if (!_isEnabled.value || _streamMode.value != AisStreamMode.Live) return
+        if (!AisVesselMotion.needsLiveMapTick(_vessels.value)) return
+        _mapRenderGeneration.value = _mapRenderGeneration.value + 1
+    }
+
+    private fun updateStreamMode() {
+        if (!_isEnabled.value) {
+            _streamMode.value = AisStreamMode.Off
             return
         }
-        _vessels.value = fleetByMmsi.values.toList()
-        if (_isEnabled.value) {
-            _streamMode.value =
-                if (_vessels.value.isEmpty()) {
+        _streamMode.value =
+            when {
+                lastViewport == null || (fleetByMmsi.isEmpty() && _isLoading.value) ->
                     AisStreamMode.Connecting
-                } else {
+                fleetByMmsi.isEmpty() && _lastError.value != null ->
+                    AisStreamMode.Error
+                mqttClient.isConnected && fleetByMmsi.isNotEmpty() ->
+                    AisStreamMode.Live
+                fleetByMmsi.isNotEmpty() ->
                     AisStreamMode.RestOnly
-                }
-        }
-        _mapRenderGeneration.value = _mapRenderGeneration.value + 1
+                else ->
+                    AisStreamMode.Connecting
+            }
     }
 
     private fun viewportApproximatelyEquals(
@@ -250,6 +387,8 @@ class AisMapViewModel(
 
     override fun onCleared() {
         tearDown()
+        mqttMessagesJob?.cancel()
+        mqttConnectionJob?.cancel()
         super.onCleared()
     }
 

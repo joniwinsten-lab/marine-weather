@@ -10,6 +10,13 @@
     <string name="ais_chip_accessibility">AIS-alusten sijainnit kartalla</string>
     <string name="ais_premium_required_title">Premium-ominaisuus</string>
     <string name="ais_premium_required_body">AIS-alusten sijainnit (Fintraffic Digitraffic) sisältyvät samaan reitti-premium-ostoon kuin reittisuunnittelu ja 12 päivän tuuliennuste.</string>
+    <string name="ais_detail_last_seen">Viimeisin AIS-päivitys</string>
+    <string name="ais_last_seen_none">Ei signaalia</string>
+    <string name="ais_last_seen_just_now">Juuri nyt</string>
+    <string name="ais_last_seen_min">%1$d min sitten</string>
+    <string name="ais_last_seen_hours">%1$d h sitten</string>
+    <string name="ais_last_seen_days">%1$d pv sitten</string>
+    <string name="ais_detail_stale_hint">Yli 30 min vanha signaali — sijainti voi olla vanhentunut.</string>
     <string name="route_premium_buy_once">Osta kerralla — %1$s</string>
     <string name="route_premium_subscribe_monthly">Tilaa — %1$s / kk</string>
     <string name="route_premium_price_loading">…</string>

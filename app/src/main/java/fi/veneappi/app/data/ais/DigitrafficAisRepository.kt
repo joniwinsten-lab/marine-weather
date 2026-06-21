@@ -20,7 +20,8 @@ class DigitrafficAisRepository(
     /** Full fetch: locations + vessel metadata (slow — use on first load). */
     suspend fun fetchAllVessels(): List<AisVesselDisplay> =
         withContext(Dispatchers.IO) {
-            val locations = fetchLocations()
+            val fetchedAtMs = System.currentTimeMillis()
+            val locations = fetchLocations(fetchedAtMs)
             val metadataByMmsi =
                 runCatching { fetchVesselMetadata() }.getOrElse { emptyMap() }
             locations.map { it.toDisplay(metadataByMmsi[it.mmsi]) }
@@ -29,10 +30,11 @@ class DigitrafficAisRepository(
     /** Positions only (~7 MB) — for 60 s polling without re-downloading metadata. */
     suspend fun fetchLocationUpdates(): List<AisVesselDisplay> =
         withContext(Dispatchers.IO) {
-            fetchLocations().map { it.toDisplay(meta = null) }
+            val fetchedAtMs = System.currentTimeMillis()
+            fetchLocations(fetchedAtMs).map { it.toDisplay(meta = null) }
         }
 
-    private fun fetchLocations(): List<AisLocationRecord> {
+    private fun fetchLocations(fetchedAtMs: Long): List<AisLocationRecord> {
         val url = "${AisConfig.DIGITRAFFIC_BASE_URL}/locations"
         val data = http.getBytes(url)
         val collection = json.decodeFromString<AisLocationFeatureCollection>(data.decodeToString())
@@ -50,6 +52,7 @@ class DigitrafficAisRepository(
                 cogDeg = sanitizeCog(feature.properties.cog),
                 headingDeg = sanitizeHeading(feature.properties.heading),
                 navStatusCode = feature.properties.navStat,
+                lastSeenEpochMs = resolveLastSeenEpochMs(feature.properties, fetchedAtMs),
             )
         }
     }
@@ -70,6 +73,14 @@ class DigitrafficAisRepository(
         if (heading == null || heading !in 0..359) return null
         return heading
     }
+
+    private fun resolveLastSeenEpochMs(
+        properties: AisLocationProperties,
+        fetchedAtMs: Long,
+    ): Long =
+        AisMqttMessageParser.normalizeEpochMs(properties.timestampExternal)
+            ?: AisMqttMessageParser.normalizeEpochMs(properties.timestamp?.toLong())
+            ?: fetchedAtMs
 }
 
 private fun AisLocationRecord.toDisplay(meta: AisVesselMetaRecord?): AisVesselDisplay =
@@ -88,6 +99,7 @@ private fun AisLocationRecord.toDisplay(meta: AisVesselMetaRecord?): AisVesselDi
         sogKn = sogKn,
         cogDeg = cogDeg,
         headingDeg = headingDeg,
+        lastSeenEpochMs = lastSeenEpochMs,
     )
 
 @Serializable
@@ -113,6 +125,8 @@ private data class AisLocationProperties(
     val cog: Double? = null,
     val heading: Int? = null,
     @SerialName("navStat") val navStat: Int? = null,
+    val timestampExternal: Long? = null,
+    val timestamp: Long? = null,
 )
 
 private data class AisLocationRecord(
@@ -123,6 +137,7 @@ private data class AisLocationRecord(
     val cogDeg: Double?,
     val headingDeg: Int?,
     val navStatusCode: Int?,
+    val lastSeenEpochMs: Long,
 )
 
 @Serializable

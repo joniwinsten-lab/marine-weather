@@ -54,6 +54,7 @@ import fi.veneappi.app.data.radar.RadarDisplayKind
 import fi.veneappi.app.domain.GeoMath
 import fi.veneappi.app.domain.Harbor
 import fi.veneappi.app.domain.ais.AisVesselDisplay
+import fi.veneappi.app.domain.ais.AisVesselMotion
 import fi.veneappi.app.domain.ais.MapViewport
 import kotlin.math.hypot
 import kotlinx.coroutines.delay
@@ -118,6 +119,9 @@ private const val AIS_POINT_LAYER_ID = "veneappi_ais_point_layer"
 private const val AIS_VECTOR_SOURCE_ID = "veneappi_ais_vector_source"
 private const val AIS_VECTOR_LAYER_ID = "veneappi_ais_vector_layer"
 private const val AIS_HIT_RADIUS_PX = 32f
+private const val AIS_STATE_PROPERTY = "state"
+private const val AIS_STATE_ACTIVE = "active"
+private const val AIS_STATE_STALE = "stale"
 
 private const val DEFAULT_ZOOM = 12.5
 /** Storm radar opens at scale bar target: 1 cm on screen ≈ 4 nm. */
@@ -314,12 +318,15 @@ fun MapPane(
                             }
                             if (latestAisEnabled && latestAisVessels.isNotEmpty()) {
                                 val screen = map.projection.toScreenLocation(latLng)
+                                val nowMs = System.currentTimeMillis()
                                 var best: Pair<AisVesselDisplay, Float>? = null
                                 for (vessel in latestAisVessels) {
-                                    if (!vessel.latitude.isFinite() || !vessel.longitude.isFinite()) continue
+                                    val pos =
+                                        AisVesselMotion.displayPosition(vessel, nowMs)
+                                            ?: continue
                                     val pt =
                                         map.projection.toScreenLocation(
-                                            LatLng(vessel.latitude, vessel.longitude),
+                                            LatLng(pos.first, pos.second),
                                         )
                                     val dist = hypot(pt.x - screen.x, pt.y - screen.y)
                                     if (dist > AIS_HIT_RADIUS_PX) continue
@@ -1144,23 +1151,11 @@ private fun updateAisLayer(
         return
     }
 
+    val nowMs = System.currentTimeMillis()
     val pointFeatures =
-        vessels.mapNotNull { vessel ->
-            if (!vessel.latitude.isFinite() || !vessel.longitude.isFinite()) return@mapNotNull null
-            Feature.fromGeometry(Point.fromLngLat(vessel.longitude, vessel.latitude))
-        }
+        vessels.mapNotNull { vessel -> aisPointFeature(vessel, nowMs) }
     val vectorFeatures =
-        vessels.mapNotNull { vessel ->
-            val end = vessel.courseVectorEnd() ?: return@mapNotNull null
-            val line =
-                LineString.fromLngLats(
-                    listOf(
-                        Point.fromLngLat(vessel.longitude, vessel.latitude),
-                        Point.fromLngLat(end.second, end.first),
-                    ),
-                )
-            Feature.fromGeometry(line)
-        }
+        vessels.mapNotNull { vessel -> aisVectorFeature(vessel, nowMs) }
 
     val pointCollection = FeatureCollection.fromFeatures(pointFeatures)
     val vectorCollection = FeatureCollection.fromFeatures(vectorFeatures)
@@ -1169,16 +1164,11 @@ private fun updateAisLayer(
 
     if (existingPoints != null) {
         existingPoints.setGeoJson(pointCollection)
+        (style.getLayer(AIS_POINT_LAYER_ID) as? CircleLayer)?.setProperties(*aisPointLayerProperties())
     } else if (pointFeatures.isNotEmpty()) {
         style.addSource(GeoJsonSource(AIS_POINT_SOURCE_ID, pointCollection))
         val pointLayer =
-            CircleLayer(AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID).withProperties(
-                PropertyFactory.circleRadius(9f),
-                PropertyFactory.circleColor("#007AF2"),
-                PropertyFactory.circleOpacity(1f),
-                PropertyFactory.circleStrokeColor("#FFFFFF"),
-                PropertyFactory.circleStrokeWidth(2.5f),
-            )
+            CircleLayer(AIS_POINT_LAYER_ID, AIS_POINT_SOURCE_ID).withProperties(*aisPointLayerProperties())
         if (style.getLayer(AIS_VECTOR_LAYER_ID) != null) {
             style.addLayerAbove(pointLayer, AIS_VECTOR_LAYER_ID)
         } else {
@@ -1190,19 +1180,91 @@ private fun updateAisLayer(
         removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
     } else if (existingVectors != null) {
         existingVectors.setGeoJson(vectorCollection)
+        (style.getLayer(AIS_VECTOR_LAYER_ID) as? LineLayer)?.setProperties(*aisVectorLayerProperties())
     } else {
         removeIfPresent(style, AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID)
         style.addSource(GeoJsonSource(AIS_VECTOR_SOURCE_ID, vectorCollection))
         val vectorLayer =
-            LineLayer(AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID).withProperties(
-                PropertyFactory.lineColor("#40B8FF"),
-                PropertyFactory.lineWidth(4f),
-                PropertyFactory.lineOpacity(0.92f),
-                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
-            )
+            LineLayer(AIS_VECTOR_LAYER_ID, AIS_VECTOR_SOURCE_ID).withProperties(*aisVectorLayerProperties())
         insertAisLayerBelowPin(style, vectorLayer)
     }
 }
+
+private fun aisPointFeature(
+    vessel: AisVesselDisplay,
+    nowMs: Long,
+): Feature? {
+    val pos = AisVesselMotion.displayPosition(vessel, nowMs) ?: return null
+    val (lat, lon) = pos
+    if (!lat.isFinite() || !lon.isFinite()) return null
+    val active = AisVesselMotion.isActive(vessel, nowMs)
+    return Feature.fromGeometry(Point.fromLngLat(lon, lat)).also { feature ->
+        feature.addStringProperty(AIS_STATE_PROPERTY, if (active) AIS_STATE_ACTIVE else AIS_STATE_STALE)
+    }
+}
+
+private fun aisVectorFeature(
+    vessel: AisVesselDisplay,
+    nowMs: Long,
+): Feature? {
+    val pos = AisVesselMotion.displayPosition(vessel, nowMs) ?: return null
+    val end = AisVesselMotion.courseVectorEndAt(vessel, nowMs) ?: return null
+    val active = AisVesselMotion.isActive(vessel, nowMs)
+    val line =
+        LineString.fromLngLats(
+            listOf(
+                Point.fromLngLat(pos.second, pos.first),
+                Point.fromLngLat(end.second, end.first),
+            ),
+        )
+    return Feature.fromGeometry(line).also { feature ->
+        feature.addStringProperty(AIS_STATE_PROPERTY, if (active) AIS_STATE_ACTIVE else AIS_STATE_STALE)
+    }
+}
+
+private fun aisStateActiveExpression(): Expression =
+    Expression.eq(Expression.get(AIS_STATE_PROPERTY), Expression.literal(AIS_STATE_ACTIVE))
+
+private fun aisPointLayerProperties() =
+    arrayOf(
+        PropertyFactory.circleRadius(9f),
+        PropertyFactory.circleColor(
+            Expression.switchCase(
+                aisStateActiveExpression(),
+                Expression.rgb(0, 122, 242),
+                Expression.rgb(158, 158, 158),
+            ),
+        ),
+        PropertyFactory.circleOpacity(
+            Expression.switchCase(
+                aisStateActiveExpression(),
+                Expression.literal(1f),
+                Expression.literal(0.62f),
+            ),
+        ),
+        PropertyFactory.circleStrokeColor("#FFFFFF"),
+        PropertyFactory.circleStrokeWidth(2.5f),
+    )
+
+private fun aisVectorLayerProperties() =
+    arrayOf(
+        PropertyFactory.lineColor(
+            Expression.switchCase(
+                aisStateActiveExpression(),
+                Expression.rgb(64, 184, 255),
+                Expression.rgb(120, 144, 156),
+            ),
+        ),
+        PropertyFactory.lineWidth(4f),
+        PropertyFactory.lineOpacity(
+            Expression.switchCase(
+                aisStateActiveExpression(),
+                Expression.literal(0.92f),
+                Expression.literal(0.5f),
+            ),
+        ),
+        PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+    )
 
 private fun insertAisLayerBelowPin(
     style: Style,

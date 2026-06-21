@@ -101,7 +101,7 @@ Billing intent (store IDs differ by platform):
 | WIND-01 | 12-day extended wind outlook | Premium | sync | sync | | 2026-05-24 |
 | AIS-01 | Digitraffic AIS REST (~60s poll) | Premium | sync | sync | Viewport reload | 2026-05-24 |
 | AIS-02 | AIS vessel detail sheet | Premium | sync | sync | | 2026-05-24 |
-| AIS-03 | AIS MQTT live stream | Premium | deferred | deferred | REST-only for now | 2026-05-24 |
+| AIS-03 | AIS MQTT live stream | Premium | android-only | deferred | Viewport MQTT + dead reckoning map (2 min) | 2026-06-09 |
 | OFF-01 | Offline / stale banner (all tabs) | Free | sync | sync | NWPath + cache age | 2026-05-24 |
 | OFF-02 | Offline route pack (tiles+weather+marine) | Premium | sync | sync | No Traficom tiles in pack | 2026-05-24 |
 | BILL-01 | Lifetime + monthly IAP | Premium | sync | partial | Play live; ASC products not live | 2026-05-24 |
@@ -133,6 +133,8 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-09 | android | AIS-03 | Phase 2: dead reckoning on map, 1 s live tick, stale styling + last-seen sheet |
+| 2026-06-09 | android | AIS-03 | Phase 1: Digitraffic MQTT (viewport MMSI), Live chip, REST fallback |
 | 2026-06-20 | android | GROWTH-01 | Harden in-app review: check eligibility when splash ends; 0.3.3 |
 | 2026-06-17 | android | MAP-06 | Release 0.3.2 AAB (versionCode 28): fresh GPS on my-location + startup |
 | 2026-06-16 | android | GROWTH-01 | Play In-App Review after engagement thresholds; non-blocking, friends build disabled |

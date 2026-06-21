@@ -25,6 +25,7 @@ import fi.veneappi.app.R
 import fi.veneappi.app.domain.Harbor
 import fi.veneappi.app.domain.ais.AisVesselDisplay
 import fi.veneappi.app.ui.map.MapPane
+import kotlinx.coroutines.delay
 
 /**
  * Map pane plus AIS toggle chip — optional layer; defaults keep existing maps unchanged.
@@ -49,6 +50,7 @@ fun MapWithAisChrome(
 ) {
     val vessels by aisViewModel.vessels.collectAsState()
     val aisEnabled by aisViewModel.isEnabled.collectAsState()
+    val streamMode by aisViewModel.streamMode.collectAsState()
     val renderGen by aisViewModel.mapRenderGeneration.collectAsState()
     var showPremiumHint by remember { mutableStateOf(false) }
     var selectedVessel by remember { mutableStateOf<AisVesselDisplay?>(null) }
@@ -77,6 +79,14 @@ fun MapWithAisChrome(
             }
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(aisEnabled, isPremium, streamMode) {
+        if (!aisEnabled || !isPremium || streamMode != AisStreamMode.Live) return@LaunchedEffect
+        while (true) {
+            delay(1_000L)
+            aisViewModel.tickLiveMapRender()
+        }
     }
 
     Box(modifier = modifier) {

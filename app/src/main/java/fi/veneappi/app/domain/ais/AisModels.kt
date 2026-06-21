@@ -64,6 +64,8 @@ data class AisVesselDisplay(
     val sogKn: Double?,
     val cogDeg: Double?,
     val headingDeg: Int?,
+    /** Last AIS fix time (epoch ms). Used for stale detection and dead reckoning. */
+    val lastSeenEpochMs: Long? = null,
 ) {
     val displayLabel: String
         get() {

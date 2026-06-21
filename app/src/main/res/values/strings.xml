@@ -17,6 +17,13 @@
     <string name="ais_detail_speed">Speed (SOG)</string>
     <string name="ais_detail_cog">Course (COG)</string>
     <string name="ais_detail_heading">Heading</string>
+    <string name="ais_detail_last_seen">Last AIS update</string>
+    <string name="ais_last_seen_none">No signal</string>
+    <string name="ais_last_seen_just_now">Just now</string>
+    <string name="ais_last_seen_min">%1$d min ago</string>
+    <string name="ais_last_seen_hours">%1$d h ago</string>
+    <string name="ais_last_seen_days">%1$d d ago</string>
+    <string name="ais_detail_stale_hint">No AIS signal for over 30 minutes — position may be outdated.</string>
     <string name="ais_detail_vector_hint">Blue line: %1$d min at current speed (from AIS COG/SOG, not official track).</string>
     <string name="ais_detail_callsign">Call sign</string>
     <string name="ais_detail_type">Ship type</string>
