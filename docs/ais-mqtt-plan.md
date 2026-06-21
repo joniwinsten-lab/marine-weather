@@ -101,9 +101,11 @@ ON_PAUSE → disconnect MQTT (jo olemassa setSceneActive)
 - [x] Viimeisin AIS -rivi detail-sheetissä
 - [ ] Fyysinen laite -testi (manuaalinen)
 
-### Phase 3 — Seuranta-välilehti (myöhemmin, erillinen feature)
+### Phase 3 — Seuranta-välilehti (seuraava iso feature)
 
-- DataStore watchlist, oma UI — **ei osa AIS-03 MVP:tä**
+Katso **`docs/ais-track-tab-plan.md`** — watchlist-tab, web-pariteetti, jaettu MQTT-coordinator.
+
+- DataStore watchlist, oma UI — **ei osa AIS-03 MVP:tä** (erillinen AIS-04)
 
 ### Phase 4 — iOS
 

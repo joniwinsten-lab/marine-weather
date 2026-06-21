@@ -81,8 +81,8 @@ fun MapWithAisChrome(
         onDispose { lifecycle.removeObserver(observer) }
     }
 
-    LaunchedEffect(aisEnabled, isPremium, streamMode) {
-        if (!aisEnabled || !isPremium || streamMode != AisStreamMode.Live) return@LaunchedEffect
+    LaunchedEffect(aisEnabled, isPremium) {
+        if (!aisEnabled || !isPremium) return@LaunchedEffect
         while (true) {
             delay(1_000L)
             aisViewModel.tickLiveMapRender()

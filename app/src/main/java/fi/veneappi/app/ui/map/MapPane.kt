@@ -164,6 +164,12 @@ fun MapPane(
     showZoomButtons: Boolean = true,
     onMyLocation: (() -> Unit)? = null,
     mapRecenterSignal: Long = 0L,
+    /** When set, [mapRecenterSignal] animates here instead of [latitude]/[longitude]. */
+    mapRecenterTargetLatitude: Double? = null,
+    mapRecenterTargetLongitude: Double? = null,
+    mapRecenterTargetZoom: Double? = null,
+    /** Forecast location pin; off for AIS-only maps (e.g. Seuranta tab). */
+    showForecastPin: Boolean = true,
     aisVessels: List<AisVesselDisplay> = emptyList(),
     aisEnabled: Boolean = false,
     aisRenderGeneration: Int = 0,
@@ -206,6 +212,7 @@ fun MapPane(
     val latestAisEnabled by rememberUpdatedState(aisEnabled)
     val latestOnAisSelected by rememberUpdatedState(onAisVesselSelected)
     val latestOnViewportChange by rememberUpdatedState(onMapViewportChange)
+    val latestShowForecastPin by rememberUpdatedState(showForecastPin)
 
     val zoomInDesc = stringResource(R.string.map_zoom_in)
     val zoomOutDesc = stringResource(R.string.map_zoom_out)
@@ -303,6 +310,7 @@ fun MapPane(
                                 longitude = latestLon,
                                 traficomPlanningRasterEnabled = latestTraficom,
                                 harbors = latestHarbors,
+                                showForecastPin = latestShowForecastPin,
                             )
                             styleReady = true
                         }
@@ -362,7 +370,7 @@ fun MapPane(
                         try {
                             ensureStormRadar(style, overlay)
                             updateLightningLayer(style, strikes)
-                            updatePin(style, latitude, longitude)
+                            updatePin(style, latitude, longitude, showForecastPin)
                         } catch (e: Exception) {
                             Log.e(TAG, "Storm map style update failed", e)
                         }
@@ -370,7 +378,7 @@ fun MapPane(
                 }
             }
         } else {
-            LaunchedEffect(mapRef, traficomPlanningRasterEnabled, routeGeometry, routeStart, routeEnd, latitude, longitude) {
+            LaunchedEffect(mapRef, traficomPlanningRasterEnabled, routeGeometry, routeStart, routeEnd, latitude, longitude, showForecastPin) {
                 val map = mapRef ?: return@LaunchedEffect
                 val traficomToggled =
                     prevTraficomRaster != null && prevTraficomRaster != traficomPlanningRasterEnabled
@@ -385,7 +393,7 @@ fun MapPane(
                         forceReorder = traficomToggled || traficomLayerChanged,
                     )
                     updateRouteMarkers(style, routeStart, routeEnd)
-                    updatePin(style, latitude, longitude)
+                    updatePin(style, latitude, longitude, showForecastPin)
                 }
             }
             LaunchedEffect(mapRef, styleReady, stormRadarOverlay, lightningStrikes) {
@@ -401,9 +409,9 @@ fun MapPane(
                     }
                 }
             }
-            LaunchedEffect(mapRef, latitude, longitude) {
+            LaunchedEffect(mapRef, latitude, longitude, showForecastPin) {
                 val map = mapRef ?: return@LaunchedEffect
-                map.getStyle { style -> updatePin(style, latitude, longitude) }
+                map.getStyle { style -> updatePin(style, latitude, longitude, showForecastPin) }
             }
             LaunchedEffect(mapRef, harbors) {
                 val map = mapRef ?: return@LaunchedEffect
@@ -540,7 +548,7 @@ fun MapPane(
         }
     }
 
-    LaunchedEffect(mapRef, styleReady, routeGeometry, latitude, longitude, mapRecenterSignal, isStormMap) {
+    LaunchedEffect(mapRef, styleReady, routeGeometry, latitude, longitude, mapRecenterSignal, mapRecenterTargetLatitude, mapRecenterTargetLongitude, mapRecenterTargetZoom, isStormMap) {
         val map = mapRef ?: return@LaunchedEffect
         if (!styleReady && isStormMap) return@LaunchedEffect
         val stormZoom =
@@ -552,11 +560,15 @@ fun MapPane(
         if (mapRecenterSignal > lastRecenterSignalHandled) {
             lastRecenterSignalHandled = mapRecenterSignal
             mapView.post {
-                val target = LatLng(latitude, longitude)
+                val targetLat = mapRecenterTargetLatitude ?: latitude
+                val targetLon = mapRecenterTargetLongitude ?: longitude
+                val target = LatLng(targetLat, targetLon)
                 val z = map.cameraPosition.zoom
                 val minZoom = if (isStormMap) STORM_MAP_MIN_ZOOM else MIN_KEEP_ZOOM
                 val keepZoom =
-                    if (isStormMap && stormZoom != null) {
+                    if (mapRecenterTargetZoom != null) {
+                        mapRecenterTargetZoom.coerceIn(minZoom, 18.0)
+                    } else if (isStormMap && stormZoom != null) {
                         stormZoom
                     } else if (z.isFinite() && z >= 2f) {
                         z.toDouble().coerceIn(minZoom, 18.0)
@@ -625,12 +637,13 @@ private fun applyAllMapOverlays(
     longitude: Double,
     traficomPlanningRasterEnabled: Boolean,
     harbors: List<Harbor>,
+    showForecastPin: Boolean = true,
 ) {
     ensureTraficomRaster(style, traficomPlanningRasterEnabled)
     val rasterAnchor = bottomRasterAnchorLayerId(style)
     updateRoute(style, routeGeometry, insertAboveLayerId = rasterAnchor)
     updateRouteMarkers(style, routeStart, routeEnd)
-    updatePin(style, latitude, longitude)
+    updatePin(style, latitude, longitude, showForecastPin)
     updateHarborLayer(style, harbors)
 }
 
@@ -968,7 +981,12 @@ private fun updatePin(
     style: Style,
     lat: Double,
     lon: Double,
+    visible: Boolean = true,
 ) {
+    if (!visible) {
+        removeIfPresent(style, PIN_LAYER_ID, PIN_SOURCE_ID)
+        return
+    }
     val feature = Feature.fromGeometry(Point.fromLngLat(lon, lat))
     val existing = style.getSource(PIN_SOURCE_ID) as? GeoJsonSource
     if (existing == null) {

@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.DirectionsBoat
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Thunderstorm
 import androidx.compose.material.icons.outlined.Waves
@@ -106,6 +107,8 @@ import fi.veneappi.app.export.formatRouteSlotForPdf
 import fi.veneappi.app.export.routeExportCacheDir
 import fi.veneappi.app.export.shareStream
 import fi.veneappi.app.ui.ais.AisMapViewModel
+import fi.veneappi.app.ui.ais.AisTrackPane
+import fi.veneappi.app.ui.ais.AisTrackViewModel
 import fi.veneappi.app.ui.ais.MapWithAisChrome
 import fi.veneappi.app.ui.map.MapPane
 import fi.veneappi.app.ui.theme.VeneappiTheme
@@ -124,6 +127,7 @@ import kotlin.math.roundToInt
 private enum class MainDest {
     COMPARE,
     ROUTE,
+    TRACK,
     EXTENDED_WIND,
     MARINE_TEXT,
     STORM_RADAR,
@@ -225,7 +229,22 @@ fun VeneappiRoot(
         app.appContainer.userPreferencesRepository.routeTrialWasStarted.collectAsState(initial = false)
     val scope = rememberCoroutineScope()
     val aisViewModel: AisMapViewModel =
-        viewModel(factory = AisMapViewModel.factory(app.appContainer.digitrafficAisRepository))
+        viewModel(
+            factory =
+                AisMapViewModel.factory(
+                    app.appContainer.digitrafficAisRepository,
+                    app.appContainer.aisMqttCoordinator,
+                ),
+        )
+    val trackViewModel: AisTrackViewModel =
+        viewModel(
+            factory =
+                AisTrackViewModel.factory(
+                    app.appContainer.digitrafficAisRepository,
+                    app.appContainer.aisWatchlistRepository,
+                    app.appContainer.aisMqttCoordinator,
+                ),
+        )
     var destination by remember { mutableStateOf(MainDest.COMPARE) }
     var showAttribution by remember { mutableStateOf(false) }
     var traficomPlanningChart by remember { mutableStateOf(true) }
@@ -284,6 +303,7 @@ fun VeneappiRoot(
                         vm.setRoutePickMode(RoutePickMode.None)
                     },
                     onRoute = { destination = MainDest.ROUTE },
+                    onTrack = { destination = MainDest.TRACK },
                     onWind = { destination = MainDest.EXTENDED_WIND },
                     onMarine = { destination = MainDest.MARINE_TEXT },
                     onStorm = { destination = MainDest.STORM_RADAR },
@@ -357,6 +377,75 @@ fun VeneappiRoot(
                                             ),
                                         )
                                     },
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else {
+                                RoutePremiumPaywall(
+                                    billingReady = billingReady,
+                                    productsUnavailable = routePremiumProductsUnavailable,
+                                    productQueryFinished = routePremiumProductQueryFinished,
+                                    billingDiagnostic = routePremiumBillingDiagnostic,
+                                    inAppProduct = routePremiumInApp,
+                                    subscriptionProduct = routePremiumSub,
+                                    showTrialOffer = !routeTrialWasStarted,
+                                    onStartTrial = {
+                                        scope.launch {
+                                            val ok =
+                                                app.appContainer.userPreferencesRepository.startRouteTrialIfEligible()
+                                            if (!ok) {
+                                                Toast.makeText(
+                                                    context,
+                                                    context.getString(R.string.route_premium_trial_already_used),
+                                                    Toast.LENGTH_SHORT,
+                                                ).show()
+                                            }
+                                        }
+                                    },
+                                    onBuyLifetime = {
+                                        val started =
+                                            app.appContainer.billingManager.launchRoutePremiumInAppPurchase(activity)
+                                        if (!started) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.route_premium_purchase_unavailable),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        }
+                                    },
+                                    onSubscribeMonthly = {
+                                        val started =
+                                            app.appContainer.billingManager.launchRoutePremiumSubscriptionPurchase(
+                                                activity,
+                                            )
+                                        if (!started) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.route_premium_purchase_unavailable),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        }
+                                    },
+                                    onRestorePurchases = {
+                                        app.appContainer.billingManager.syncPurchasesAndAcknowledge()
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
+                                    },
+                                    onBackToMap = {
+                                        destination = MainDest.COMPARE
+                                        vm.setRoutePickMode(RoutePickMode.None)
+                                    },
+                                    onRefreshProducts = {
+                                        app.appContainer.billingManager.refreshRouteProductDetails()
+                                    },
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
+                        MainDest.TRACK ->
+                            if (isRoutePremium) {
+                                AisTrackPane(
+                                    latitude = ui.latitude,
+                                    longitude = ui.longitude,
+                                    viewModel = trackViewModel,
+                                    isPremium = true,
                                     modifier = Modifier.fillMaxSize(),
                                 )
                             } else {
@@ -565,6 +654,18 @@ fun VeneappiRoot(
                             label = { NavPremiumStackLabel(stringResource(R.string.nav_route)) },
                         )
                         NavigationBarItem(
+                            selected = destination == MainDest.TRACK,
+                            onClick = { destination = MainDest.TRACK },
+                            icon = {
+                                NavPremiumBadgeIcon(
+                                    baseImageVector = Icons.Outlined.DirectionsBoat,
+                                    baseContentDescription = stringResource(R.string.track_nav_cd),
+                                    isUnlocked = isRoutePremium,
+                                )
+                            },
+                            label = { NavPremiumStackLabel(stringResource(R.string.nav_track)) },
+                        )
+                        NavigationBarItem(
                             selected = destination == MainDest.EXTENDED_WIND,
                             onClick = { destination = MainDest.EXTENDED_WIND },
                             icon = {
@@ -710,6 +811,7 @@ private fun ScrollableDestinationRail(
     compactLabels: Boolean,
     onCompare: () -> Unit,
     onRoute: () -> Unit,
+    onTrack: () -> Unit,
     onWind: () -> Unit,
     onMarine: () -> Unit,
     onStorm: () -> Unit,
@@ -765,6 +867,25 @@ private fun ScrollableDestinationRail(
                 label = {
                     NavPremiumStackLabel(
                         stringResource(R.string.nav_route),
+                        forRail = true,
+                        showLabel = showLabels,
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.TRACK,
+                onClick = onTrack,
+                showLabel = showLabels,
+                icon = {
+                    NavPremiumBadgeIcon(
+                        baseImageVector = Icons.Outlined.DirectionsBoat,
+                        baseContentDescription = stringResource(R.string.track_nav_cd),
+                        isUnlocked = isRoutePremium,
+                    )
+                },
+                label = {
+                    NavPremiumStackLabel(
+                        stringResource(R.string.nav_track),
                         forRail = true,
                         showLabel = showLabels,
                     )

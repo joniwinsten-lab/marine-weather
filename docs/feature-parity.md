@@ -40,6 +40,7 @@ Whenever you change **user-facing** behaviour, premium gates, APIs, offline rule
 | Route planning + weather along route | | ✓ |
 | 12-day wind outlook | | ✓ |
 | AIS overlay (Digitraffic) | | ✓ |
+| AIS vessel watchlist (Seuranta tab) | | ✓ |
 | Route line on Compare map | | ✓ |
 | Offline route pack | | ✓ |
 
@@ -71,7 +72,7 @@ Billing intent (store IDs differ by platform):
 
 | ID | Feature | Tier | Android | iOS | Notes | Updated |
 |----|---------|------|---------|-----|-------|---------|
-| NAV-01 | 5 tabs: Compare, Route, 12-day wind, Marine weather, Rain radar | — | sync | sync | Premium badges on Route + 12-day | 2026-06-09 |
+| NAV-01 | 6 tabs: Compare, Route, Track, 12-day wind, Marine weather, Rain radar | — | android-only | sync | Premium badges on Route + Track + 12-day; iOS still 5 tabs | 2026-06-21 |
 | MAP-01 | OpenFreeMap Liberty basemap | Free | sync | sync | Same style URL | 2026-05-24 |
 | MAP-02 | Traficom nautical WMTS (`Merikarttasarjat public`) | Free | sync | sync | zoom 5–15, bounds 17–32°E, 58–71°N | 2026-05-24 |
 | MAP-03 | Forecast location pin (long-press) | Free | sync | sync | | 2026-05-24 |
@@ -102,6 +103,7 @@ Billing intent (store IDs differ by platform):
 | AIS-01 | Digitraffic AIS REST (~60s poll) | Premium | sync | sync | Viewport reload | 2026-05-24 |
 | AIS-02 | AIS vessel detail sheet | Premium | sync | sync | | 2026-05-24 |
 | AIS-03 | AIS MQTT live stream | Premium | android-only | deferred | Viewport MQTT + dead reckoning map (2 min) | 2026-06-09 |
+| AIS-04 | AIS watchlist / Seuranta tab | Premium | android-only | deferred | DataStore watchlist (max 50), Hae browse, shared MQTT coordinator | 2026-06-21 |
 | OFF-01 | Offline / stale banner (all tabs) | Free | sync | sync | NWPath + cache age | 2026-05-24 |
 | OFF-02 | Offline route pack (tiles+weather+marine) | Premium | sync | sync | No Traficom tiles in pack | 2026-05-24 |
 | BILL-01 | Lifetime + monthly IAP | Premium | sync | partial | Play live; ASC products not live | 2026-05-24 |
@@ -133,6 +135,8 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-21 | android | AIS-03 | Viewport pan: zoom-aware refresh + radius REST; dead reckoning tick without Live MQTT |
+| 2026-06-21 | android | NAV-01 | 6th nav tab Track (Seuranta), premium-gated |
 | 2026-06-09 | android | AIS-03 | Phase 2: dead reckoning on map, 1 s live tick, stale styling + last-seen sheet |
 | 2026-06-09 | android | AIS-03 | Phase 1: Digitraffic MQTT (viewport MMSI), Live chip, REST fallback |
 | 2026-06-20 | android | GROWTH-01 | Harden in-app review: check eligibility when splash ends; 0.3.3 |

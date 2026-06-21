@@ -46,6 +46,39 @@ data class MapViewport(
                 centerLatitude = latitude,
             )
     }
+
+    fun spanMetersNorthSouth(): Double {
+        val minLat = minOf(southLatitude, northLatitude)
+        val maxLat = maxOf(southLatitude, northLatitude)
+        return GeoMath.haversineMeters(minLat, centerLongitude, maxLat, centerLongitude)
+    }
+
+    fun spanMetersEastWest(): Double {
+        val minLon = minOf(southLongitude, northLongitude)
+        val maxLon = maxOf(southLongitude, northLongitude)
+        return GeoMath.haversineMeters(centerLatitude, minLon, centerLatitude, maxLon)
+    }
+
+    fun centerMovedMeters(other: MapViewport): Double =
+        GeoMath.haversineMeters(
+            centerLatitude,
+            centerLongitude,
+            other.centerLatitude,
+            other.centerLongitude,
+        )
+
+    /** Radius for Digitraffic `locations?latitude=&longitude=&radius=` covering visible bounds. */
+    fun queryRadiusKm(): Int {
+        val radiusM = maxOf(spanMetersNorthSouth(), spanMetersEastWest()) / 2.0 * 1.15
+        return (radiusM / 1000.0).toInt().coerceIn(8, 80)
+    }
+
+    /** True when the map moved enough to warrant a new AIS fetch (zoom-aware, not fixed degrees). */
+    fun regionChangedSignificantly(previous: MapViewport): Boolean {
+        if (kotlin.math.abs(zoom - previous.zoom) > 0.25) return true
+        val spanM = spanMetersNorthSouth().coerceAtLeast(500.0)
+        return centerMovedMeters(previous) > spanM * 0.08
+    }
 }
 
 /** Merged AIS position + vessel metadata for map display and detail sheet. */
