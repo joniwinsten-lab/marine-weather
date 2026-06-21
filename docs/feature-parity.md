@@ -114,7 +114,7 @@ Billing intent (store IDs differ by platform):
 | DIST-01 | Store distribution | n/a | sync | android-only | Play published; App Store pending dev account | 2026-05-24 |
 | PLAT-01 | Target devices | n/a | partial | exception | Android 0.3.1: phones + tablets; iOS iPad-only | 2026-06-16 |
 | PLAT-02 | OSRM demo routing | n/a | exception | n/a | Android debug only, disabled in release | 2026-05-24 |
-| GROWTH-01 | Play in-app review prompt | Free | android-only | deferred | After 3 launches + 2 successful weather loads; once per install; friends build off | 2026-06-16 |
+| GROWTH-01 | Play in-app review prompt | Free | android-only | deferred | 3 launches + 2 weather loads; prompt after splash; once per install; friends off | 2026-06-20 |
 
 ### Quick audit
 
@@ -133,6 +133,7 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-06-20 | android | GROWTH-01 | Harden in-app review: check eligibility when splash ends; 0.3.3 |
 | 2026-06-17 | android | MAP-06 | Release 0.3.2 AAB (versionCode 28): fresh GPS on my-location + startup |
 | 2026-06-16 | android | GROWTH-01 | Play In-App Review after engagement thresholds; non-blocking, friends build disabled |
 | 2026-06-16 | android | PLAT-01 | Play store listing EN: phones + tablets, portrait/landscape (0.3.1) |

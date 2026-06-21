@@ -64,7 +64,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.first
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.Modifier
@@ -156,10 +158,12 @@ fun VeneappiApp() {
                 }
             }
 
-        LaunchedEffect(vm, showSplashText) {
-            if (showSplashText) return@LaunchedEffect
-            app.appContainer.playInAppReviewCoordinator.reviewEligible.collect {
-                app.appContainer.playInAppReviewCoordinator.requestReviewFlow(activity)
+        LaunchedEffect(vm) {
+            snapshotFlow { showSplashText }.first { !it }
+            val coordinator = app.appContainer.playInAppReviewCoordinator
+            coordinator.onAppUiReady(activity)
+            coordinator.reviewEligible.collect {
+                coordinator.requestReviewFlow(activity)
             }
         }
 
