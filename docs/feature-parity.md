@@ -100,6 +100,7 @@ Billing intent (store IDs differ by platform):
 | RTE-05 | GPX export | Premium | sync | sync | | 2026-05-24 |
 | RTE-06 | Route plan PDF export | Premium | sync | sync | | 2026-05-24 |
 | RTE-07 | Contextual route hint banner on map | Premium | sync | sync | Capsule banner TopCenter; routeComputingFairway | 2026-06-21 |
+| RTE-08 | Route departure time + timed weather slots | Premium | deferred | deferred | Plan: `docs/route-departure-time-plan.md`; depart=NOW today | 2026-06-21 |
 | WIND-01 | 12-day extended wind outlook | Premium | sync | sync | | 2026-05-24 |
 | WTH-06 | Weather outlook tab (24h + 7d, source picker) | Free | sync | sync | `WeatherOutlookPane`; prefs weatherSource | 2026-06-21 |
 | AIS-01 | Digitraffic AIS REST (~60s poll) | Premium | sync | sync | Viewport reload | 2026-05-24 |
