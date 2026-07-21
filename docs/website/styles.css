@@ -193,48 +193,47 @@ a:hover {
 
 .btn-store {
   display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  min-width: 10.5rem;
-  padding: 0.7rem 1.15rem;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
   text-decoration: none !important;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.btn-store-play {
-  color: #fff !important;
-  background: linear-gradient(180deg, #3d8fd4 0%, #2a6fad 100%);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 16px rgba(42, 111, 173, 0.35);
+.btn-store:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
-.btn-store-play:hover {
-  filter: brightness(1.08);
+.btn-store img {
+  display: block;
+  height: 44px;
+  width: auto;
 }
 
-.btn-store-ios {
-  color: var(--muted);
-  background: var(--surface);
-  cursor: default;
+/* Google Play badge PNGs include extra transparent padding */
+.btn-store-play img {
+  height: 64px;
+  margin: -10px -8px;
 }
 
-.btn-store-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.25;
+.btn-store-ios img {
+  height: 44px;
 }
 
-.btn-store-sub {
-  margin-top: 0.2rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--muted);
+.hero-shot {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .hero-shot img {
   width: 100%;
+  max-width: 42rem;
   height: auto;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -317,9 +316,9 @@ a:hover {
 
 /* Gallery */
 .gallery {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.5rem;
 }
 
 .gallery figure {

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <title>Marine Weather — 10×15 cm esite (tulosta)</title>
+  <link rel="stylesheet" href="print-flyer.css" />
+  <style>
+    @page { size: 100mm 150mm; margin: 4mm; }
+    :root {
+      --page-w: 100mm;
+      --page-h: 150mm;
+      --page-margin: 4mm;
+      --section-gap: 2.5mm;
+      --title-size: 14pt;
+      --tagline-size: 7.5pt;
+      --chip-size: 6pt;
+      --qr-size: 20mm;
+      --icon-size: 18mm;
+      --shot-min-h: 18mm;
+      --base-font: 7pt;
+      --caption-size: 6pt;
+      --col-pad: 2.5mm;
+      --col-li-size: 6.5pt;
+      --col-title-size: 7pt;
+      --cta-pad: 2.5mm;
+      --cta-title-size: 8.5pt;
+      --cta-hint-size: 6.5pt;
+      --cta-icon-size: 16mm;
+      --badge-play-h: 7mm;
+      --badge-ios-h: 4.8mm;
+      --footer-size: 6pt;
+      --web-size: 7pt;
+    }
+  </style>
+</head>
+<body class="flyer flyer-fi size-10x15">
+  <p class="print-hint" aria-hidden="true">
+    <strong>10×15 cm (100×150 mm)</strong> — Postikortti / pieni esite. Tulosta: mukautettu koko 100×150 mm, pysty, marginaalit 0–4 mm, taustagrafiikat päällä.
+  </p>
+
+  <article class="sheet" aria-label="Marine Weather 10x15 esite">
+    <header class="flyer-header">
+      <h1>Marine Weather</h1>
+      <p class="tagline">Kartta, kolme sääpalvelua, reitti &amp; AIS.</p>
+      <ul class="hero-chips">
+        <li>Android &amp; iOS</li>
+        <li>MET · SMHI · FMI</li>
+      </ul>
+    </header>
+
+    <div class="flyer-main">
+      <section class="flyer-shots" aria-label="Kuvakaappaukset">
+        <figure class="shot">
+          <img src="../assets/screenshots/hero-compare.png" alt="Kartta ja sää" loading="eager" />
+          <figcaption>Kartta &amp; sää</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="../assets/screenshots/radar-lightning.png" alt="Sadetutka" loading="eager" />
+          <figcaption>Tutka</figcaption>
+        </figure>
+      </section>
+
+      <section class="flyer-grid" aria-label="Ominaisuudet">
+        <div class="flyer-col">
+          <h2>Ilmainen</h2>
+          <ul>
+            <li>Kartta &amp; tuuli</li>
+            <li>Tutka &amp; salama</li>
+            <li>Merisää 4 maata</li>
+          </ul>
+        </div>
+        <div class="flyer-col flyer-col-premium">
+          <h2>Premium</h2>
+          <ul>
+            <li>Reitti + sää</li>
+            <li>AIS-seuranta</li>
+            <li>Offline-reitti</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="flyer-cta" aria-label="Lataa sovellus">
+        <figure class="qr-block qr-block-edge">
+          <img class="qr-img" src="../assets/qr-play-store.png" width="80" height="80" alt="QR Google Play" />
+          <img class="store-badge store-badge-play" src="../assets/badges/google-play-fi.png" alt="LATAA SE Google Playsta" />
+        </figure>
+        <div class="cta-copy">
+          <img class="flyer-app-icon cta-app-icon" src="../assets/app-icon-128.png" width="64" height="64" alt="" />
+          <p class="qr-caption">Skannaa ja lataa</p>
+          <p class="qr-hint">safelight.fi/marine-weather</p>
+        </div>
+        <figure class="qr-block qr-block-edge">
+          <img class="qr-img" src="../assets/qr-app-store.png" width="80" height="80" alt="QR App Store" />
+          <img class="store-badge store-badge-ios" src="../assets/badges/app-store-fi.svg" alt="Lataa App Storesta" />
+        </figure>
+      </section>
+    </div>
+
+    <footer class="flyer-footer">
+      <p class="disclaimer">Vain suunnitteluapu — ei virallisia karttoja.</p>
+      <p class="contact">support@safelight.fi</p>
+    </footer>
+  </article>
+  <script>
+    if (location.search.includes("export=png")) {
+      document.body.classList.add("export-png");
+    }
+  </script>
+</body>
+</html>

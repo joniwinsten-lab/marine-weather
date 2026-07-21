@@ -9,8 +9,9 @@
     .legal { max-width: 42rem; margin: 0 auto; padding: 2rem 0 4rem; }
     .legal h1 { font-size: 1.5rem; }
     .legal h2 { font-size: 1.1rem; margin-top: 1.75rem; }
+    .legal h3 { font-size: 1rem; margin-top: 1.25rem; }
     .legal p, .legal li { font-size: 0.95rem; color: var(--muted); }
-    .legal strong, .legal h2 { color: var(--text); }
+    .legal strong, .legal h2, .legal h3 { color: var(--text); }
     .meta { font-size: 0.85rem; }
     .back { display: inline-block; margin-bottom: 1rem; }
   </style>
@@ -21,6 +22,7 @@
       <a class="logo" href="./">Marine Weather</a>
       <nav class="nav">
         <a href="./">Home</a>
+        <a href="terms.html">Terms</a>
         <a href="mailto:support@safelight.fi">Support</a>
       </nav>
     </div>
@@ -28,16 +30,24 @@
   <main class="wrap legal">
     <a class="back" href="./">← Back to home</a>
     <h1>Privacy Policy</h1>
-    <p class="meta">Effective date: 19 May 2026 · App ID: fi.veneappi.app</p>
+    <p class="meta">Effective date: 6 July 2026</p>
 
     <p>
       Marine Weather is a marine planning app (maps, weather comparison, optional route planning).
       This policy describes what the app does on your device and what is sent over the network.
+      The same product is available on <strong>Android</strong> and <strong>iOS</strong>; platform-specific
+      details are noted below.
     </p>
 
     <h2>Who we are</h2>
     <p>
-      The app is published under the package name <strong>fi.veneappi.app</strong>.
+      Marine Weather is published as:
+    </p>
+    <ul>
+      <li><strong>Android:</strong> <code>fi.veneappi.app</code> (Google Play)</li>
+      <li><strong>iOS:</strong> <code>fi.veneappi.MarineWeather</code> (Apple App Store)</li>
+    </ul>
+    <p>
       For privacy or support questions, contact
       <a href="mailto:support@safelight.fi">support@safelight.fi</a>.
     </p>
@@ -62,21 +72,31 @@
     </ul>
 
     <h2>Data stored on your device</h2>
+    <p>Common to both platforms:</p>
     <ul>
+      <li><strong>Preferences:</strong> Wind unit choice and local route-trial timing.</li>
       <li>
-        <strong>Preferences:</strong> Wind unit choice and local route-trial timing (stored with Android DataStore).
-      </li>
-      <li>
-        <strong>Cache:</strong> Downloaded forecast data may be cached locally (Room database) to improve performance
+        <strong>Cache:</strong> Downloaded forecast data may be cached locally to improve performance
         and reduce repeat downloads.
       </li>
       <li>
-        <strong>Premium status:</strong> Google Play purchase state is handled by Google Play Billing; the app
-        remembers entitlement locally after purchase or restore.
+        <strong>Exports:</strong> If you export a route as GPX or PDF, files are written where you choose.
       </li>
-      <li>
-        <strong>Exports:</strong> If you export a route as GPX or PDF, files are written where you choose (e.g. Downloads).
-      </li>
+    </ul>
+
+    <h3>Android</h3>
+    <ul>
+      <li>Preferences and trial timing are stored with Android DataStore.</li>
+      <li>Forecast cache uses a local Room database.</li>
+      <li>Premium entitlement is verified via Google Play Billing and remembered locally after purchase or restore.</li>
+    </ul>
+
+    <h3>iOS</h3>
+    <ul>
+      <li>Preferences and trial timing are stored in the app sandbox (UserDefaults).</li>
+      <li>Forecast cache uses SwiftData on device.</li>
+      <li>Premium entitlement is verified via Apple StoreKit and remembered locally after purchase or restore.</li>
+      <li>AIS watchlist entries (if you use Track) are stored locally on the device.</li>
     </ul>
 
     <h2>Network and third-party services</h2>
@@ -88,9 +108,10 @@
       <li>Finnish Meteorological Institute (FMI) open data</li>
       <li>MET Norway (api.met.no)</li>
       <li>SMHI open data</li>
-      <li>OpenStreetMap-related services (e.g. OpenFreeMap tiles, Overpass for harbour search)</li>
+      <li>OpenStreetMap-related services (e.g. OpenFreeMap tiles)</li>
       <li>Finnish Transport Infrastructure Agency open raster charts (when enabled)</li>
-      <li>Google Play (in-app purchases and subscriptions for route planning premium)</li>
+      <li>Fintraffic Digitraffic (AIS vessel positions, when enabled)</li>
+      <li>Google Play or Apple App Store (in-app purchases and subscriptions for route planning premium)</li>
     </ul>
     <p>
       Each provider has its own terms and privacy practices. Requests typically include approximate coordinates,
@@ -98,9 +119,17 @@
     </p>
 
     <h2>Payments</h2>
+    <h3>Android (Google Play)</h3>
     <p>
-      Paid features (one-time purchase or subscription) are processed by <strong>Google Play Billing</strong>.
+      Paid features are processed by <strong>Google Play Billing</strong>.
       We do not receive your payment card details. Google’s privacy policy applies to payment data.
+    </p>
+    <h3>iOS (App Store)</h3>
+    <p>
+      Paid features are processed by <strong>Apple In-App Purchase (StoreKit)</strong>.
+      We do not receive your payment card details. Apple’s privacy policy applies to payment data.
+      Subscription management and cancellation are handled in your Apple ID settings.
+      See also our <a href="terms.html">Terms of Use</a>.
     </p>
 
     <h2>Analytics and advertising</h2>
@@ -120,14 +149,15 @@
     </p>
 
     <h2>Your rights</h2>
-    <p>
-      You can revoke location permission in Android settings, clear app storage, or uninstall the app to remove
-      local data. For Google Play purchase issues, use Play Store subscription and order management.
-    </p>
+    <p><strong>Android:</strong> Revoke location permission in system settings, clear app storage, or uninstall.
+      For Google Play purchase issues, use Play Store subscription and order management.</p>
+    <p><strong>iOS:</strong> Revoke location permission in Settings → Marine Weather, or uninstall the app.
+      For App Store purchases and subscriptions, use Settings → Apple ID → Subscriptions, or
+      <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <p>© 2026 Marine Weather · <a href="./">Home</a></p>
+      <p>© 2026 Marine Weather · <a href="./">Home</a> · <a href="terms.html">Terms</a></p>
     </div>
   </footer>
 </body>

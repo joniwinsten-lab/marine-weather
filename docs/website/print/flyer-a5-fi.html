@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <title>Marine Weather — A5-esite (tulosta)</title>
+  <link rel="stylesheet" href="print-flyer.css" />
+  <style>
+    @page { size: A5 portrait; margin: 7mm; }
+    :root {
+      --page-w: 148mm;
+      --page-h: 210mm;
+      --page-margin: 7mm;
+      --section-gap: 3.5mm;
+      --title-size: 20pt;
+      --tagline-size: 9.5pt;
+      --qr-size: 26mm;
+      --icon-size: 26mm;
+      --shot-min-h: 28mm;
+      --base-font: 9pt;
+      --badge-play-h: 9mm;
+      --badge-ios-h: 6.2mm;
+    }
+  </style>
+</head>
+<body class="flyer flyer-fi size-a5">
+  <p class="print-hint" aria-hidden="true">
+    <strong>A5 (148×210 mm)</strong> — Tulosta: paperi A5, pysty, marginaalit minimaaliset, taustagrafiikat päällä.
+  </p>
+
+  <article class="sheet" aria-label="Marine Weather A5-esite">
+    <header class="flyer-header">
+      <h1>Marine Weather</h1>
+      <p class="tagline">Merisää ja reittisuunnittelu veneilijöille — kartta ja kolme ennustelähdettä.</p>
+      <ul class="hero-chips">
+        <li>MET Norway · SMHI · FMI</li>
+        <li>Android &amp; iPhone/iPad</li>
+        <li>FI · EN · SV · NO</li>
+      </ul>
+    </header>
+
+    <div class="flyer-main">
+      <section class="flyer-shots" aria-label="Kuvakaappaukset">
+        <figure class="shot">
+          <img src="../assets/screenshots/hero-compare.png" alt="Kartta ja kolmen lähteen säävertailu" loading="eager" />
+          <figcaption>Kartta &amp; sää — 3 lähdettä</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="../assets/screenshots/radar-lightning.png" alt="Sadetutka ja salama" loading="eager" />
+          <figcaption>Sadetutka ja salama</figcaption>
+        </figure>
+      </section>
+
+      <section class="flyer-grid" aria-label="Ominaisuudet">
+        <div class="flyer-col">
+          <h2>Ilmainen</h2>
+          <ul>
+            <li>Kartta ja tuulivertailu (+3 / +6 / +12 h)</li>
+            <li>Sadetutka ja salama</li>
+            <li>Merisää (4 maata)</li>
+            <li>Traficom-suunnittelukartat</li>
+          </ul>
+        </div>
+        <div class="flyer-col flyer-col-premium">
+          <h2>Premium <span class="badge">Play / App Store</span></h2>
+          <ul>
+            <li>Reitti + sää neljässä pisteessä</li>
+            <li>12 päivän tuuli</li>
+            <li>AIS-seuranta kartalla</li>
+            <li>Offline-reittipaketti</li>
+            <li>GPX- ja PDF-vienti</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="flyer-cta" aria-label="Lataa sovellus">
+        <figure class="qr-block qr-block-edge">
+          <img class="qr-img" src="../assets/qr-play-store.png" width="140" height="140" alt="QR-koodi: Google Play" />
+          <img class="store-badge store-badge-play" src="../assets/badges/google-play-fi.png" alt="LATAA SE Google Playsta" />
+        </figure>
+        <div class="cta-copy">
+          <img class="flyer-app-icon cta-app-icon" src="../assets/app-icon-128.png" width="128" height="128" alt="Marine Weather -kuvake" />
+          <p class="qr-caption">Lataa Androidille tai iPhone/iPadille</p>
+          <p class="qr-hint">Skannaa QR-koodi puhelimella tai tabletilla</p>
+        </div>
+        <figure class="qr-block qr-block-edge">
+          <img class="qr-img" src="../assets/qr-app-store.png" width="140" height="140" alt="QR-koodi: App Store" />
+          <img class="store-badge store-badge-ios" src="../assets/badges/app-store-fi.svg" alt="Lataa App Storesta" />
+        </figure>
+      </section>
+    </div>
+
+    <footer class="flyer-footer">
+      <p class="web">safelight.fi/marine-weather</p>
+      <p class="disclaimer">Vain suunnitteluapu — ei korvaa virallisia karttoja, sertifioitua AIS-laitetta tai säännöksiä.</p>
+      <p class="contact">support@safelight.fi</p>
+    </footer>
+  </article>
+</body>
+</html>

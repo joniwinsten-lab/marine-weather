@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Marine Weather — Läänemere kaardid, MET Norway / SMHI / FMI prognoosid, radar, marsruutide planeerimine, AIS ja offline-paketid Android tahvelarvutitele." />
+  <meta name="description" content="Marine Weather — Läänemere kaardid, MET Norway / SMHI / FMI prognoosid, radar, marsruutide planeerimine, AIS ja offline-paketid Androidile ja iOS-ile." />
   <title>Marine Weather — Kaart, prognoosid ja marsruutide planeerimine</title>
   <link rel="stylesheet" href="../styles.css" />
   <link rel="alternate" hreflang="en" href="../" />
@@ -22,7 +22,7 @@
         <a href="#screenshots">Ekraanipildid</a>
         <a href="#premium">Premium</a>
         <a href="../privacy.html">Privaatsus</a>
-        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">Laadi alla</a>
+        <a class="nav-cta" href="#download">Laadi alla</a>
         <select class="lang-select" aria-label="Keel" onchange="if(this.value) window.location.href=this.value">
           <option value="../">EN</option>
           <option value="../fi/">FI</option>
@@ -38,7 +38,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <h1>Planeerige Läänemere reise ühe kaardi, kolme ilmateenuse ja merel nõrga signaali jaoks mõeldud tööriistadega</h1>
+          <h1>Mereilm ja marsruutide planeerimine kõigile meresõitjatele — üks kaart, kolm prognoosiallikat</h1>
           <p class="lead">
             Marine Weather ühendab avatud merekaardid MET Norway, SMHI ja FMI prognoosidega —
             tormiradar, välk, riiklikud mereilmatekstid, premium marsruutide planeerimine AIS-laevadega
@@ -55,16 +55,15 @@
           </p>
           <div class="store-buttons">
             <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
-              <span class="btn-store-name">Google Play</span>
+              <img src="../assets/badges/google-play-et.png" alt="HANKIGE Google Playst" loading="eager" />
             </a>
-            <span class="btn-store btn-store-ios" aria-disabled="true">
-              <span class="btn-store-name">App Store</span>
-              <span class="btn-store-sub">Avaldatakse hiljem</span>
-            </span>
+            <a class="btn-store btn-store-ios" href="https://apps.apple.com/us/app/marine-weather-finland/id6787024900" rel="noopener noreferrer">
+              <img src="../assets/badges/app-store-et.svg" alt="Laadi App Store'ist" loading="eager" />
+            </a>
           </div>
         </div>
         <figure class="hero-shot">
-          <img src="../assets/screenshots/map-weather-compare.png" alt="Kaart MET Norway, SMHI ja FMI prognoosidega" width="1280" height="800" loading="eager" />
+          <img src="../assets/screenshots/hero-compare.png" alt="Kaart MET Norway, SMHI ja FMI prognoosidega" width="1280" height="768" loading="eager" />
         </figure>
       </div>
     </section>
@@ -107,7 +106,7 @@
           </article>
           <article class="card">
             <h3>Kontot pole vaja</h3>
-            <p>Tasuta funktsioonid ilma sisselogimiseta. Asukoht jääb seadmesse. Premium Google Play kaudu.</p>
+            <p>Tasuta funktsioonid ilma sisselogimiseta. Asukoht jääb seadmesse. Premium Google Play või App Store kaudu.</p>
           </article>
         </div>
       </div>
@@ -142,27 +141,31 @@
     <section id="screenshots" class="section">
       <div class="wrap">
         <h2>Ekraanipildid</h2>
-        <p class="section-intro">Rõhtpaigutusega Android tahvelarvutitele (vähemalt 600&nbsp;dp laius).</p>
+        <p class="section-intro">Rakendusest Androidil ja iOS-il — telefon ja tahvelarvuti.</p>
         <div class="gallery">
           <figure>
-            <img src="../assets/screenshots/map-weather-compare.png" alt="Prognoosid allika järgi" loading="lazy" />
-            <figcaption>Prognoosid — MET Norway, SMHI, FMI</figcaption>
+            <img src="../assets/screenshots/map-weather-compare.png" alt="Kaart ja ilm mis tahes punktis" loading="eager" />
+            <figcaption>Kaart & ilm — MET Norway, SMHI, FMI</figcaption>
           </figure>
           <figure>
-            <img src="../assets/screenshots/route-planning.png" alt="Marsruudi planeerimine" loading="lazy" />
-            <figcaption>Marsruut ilmaga</figcaption>
-          </figure>
-          <figure>
-            <img src="../assets/screenshots/wind-outlook.png" alt="12-päevane tuul" loading="lazy" />
-            <figcaption>12-päevane tuul (Premium)</figcaption>
-          </figure>
-          <figure>
-            <img src="../assets/screenshots/radar-lightning.png" alt="Vihmaradar ja välk" loading="lazy" />
+            <img src="../assets/screenshots/radar-lightning.png" alt="Vihmaradar ja välk ajajoonel" loading="lazy" />
             <figcaption>Vihmaradar ja välk</figcaption>
           </figure>
           <figure>
-            <img src="../assets/screenshots/marine-text-forecast.png" alt="Mereilmatekst neli riiki" loading="lazy" />
-            <figcaption>Mereilmatekst — 4 riiki</figcaption>
+            <img src="../assets/screenshots/marine-text-forecast.png" alt="Mereilmekokkuvõtted neljast riigist" loading="lazy" />
+            <figcaption>Mereilm — 4 riiki</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/route-planning.png" alt="Marsruudi planeerimine ilmaga marsruudi ääres" loading="lazy" />
+            <figcaption>Marsruut ilmaga (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/wind-outlook.png" alt="12-päevane tuulevõrdlus kolmest allikast" loading="lazy" />
+            <figcaption>12-päevane tuul (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/ais-track.png" alt="AIS-jälgimine: jälgimisnimekiri ja laevad kaardil" loading="lazy" />
+            <figcaption>AIS-jälgimine (Premium)</figcaption>
           </figure>
         </div>
       </div>
@@ -184,7 +187,7 @@
             </ul>
           </div>
           <div class="compare-col compare-col-premium">
-            <h3>Premium <span class="badge">Google Play</span></h3>
+            <h3>Premium <span class="badge">Play / App Store</span></h3>
             <ul>
               <li>Marsruut ilmaga</li>
               <li>12-päevane tuul</li>
@@ -196,9 +199,8 @@
           </div>
         </div>
         <p class="fine-print">
-          Premium on vabatahtlik. Hinnad kuvatakse Play'is enne ostu.
-          Toote-ID: <code>route_premium_lifetime</code>, <code>marine_weather_premium</code>.
-          Pakett: <code>fi.veneappi.app</code>
+          Premium on vabatahtlik. Hinnad kuvatakse Google Play's või App Store'is enne ostu.
+          Android: <code>fi.veneappi.app</code> · iOS: <code>fi.veneappi.MarineWeather</code>
         </p>
       </div>
     </section>
@@ -207,17 +209,16 @@
       <div class="wrap cta-box">
         <h2>Hankige rakendus</h2>
         <p>
-          Marine Weather on saadaval Google Play'is Android tahvelarvutitele.
+          Marine Weather on saadaval Google Play's (Android) ja App Store'is (iPhone &amp; iPad).
         </p>
         <div class="store-buttons store-buttons-center">
-          <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
-            <span class="btn-store-name">Google Play</span>
-          </a>
-          <span class="btn-store btn-store-ios" aria-disabled="true">
-            <span class="btn-store-name">App Store</span>
-            <span class="btn-store-sub">Avaldatakse hiljem</span>
-          </span>
-        </div>
+            <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
+              <img src="../assets/badges/google-play-et.png" alt="HANKIGE Google Playst" loading="lazy" />
+            </a>
+            <a class="btn-store btn-store-ios" href="https://apps.apple.com/us/app/marine-weather-finland/id6787024900" rel="noopener noreferrer">
+              <img src="../assets/badges/app-store-et.svg" alt="Laadi App Store'ist" loading="lazy" />
+            </a>
+          </div>
         <p class="cta-links">
           <a href="mailto:support@safelight.fi">support@safelight.fi</a>
           ·

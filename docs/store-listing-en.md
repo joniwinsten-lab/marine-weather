@@ -5,7 +5,7 @@ Use **Marine Weather** as the app name everywhere. Default store language: **Eng
 ## Short description (max 80 characters)
 
 ```
-Baltic maps & forecasts on phones and tablets. Route, AIS, offline (Premium).
+Baltic maps & forecasts. Route, AIS, Track vessels, offline (Premium).
 ```
 
 (76 characters)
@@ -26,7 +26,8 @@ FREE
 PREMIUM (Google Play)
 • Route planning with weather along the route
 • 12-day wind outlook
-• AIS vessel positions on the map (Fintraffic Digitraffic)
+• Live AIS vessel positions on the map (Fintraffic Digitraffic)
+• Track tab: follow chosen vessels (MMSI watchlist, search & add)
 • Download offline route pack in harbour (map tiles + weather along track)
 • Export route as GPX or PDF
 • One-time purchase or monthly subscription — prices shown in Play before you buy

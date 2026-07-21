@@ -1,0 +1,21 @@
+<en-US>
+Marine Weather for Android. One map, three forecast sources — MET Norway, SMHI and FMI — plus rain radar, lightning and marine weather summaries.
+
+Premium unlocks route planning, weather along the route, 12-day wind, live AIS, a Track tab for vessels you choose, offline route packs, and GPX/PDF export. Three-day free trial.
+
+Planning aid only — not for primary navigation.
+</en-US>
+<fi-FI>
+Merisää Androidille. Sama kartta, kolme ennustetta — MET Norway, SMHI ja Ilmatieteen laitos — sekä sadetutka, salamat ja Merisää neljän maan yhteenveto.
+
+Premiumilla reittisuunnittelu, sää reitillä, 12 päivän tuuli, live AIS kartalla, Seuranta-välilehti omille aluksille, offline-paketti ja GPX/PDF. Kolmen päivän kokeilu.
+
+Vain suunnitteluapu — ei päänavigointiin.
+</fi-FI>
+<sv-SE>
+Marine Weather för Android. En karta, tre prognoskällor — MET Norway, SMHI och FMI — plus regnradar, blixtar och havsväder från fyra länder.
+
+Premium ger ruttplanering, väder längs rutten, 12 dagars vind, live AIS, fliken Spårning för valda fartyg, offline-paket och GPX/PDF. Tre dagars provperiod.
+
+Endast planeringshjälp — inte för primär navigering.
+</sv-SE>

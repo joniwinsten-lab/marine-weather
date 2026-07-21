@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Marine Weather — Østersjøkart, MET Norway / SMHI / FMI-prognoser, radar, ruteplanlegging, AIS og offline-rutepakker for Android-nettbrett." />
+  <meta name="description" content="Marine Weather — Østersjøkart, MET Norway / SMHI / FMI-prognoser, radar, ruteplanlegging, AIS og offline-rutepakker for Android og iOS." />
   <title>Marine Weather — Kart, prognoser og ruteplanlegging</title>
   <link rel="stylesheet" href="../styles.css" />
   <link rel="alternate" hreflang="en" href="../" />
@@ -22,7 +22,7 @@
         <a href="#screenshots">Skjermbilder</a>
         <a href="#premium">Premium</a>
         <a href="../privacy.html">Personvern</a>
-        <a class="nav-cta" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">Last ned</a>
+        <a class="nav-cta" href="#download">Last ned</a>
         <select class="lang-select" aria-label="Språk" onchange="if(this.value) window.location.href=this.value">
           <option value="../">EN</option>
           <option value="../fi/">FI</option>
@@ -38,7 +38,7 @@
     <section class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <h1>Planlegg Østersjøturer med ett kart, tre værtjenester og verktøy for svakt signal til sjøs</h1>
+          <h1>Sjøvær og ruteplanlegging for alle båtfarere — ett kart, tre prognosekilder</h1>
           <p class="lead">
             Marine Weather kombinerer åpne sjøkart med prognoser fra MET Norway, SMHI og FMI —
             stormradar, lyn, nasjonale sjøværttekster, premium ruteplanlegging med AIS-fartøy
@@ -55,16 +55,15 @@
           </p>
           <div class="store-buttons">
             <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
-              <span class="btn-store-name">Google Play</span>
+              <img src="../assets/badges/google-play-nb.png" alt="LAST NED PÅ Google Play" loading="eager" />
             </a>
-            <span class="btn-store btn-store-ios" aria-disabled="true">
-              <span class="btn-store-name">App Store</span>
-              <span class="btn-store-sub">Kommer senere</span>
-            </span>
+            <a class="btn-store btn-store-ios" href="https://apps.apple.com/us/app/marine-weather-finland/id6787024900" rel="noopener noreferrer">
+              <img src="../assets/badges/app-store-nb.svg" alt="Last ned i App Store" loading="eager" />
+            </a>
           </div>
         </div>
         <figure class="hero-shot">
-          <img src="../assets/screenshots/map-weather-compare.png" alt="Kart med MET Norway, SMHI og FMI" width="1280" height="800" loading="eager" />
+          <img src="../assets/screenshots/hero-compare.png" alt="Kart med MET Norway, SMHI og FMI" width="1280" height="768" loading="eager" />
         </figure>
       </div>
     </section>
@@ -107,7 +106,7 @@
           </article>
           <article class="card">
             <h3>Ingen konto</h3>
-            <p>Gratis funksjoner uten innlogging. Posisjonen blir på enheten. Premium via Google Play.</p>
+            <p>Gratis funksjoner uten innlogging. Posisjonen blir på enheten. Premium via Google Play eller App Store.</p>
           </article>
         </div>
       </div>
@@ -142,27 +141,31 @@
     <section id="screenshots" class="section">
       <div class="wrap">
         <h2>Skjermbilder</h2>
-        <p class="section-intro">For liggende Android-nettbrett (minst 600&nbsp;dp bredde).</p>
+        <p class="section-intro">Fra appen på Android og iOS — telefon og nettbrett.</p>
         <div class="gallery">
           <figure>
-            <img src="../assets/screenshots/map-weather-compare.png" alt="Prognoser per kilde" loading="lazy" />
-            <figcaption>Prognoser — MET Norway, SMHI, FMI</figcaption>
+            <img src="../assets/screenshots/map-weather-compare.png" alt="Kart og vær ved et hvilket som helst punkt" loading="eager" />
+            <figcaption>Kart & vær — MET Norway, SMHI, FMI</figcaption>
           </figure>
           <figure>
-            <img src="../assets/screenshots/route-planning.png" alt="Ruteplanlegging" loading="lazy" />
-            <figcaption>Ruteplanlegging med vær</figcaption>
-          </figure>
-          <figure>
-            <img src="../assets/screenshots/wind-outlook.png" alt="12-dagers vind" loading="lazy" />
-            <figcaption>12-dagers vind (Premium)</figcaption>
-          </figure>
-          <figure>
-            <img src="../assets/screenshots/radar-lightning.png" alt="Regnradar og lyn" loading="lazy" />
+            <img src="../assets/screenshots/radar-lightning.png" alt="Regnradar og lyn på tidslinje" loading="lazy" />
             <figcaption>Regnradar og lyn</figcaption>
           </figure>
           <figure>
-            <img src="../assets/screenshots/marine-text-forecast.png" alt="Sjøværttekst fire land" loading="lazy" />
-            <figcaption>Sjøværttekst — 4 land</figcaption>
+            <img src="../assets/screenshots/marine-text-forecast.png" alt="Sjøværsammendrag for fire land" loading="lazy" />
+            <figcaption>Sjøvær — 4 land</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/route-planning.png" alt="Ruteplanlegging med vær langs ruten" loading="lazy" />
+            <figcaption>Ruteplanlegging med vær (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/wind-outlook.png" alt="12-dagers vindsammenligning fra tre kilder" loading="lazy" />
+            <figcaption>12-dagers vind (Premium)</figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/screenshots/ais-track.png" alt="AIS-sporing: overvåkningsliste og fartøy på kartet" loading="lazy" />
+            <figcaption>AIS-sporing (Premium)</figcaption>
           </figure>
         </div>
       </div>
@@ -184,7 +187,7 @@
             </ul>
           </div>
           <div class="compare-col compare-col-premium">
-            <h3>Premium <span class="badge">Google Play</span></h3>
+            <h3>Premium <span class="badge">Play / App Store</span></h3>
             <ul>
               <li>Ruteplanlegging med vær</li>
               <li>12-dagers vind</li>
@@ -196,9 +199,8 @@
           </div>
         </div>
         <p class="fine-print">
-          Premium er valgfritt. Priser vises i Play før kjøp.
-          Produkt-ID: <code>route_premium_lifetime</code>, <code>marine_weather_premium</code>.
-          Pakke: <code>fi.veneappi.app</code>
+          Premium er valgfritt. Priser vises i Google Play eller App Store før kjøp.
+          Android: <code>fi.veneappi.app</code> · iOS: <code>fi.veneappi.MarineWeather</code>
         </p>
       </div>
     </section>
@@ -207,17 +209,16 @@
       <div class="wrap cta-box">
         <h2>Skaff appen</h2>
         <p>
-          Marine Weather er tilgjengelig på Google Play for Android-nettbrett.
+          Marine Weather er tilgjengelig på Google Play (Android) og App Store (iPhone &amp; iPad).
         </p>
         <div class="store-buttons store-buttons-center">
-          <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
-            <span class="btn-store-name">Google Play</span>
-          </a>
-          <span class="btn-store btn-store-ios" aria-disabled="true">
-            <span class="btn-store-name">App Store</span>
-            <span class="btn-store-sub">Kommer senere</span>
-          </span>
-        </div>
+            <a class="btn-store btn-store-play" href="https://play.google.com/store/apps/details?id=fi.veneappi.app" rel="noopener noreferrer">
+              <img src="../assets/badges/google-play-nb.png" alt="LAST NED PÅ Google Play" loading="lazy" />
+            </a>
+            <a class="btn-store btn-store-ios" href="https://apps.apple.com/us/app/marine-weather-finland/id6787024900" rel="noopener noreferrer">
+              <img src="../assets/badges/app-store-nb.svg" alt="Last ned i App Store" loading="lazy" />
+            </a>
+          </div>
         <p class="cta-links">
           <a href="mailto:support@safelight.fi">support@safelight.fi</a>
           ·
