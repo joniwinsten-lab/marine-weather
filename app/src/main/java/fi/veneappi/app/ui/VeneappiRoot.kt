@@ -92,6 +92,7 @@ import fi.veneappi.app.R
 import fi.veneappi.app.MainActivity
 import fi.veneappi.app.VeneappiApplication
 import fi.veneappi.app.domain.GeoMath
+import fi.veneappi.app.domain.RouteDepartureTime
 import fi.veneappi.app.domain.RouteSourceWeatherSlots
 import fi.veneappi.app.domain.SourceId
 import fi.veneappi.app.domain.UnifiedForecast
@@ -387,6 +388,9 @@ fun VeneappiRoot(
                                     onWindUnit = vm::setWindUnit,
                                     onClear = vm::clearRoute,
                                     onSpeedChange = vm::setBoatSpeedKn,
+                                    onDepartureNow = { vm.setRouteDepartureIsNow(true) },
+                                    onDepartureSchedule = { vm.setRouteDepartureIsNow(false) },
+                                    onDepartureScheduled = vm::setRouteDepartureScheduled,
                                     onLongPressRoute = vm::onMapLongPressForRoute,
                                     onMyLocation = { vm.recenterToDeviceLocation(context) },
                                     traficomPlanningChart = traficomPlanningChart,
@@ -1489,6 +1493,12 @@ private fun buildRoutePlanPdfInput(
                 }
             }
         }
+    val departureSummary =
+        if (ui.routeDepartureIsNow) {
+            res.getString(R.string.route_departure_now)
+        } else {
+            RouteDepartureTime.formatLocalDateTimeFull(ui.routeDepartureMillis, zone)
+        }
     return RoutePlanPdfInput(
         docTitle = res.getString(R.string.route_pdf_doc_title),
         generatedLine = res.getString(R.string.route_pdf_generated, genTime),
@@ -1496,6 +1506,7 @@ private fun buildRoutePlanPdfInput(
         startLine = res.getString(R.string.route_pdf_start_fmt, s.first, s.second),
         endLine = res.getString(R.string.route_pdf_end_fmt, e.first, e.second),
         legSummaryLine = res.getString(R.string.route_weather_leg, legNm, etaHours),
+        departureLine = res.getString(R.string.route_departure_pdf, departureSummary),
         boatSpeedLine =
             res.getString(R.string.route_boat_speed_title) +
                 ": " +
@@ -1554,6 +1565,9 @@ private fun RouteWeatherRightPane(
     windUnit: WindUnit,
     onWindUnit: (WindUnit) -> Unit,
     slotLabels: List<String>,
+    onDepartureNow: () -> Unit,
+    onDepartureSchedule: () -> Unit,
+    onDepartureScheduled: (Long) -> Unit,
     speedDraft: TextFieldValue,
     onSpeedDraftChange: (TextFieldValue) -> Unit,
     speedTextFieldModifier: Modifier,
@@ -1578,6 +1592,13 @@ private fun RouteWeatherRightPane(
                 .imePadding()
                 .padding(horizontal = 2.dp, vertical = 1.dp),
         ) {
+        RouteDepartureBar(
+            ui = ui,
+            onDepartureNow = onDepartureNow,
+            onDepartureSchedule = onDepartureSchedule,
+            onDepartureScheduled = onDepartureScheduled,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
         RouteSpeedCompactBar(
             ui = ui,
             speedDraft = speedDraft,
@@ -1835,6 +1856,9 @@ private fun RoutePane(
     onWindUnit: (WindUnit) -> Unit,
     onClear: () -> Unit,
     onSpeedChange: (Double) -> Unit,
+    onDepartureNow: () -> Unit,
+    onDepartureSchedule: () -> Unit,
+    onDepartureScheduled: (Long) -> Unit,
     onLongPressRoute: (Double, Double) -> Unit,
     onMyLocation: () -> Unit,
     traficomPlanningChart: Boolean,
@@ -1881,24 +1905,32 @@ private fun RoutePane(
         }
     val slotFracs = listOf(0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0)
     val speedKnSlots = ui.boatSpeedKn.coerceIn(0.5, 40.0)
-    val etaMinutesTotal =
-        remember(nmSlotPoints, speedKnSlots) {
-            val leg = nmSlotPoints.getOrNull(3) ?: 0.0
-            if (leg <= 0) 0 else (leg / speedKnSlots * 60.0).roundToInt()
-        }
     val routeSlotLabels =
-        nmSlotPoints.zip(slotFracs).map { (nm, fr) ->
-            val elapsedMin = (etaMinutesTotal * fr).roundToInt().coerceAtLeast(0)
-            val distStr = stringResource(R.string.route_weather_slot_nm, nm)
-            val timeStr =
-                if (elapsedMin < 60) {
-                    stringResource(R.string.route_duration_min, elapsedMin)
+        remember(
+            nmSlotPoints,
+            speedKnSlots,
+            ui.routeDepartureIsNow,
+            ui.routeDepartureMillis,
+            ui.routeClockTick,
+        ) {
+            val depart =
+                RouteDepartureTime.effectiveDepartureMillis(
+                    isNow = ui.routeDepartureIsNow,
+                    scheduledMillis = ui.routeDepartureMillis,
+                )
+            val leg = nmSlotPoints.getOrNull(3) ?: 0.0
+            val etaMillis =
+                if (leg <= 0) {
+                    60_000L
                 } else {
-                    val h = elapsedMin / 60
-                    val m = elapsedMin % 60
-                    stringResource(R.string.route_duration_hm, h, m)
+                    (leg / speedKnSlots * 3_600_000.0).toLong().coerceAtLeast(60_000L)
                 }
-            stringResource(R.string.route_slot_label, distStr, timeStr)
+            nmSlotPoints.zip(slotFracs).map { (nm, fr) ->
+                val slotMillis = depart + (etaMillis * fr).toLong()
+                val distStr = context.getString(R.string.route_weather_slot_nm, nm)
+                val timeStr = RouteDepartureTime.formatLocalDateTime(context, slotMillis)
+                context.getString(R.string.route_slot_label, distStr, timeStr)
+            }
         }
     val showRouteWeatherStrip = ui.routeStart != null && ui.routeEnd != null
     val wide = LocalConfiguration.current.screenWidthDp >= UiBreakpoints.TWO_PANE_MIN_WIDTH_DP
@@ -2084,6 +2116,9 @@ private fun RoutePane(
                                     windUnit = windUnit,
                                     onWindUnit = onWindUnit,
                                     slotLabels = routeSlotLabels,
+                                    onDepartureNow = onDepartureNow,
+                                    onDepartureSchedule = onDepartureSchedule,
+                                    onDepartureScheduled = onDepartureScheduled,
                                     speedDraft = speedDraft,
                                     onSpeedDraftChange = onSpeedDraftChange,
                                     speedTextFieldModifier = speedTfMod,
@@ -2167,6 +2202,9 @@ private fun RoutePane(
                                     windUnit = windUnit,
                                     onWindUnit = onWindUnit,
                                     slotLabels = routeSlotLabels,
+                                    onDepartureNow = onDepartureNow,
+                                    onDepartureSchedule = onDepartureSchedule,
+                                    onDepartureScheduled = onDepartureScheduled,
                                     speedDraft = speedDraft,
                                     onSpeedDraftChange = onSpeedDraftChange,
                                     speedTextFieldModifier = speedTfMod,

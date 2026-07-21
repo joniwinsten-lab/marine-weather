@@ -13,6 +13,7 @@ import fi.veneappi.app.domain.Harbor
 import fi.veneappi.app.data.routing.VaylaFairwayRouter
 import fi.veneappi.app.domain.ForecastSampler
 import fi.veneappi.app.domain.GeoMath
+import fi.veneappi.app.domain.RouteDepartureTime
 import fi.veneappi.app.domain.RouteSourceWeatherSlots
 import fi.veneappi.app.domain.SourceId
 import fi.veneappi.app.domain.UnifiedForecast
@@ -67,6 +68,10 @@ data class VeneappiUiState(
     val routeWeatherLegNm: Double? = null,
     val routeWeatherEtaHours: Double? = null,
     val loadingRouteWeather: Boolean = false,
+    val routeDepartureIsNow: Boolean = true,
+    val routeDepartureMillis: Long = RouteDepartureTime.minimumSelectableMillis(),
+    /** Bumps every minute so slot labels refresh in "Now" mode. */
+    val routeClockTick: Long = System.currentTimeMillis(),
 )
 
 data class HarborsUiState(
@@ -121,6 +126,7 @@ class MainViewModel(
         )
 
     private var routeWeatherJob: Job? = null
+    private var routeClockJob: Job? = null
 
     val windUnit: StateFlow<WindUnit> =
         userPreferencesRepository.windUnit.stateIn(
@@ -147,6 +153,50 @@ class MainViewModel(
             }
         }
         refreshWeather()
+        startRouteClockRefresh()
+    }
+
+    private fun startRouteClockRefresh() {
+        routeClockJob?.cancel()
+        routeClockJob =
+            viewModelScope.launch {
+                while (true) {
+                    delay(60_000)
+                    val snap = _ui.value
+                    val tick = System.currentTimeMillis()
+                    if (snap.routeStart != null && snap.routeEnd != null) {
+                        if (snap.routeDepartureIsNow && premiumAccess.isPremium.value) {
+                            _ui.value = snap.copy(routeClockTick = tick)
+                            scheduleRouteWeatherRefresh()
+                        } else {
+                            _ui.value = snap.copy(routeClockTick = tick)
+                        }
+                    }
+                }
+            }
+    }
+
+    fun setRouteDepartureIsNow(isNow: Boolean) {
+        _ui.value =
+            _ui.value.copy(
+                routeDepartureIsNow = isNow,
+                routeDepartureMillis =
+                    if (!isNow) {
+                        RouteDepartureTime.minimumSelectableMillis()
+                    } else {
+                        _ui.value.routeDepartureMillis
+                    },
+            )
+        scheduleRouteWeatherRefresh()
+    }
+
+    fun setRouteDepartureScheduled(millis: Long) {
+        _ui.value =
+            _ui.value.copy(
+                routeDepartureIsNow = false,
+                routeDepartureMillis = RouteDepartureTime.clampScheduledMillis(millis),
+            )
+        scheduleRouteWeatherRefresh()
     }
 
     fun refreshWeather() {
@@ -372,6 +422,8 @@ class MainViewModel(
                 routeWeatherLegNm = null,
                 routeWeatherEtaHours = null,
                 loadingRouteWeather = false,
+                routeDepartureIsNow = true,
+                routeDepartureMillis = RouteDepartureTime.minimumSelectableMillis(),
             )
     }
 
@@ -422,7 +474,11 @@ class MainViewModel(
                     } else {
                         0.0
                     }
-                val depart = System.currentTimeMillis()
+                val depart =
+                    RouteDepartureTime.effectiveDepartureMillis(
+                        isNow = snap.routeDepartureIsNow,
+                        scheduledMillis = snap.routeDepartureMillis,
+                    )
                 val etaMillis = (etaHours * 3_600_000.0).toLong().coerceAtLeast(60_000L)
                 val fracs = listOf(0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0)
                 val locs = fracs.map { GeoMath.pointAlongPolyline(geom, it) }

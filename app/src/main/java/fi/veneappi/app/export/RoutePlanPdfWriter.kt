@@ -25,6 +25,7 @@ data class RoutePlanPdfInput(
     val startLine: String,
     val endLine: String,
     val legSummaryLine: String,
+    val departureLine: String? = null,
     val boatSpeedLine: String,
     val weatherHeading: String,
     val disclaimer: String,
@@ -112,6 +113,7 @@ object RoutePlanPdfWriter {
             drawWrapped(input.endLine, bodyPaint)
             y += SECTION_GAP * 0.5f
             drawWrapped(input.legSummaryLine, bodyPaint)
+            input.departureLine?.let { drawWrapped(it, bodyPaint) }
             drawWrapped(input.boatSpeedLine, bodyPaint)
             y += SECTION_GAP
 

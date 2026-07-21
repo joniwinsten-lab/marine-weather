@@ -149,6 +149,13 @@
     <string name="route_weather_leg">%1$.1f nm · %2$.1f h med nåværende fart</string>
     <string name="route_weather_slot_nm">%1$.1f nm</string>
     <string name="route_slot_label">%1$s / %2$s</string>
+    <string name="route_departure_title">Avgang</string>
+    <string name="route_departure_now">Nå</string>
+    <string name="route_departure_scheduled">Planlegg</string>
+    <string name="route_departure_pick">Avgangstid</string>
+    <string name="route_arrival_fmt">Ankomst ~ %1$s</string>
+    <string name="route_departure_pdf">Avgang: %1$s</string>
+    <string name="route_time_tomorrow_fmt">I morgen %1$s</string>
     <string name="route_duration_min">%1$d min</string>
     <string name="route_duration_hm">%1$d:%2$02d</string>
     <string name="route_distance_nm">Distanse %1$.1f nm</string>
