@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DirectionsBoat
 import androidx.compose.material.icons.outlined.Lock
@@ -47,8 +48,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.OutlinedButton
@@ -112,7 +111,12 @@ import fi.veneappi.app.ui.ais.AisTrackViewModel
 import fi.veneappi.app.ui.ais.MapWithAisChrome
 import fi.veneappi.app.ui.map.MapPane
 import fi.veneappi.app.ui.theme.VeneappiTheme
+import fi.veneappi.app.ui.nav.CompactAppBar
+import fi.veneappi.app.ui.nav.MainDest
+import fi.veneappi.app.ui.nav.NavigationMenuSheet
+import fi.veneappi.app.ui.route.RouteMapHintBanner
 import fi.veneappi.app.ui.weather.SourceWindForecastCard
+import fi.veneappi.app.ui.weather.WeatherOutlookPane
 import androidx.core.content.ContextCompat
 import java.io.File
 import java.time.Instant
@@ -123,15 +127,6 @@ import java.time.format.FormatStyle
 import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-
-private enum class MainDest {
-    COMPARE,
-    ROUTE,
-    TRACK,
-    EXTENDED_WIND,
-    MARINE_TEXT,
-    STORM_RADAR,
-}
 
 /** NavigationRailItem label slots can get unbounded max width; cap width so the rail does not steal the whole Row. */
 private val NavigationRailItemLabelMaxWidth = 88.dp
@@ -212,6 +207,7 @@ fun VeneappiRoot(
     val offlinePackUi by vm.offlinePackUi.collectAsState()
     val stormUi by stormVm.stormUi.collectAsState()
     val windUnit by vm.windUnit.collectAsState(initial = WindUnit.MetersPerSecond)
+    val weatherSource by vm.weatherSource.collectAsState(initial = SourceId.MET_NORWAY)
     val context = LocalContext.current
     val activity = context as ComponentActivity
     val app = context.applicationContext as VeneappiApplication
@@ -246,6 +242,7 @@ fun VeneappiRoot(
                 ),
         )
     var destination by remember { mutableStateOf(MainDest.COMPARE) }
+    var showNavMenu by remember { mutableStateOf(false) }
     var showAttribution by remember { mutableStateOf(false) }
     var traficomPlanningChart by remember { mutableStateOf(true) }
     val configuration = LocalConfiguration.current
@@ -269,7 +266,9 @@ fun VeneappiRoot(
     }
 
     LaunchedEffect(destination, isRoutePremium) {
-        if (destination == MainDest.EXTENDED_WIND && isRoutePremium) {
+        if (destination == MainDest.WEATHER ||
+            (destination == MainDest.EXTENDED_WIND && isRoutePremium)
+        ) {
             vm.refreshWeather()
         }
         if (destination == MainDest.STORM_RADAR) {
@@ -278,6 +277,20 @@ fun VeneappiRoot(
     }
     if (showAttribution) {
         AttributionDialog(onDismiss = { showAttribution = false })
+    }
+    if (showNavMenu) {
+        NavigationMenuSheet(
+            current = destination,
+            isRoutePremium = isRoutePremium,
+            onDismiss = { showNavMenu = false },
+            onSelect = { dest ->
+                destination = dest
+                showNavMenu = false
+                if (dest == MainDest.COMPARE) {
+                    vm.setRoutePickMode(RoutePickMode.None)
+                }
+            },
+        )
     }
 
     Scaffold(
@@ -302,6 +315,7 @@ fun VeneappiRoot(
                         destination = MainDest.COMPARE
                         vm.setRoutePickMode(RoutePickMode.None)
                     },
+                    onWeather = { destination = MainDest.WEATHER },
                     onRoute = { destination = MainDest.ROUTE },
                     onTrack = { destination = MainDest.TRACK },
                     onWind = { destination = MainDest.EXTENDED_WIND },
@@ -316,6 +330,12 @@ fun VeneappiRoot(
                         .weight(1f)
                         .fillMaxHeight(),
             ) {
+                if (!useNavigationRail) {
+                    CompactAppBar(
+                        destination = destination,
+                        onOpenMenu = { showNavMenu = true },
+                    )
+                }
                 Box(
                     modifier =
                         Modifier
@@ -351,6 +371,14 @@ fun VeneappiRoot(
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
+                        MainDest.WEATHER ->
+                            WeatherOutlookPane(
+                                ui = ui,
+                                windUnit = windUnit,
+                                selectedSource = weatherSource,
+                                onSourceChange = vm::setWeatherSource,
+                                modifier = Modifier.fillMaxSize(),
+                            )
                         MainDest.ROUTE ->
                             if (isRoutePremium) {
                                 RoutePane(
@@ -623,98 +651,6 @@ fun VeneappiRoot(
                     }
                 }
 
-                if (!useNavigationRail) {
-                    NavigationBar {
-                        NavigationBarItem(
-                            selected = destination == MainDest.COMPARE,
-                            onClick = {
-                                destination = MainDest.COMPARE
-                                vm.setRoutePickMode(RoutePickMode.None)
-                            },
-                            icon = { Icon(Icons.Default.Map, contentDescription = null) },
-                            label = {
-                                Text(
-                                    stringResource(R.string.nav_compare),
-                                    maxLines = 2,
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            },
-                        )
-                        NavigationBarItem(
-                            selected = destination == MainDest.ROUTE,
-                            onClick = { destination = MainDest.ROUTE },
-                            icon = {
-                                NavPremiumBadgeIcon(
-                                    baseImageVector = Icons.Default.Navigation,
-                                    baseContentDescription = stringResource(R.string.nav_route),
-                                    isUnlocked = isRoutePremium,
-                                )
-                            },
-                            label = { NavPremiumStackLabel(stringResource(R.string.nav_route)) },
-                        )
-                        NavigationBarItem(
-                            selected = destination == MainDest.TRACK,
-                            onClick = { destination = MainDest.TRACK },
-                            icon = {
-                                NavPremiumBadgeIcon(
-                                    baseImageVector = Icons.Outlined.DirectionsBoat,
-                                    baseContentDescription = stringResource(R.string.track_nav_cd),
-                                    isUnlocked = isRoutePremium,
-                                )
-                            },
-                            label = { NavPremiumStackLabel(stringResource(R.string.nav_track)) },
-                        )
-                        NavigationBarItem(
-                            selected = destination == MainDest.EXTENDED_WIND,
-                            onClick = { destination = MainDest.EXTENDED_WIND },
-                            icon = {
-                                NavPremiumBadgeIcon(
-                                    baseImageVector = Icons.Outlined.CalendarMonth,
-                                    baseContentDescription = stringResource(R.string.route_tab_extended_wind),
-                                    isUnlocked = isRoutePremium,
-                                )
-                            },
-                            label = { NavPremiumStackLabel(stringResource(R.string.route_tab_extended_wind)) },
-                        )
-                        NavigationBarItem(
-                            selected = destination == MainDest.MARINE_TEXT,
-                            onClick = { destination = MainDest.MARINE_TEXT },
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.Waves,
-                                    contentDescription = stringResource(R.string.marine_nav_cd),
-                                )
-                            },
-                            label = {
-                                Text(
-                                    stringResource(R.string.nav_marine_four_seas),
-                                    maxLines = 2,
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            },
-                        )
-                        NavigationBarItem(
-                            selected = destination == MainDest.STORM_RADAR,
-                            onClick = { destination = MainDest.STORM_RADAR },
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.Thunderstorm,
-                                    contentDescription = stringResource(R.string.storm_nav_cd),
-                                )
-                            },
-                            label = {
-                                Text(
-                                    stringResource(R.string.nav_storm_radar),
-                                    maxLines = 2,
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            },
-                        )
-                    }
-                }
             }
             }
         }
@@ -810,6 +746,7 @@ private fun ScrollableDestinationRail(
     isRoutePremium: Boolean,
     compactLabels: Boolean,
     onCompare: () -> Unit,
+    onWeather: () -> Unit,
     onRoute: () -> Unit,
     onTrack: () -> Unit,
     onWind: () -> Unit,
@@ -844,6 +781,28 @@ private fun ScrollableDestinationRail(
                 label = {
                     Text(
                         text = stringResource(R.string.nav_compare),
+                        style = MaterialTheme.typography.labelSmall,
+                        textAlign = TextAlign.Center,
+                        maxLines = 4,
+                        softWrap = true,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = NavigationRailItemLabelMaxWidth),
+                    )
+                },
+            )
+            DestinationRailItem(
+                selected = destination == MainDest.WEATHER,
+                onClick = onWeather,
+                showLabel = showLabels,
+                icon = {
+                    Icon(
+                        Icons.Outlined.Cloud,
+                        contentDescription = stringResource(R.string.tab_weather),
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(R.string.nav_weather),
                         style = MaterialTheme.typography.labelSmall,
                         textAlign = TextAlign.Center,
                         maxLines = 4,
@@ -1870,81 +1829,6 @@ private fun RouteSpeedCompactBar(
 }
 
 @Composable
-private fun RouteMapTopOverlay(
-    onOpenDisclaimer: () -> Unit,
-    fairwayUnavailable: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp, vertical = 4.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                stringResource(R.string.route_title),
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
-            IconButton(
-                onClick = onOpenDisclaimer,
-                modifier = Modifier.size(40.dp),
-            ) {
-                Icon(
-                    Icons.Default.Info,
-                    contentDescription = stringResource(R.string.disclaimer_nav_title),
-                )
-            }
-        }
-        Surface(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHighest,
-            shadowElevation = 8.dp,
-            tonalElevation = 3.dp,
-        ) {
-            Text(
-                stringResource(R.string.route_hint_long_press),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                style =
-                    MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.SemiBold,
-                    ),
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 6,
-            )
-        }
-        if (fairwayUnavailable) {
-            Surface(
-                modifier =
-                    Modifier
-                        .padding(top = 6.dp)
-                        .fillMaxWidth(),
-                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.94f),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                Text(
-                    stringResource(R.string.route_fairway_unavailable),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun RoutePane(
     ui: VeneappiUiState,
     windUnit: WindUnit,
@@ -2177,11 +2061,22 @@ private fun RoutePane(
                                                     .semantics { contentDescription = mapLabel },
                                             modifier = Modifier.fillMaxSize(),
                                         )
-                                        RouteMapTopOverlay(
-                                            onOpenDisclaimer = { showRouteDisclaimer = true },
-                                            fairwayUnavailable = ui.routeFairwayUnavailable,
-                                            modifier = Modifier.align(Alignment.TopStart),
+                                        RouteMapHintBanner(
+                                            ui = ui,
+                                            modifier = Modifier.align(Alignment.TopCenter),
                                         )
+                                        IconButton(
+                                            onClick = { showRouteDisclaimer = true },
+                                            modifier =
+                                                Modifier
+                                                    .align(Alignment.TopStart)
+                                                    .padding(start = 4.dp, top = 4.dp),
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Info,
+                                                contentDescription = stringResource(R.string.disclaimer_nav_title),
+                                            )
+                                        }
                                     }
                                 }
                                 RouteWeatherRightPane(
@@ -2249,11 +2144,22 @@ private fun RoutePane(
                                                     .semantics { contentDescription = mapLabel },
                                             modifier = Modifier.fillMaxSize(),
                                         )
-                                        RouteMapTopOverlay(
-                                            onOpenDisclaimer = { showRouteDisclaimer = true },
-                                            fairwayUnavailable = ui.routeFairwayUnavailable,
-                                            modifier = Modifier.align(Alignment.TopStart),
+                                        RouteMapHintBanner(
+                                            ui = ui,
+                                            modifier = Modifier.align(Alignment.TopCenter),
                                         )
+                                        IconButton(
+                                            onClick = { showRouteDisclaimer = true },
+                                            modifier =
+                                                Modifier
+                                                    .align(Alignment.TopStart)
+                                                    .padding(start = 4.dp, top = 4.dp),
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Info,
+                                                contentDescription = stringResource(R.string.disclaimer_nav_title),
+                                            )
+                                        }
                                     }
                                 }
                                 RouteWeatherRightPane(
@@ -2316,11 +2222,22 @@ private fun RoutePane(
                                             .semantics { contentDescription = mapLabel },
                                     modifier = Modifier.fillMaxSize(),
                                 )
-                                RouteMapTopOverlay(
-                                    onOpenDisclaimer = { showRouteDisclaimer = true },
-                                    fairwayUnavailable = ui.routeFairwayUnavailable,
-                                    modifier = Modifier.align(Alignment.TopStart),
+                                RouteMapHintBanner(
+                                    ui = ui,
+                                    modifier = Modifier.align(Alignment.TopCenter),
                                 )
+                                IconButton(
+                                    onClick = { showRouteDisclaimer = true },
+                                    modifier =
+                                        Modifier
+                                            .align(Alignment.TopStart)
+                                            .padding(start = 4.dp, top = 4.dp),
+                                ) {
+                                    Icon(
+                                        Icons.Default.Info,
+                                        contentDescription = stringResource(R.string.disclaimer_nav_title),
+                                    )
+                                }
                             }
         }
     }

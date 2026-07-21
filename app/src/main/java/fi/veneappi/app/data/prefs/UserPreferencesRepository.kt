@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import fi.veneappi.app.domain.SourceId
 import fi.veneappi.app.domain.WindUnit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,7 @@ class UserPreferencesRepository(
     private val context: Context,
 ) {
     private val windKey = stringPreferencesKey("wind_unit")
+    private val weatherSourceKey = stringPreferencesKey("weather_source")
     private val routeTrialStartKey = longPreferencesKey("route_trial_start_epoch_ms")
     private val reviewLaunchCountKey = intPreferencesKey("in_app_review_launch_count")
     private val reviewEngagementCountKey = intPreferencesKey("in_app_review_positive_engagement")
@@ -40,6 +42,19 @@ class UserPreferencesRepository(
 
     suspend fun setWindUnit(unit: WindUnit) {
         context.dataStore.edit { it[windKey] = unit.name }
+    }
+
+    val weatherSource: Flow<SourceId> =
+        context.dataStore.data.map { prefs ->
+            when (prefs[weatherSourceKey]) {
+                SourceId.SMHI.name -> SourceId.SMHI
+                SourceId.FMI.name -> SourceId.FMI
+                else -> SourceId.MET_NORWAY
+            }
+        }
+
+    suspend fun setWeatherSource(source: SourceId) {
+        context.dataStore.edit { it[weatherSourceKey] = source.name }
     }
 
     /** True while local 3-day route trial is active (does not involve Google Play billing). */

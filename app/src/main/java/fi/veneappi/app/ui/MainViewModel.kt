@@ -59,6 +59,8 @@ data class VeneappiUiState(
     val routeError: String? = null,
     /** True when both endpoints are set but Väylä navigointilinjat -reittiä ei saatu; näytetään isoympyrä tai OSRM-demo. */
     val routeFairwayUnavailable: Boolean = false,
+    /** True while fairway geometry is being resolved after both endpoints are set. */
+    val routeComputingFairway: Boolean = false,
     /** Kasvaa jokaisella "oma sijainti" -napilla, jotta kartta keskitetään vaikka koordinaatit eivät muuttuisi. */
     val mapRecenterSignal: Long = 0L,
     val routeWeatherBySource: Map<SourceId, Result<RouteSourceWeatherSlots>> = emptyMap(),
@@ -125,6 +127,13 @@ class MainViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = WindUnit.MetersPerSecond,
+        )
+
+    val weatherSource: StateFlow<SourceId> =
+        userPreferencesRepository.weatherSource.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = SourceId.MET_NORWAY,
         )
 
     init {
@@ -241,6 +250,12 @@ class MainViewModel(
         }
     }
 
+    fun setWeatherSource(source: SourceId) {
+        viewModelScope.launch {
+            userPreferencesRepository.setWeatherSource(source)
+        }
+    }
+
     fun setRoutePickMode(mode: RoutePickMode) {
         _ui.value = _ui.value.copy(routePickMode = mode, routeError = null)
     }
@@ -352,6 +367,7 @@ class MainViewModel(
                 routePickMode = RoutePickMode.None,
                 routeError = null,
                 routeFairwayUnavailable = false,
+                routeComputingFairway = false,
                 routeWeatherBySource = emptyMap(),
                 routeWeatherLegNm = null,
                 routeWeatherEtaHours = null,
@@ -486,59 +502,75 @@ class MainViewModel(
         val start = _ui.value.routeStart
         val end = _ui.value.routeEnd
         if (start == null || end == null) {
-            _ui.value = _ui.value.copy(routeGeometry = emptyList(), routeFairwayUnavailable = false)
+            _ui.value =
+                _ui.value.copy(
+                    routeGeometry = emptyList(),
+                    routeFairwayUnavailable = false,
+                    routeComputingFairway = false,
+                )
             scheduleRouteWeatherRefresh()
             return
         }
         val gc = GeoMath.greatCirclePoints(start.first, start.second, end.first, end.second)
-        _ui.value = _ui.value.copy(routeGeometry = gc, routeFairwayUnavailable = false)
+        _ui.value =
+            _ui.value.copy(
+                routeGeometry = gc,
+                routeFairwayUnavailable = false,
+                routeComputingFairway = true,
+            )
         scheduleRouteWeatherRefresh()
         viewModelScope.launch {
             val launchStart = start
             val launchEnd = end
-            val fairway =
-                runCatching {
-                    VaylaFairwayRouter.routeAlongNavLines(
+            try {
+                val fairway =
+                    runCatching {
+                        VaylaFairwayRouter.routeAlongNavLines(
+                            launchStart.first,
+                            launchStart.second,
+                            launchEnd.first,
+                            launchEnd.second,
+                        )
+                    }.getOrNull()
+                if (_ui.value.routeStart != launchStart || _ui.value.routeEnd != launchEnd) return@launch
+                val fairwayOk =
+                    fairway?.takeIf { pts ->
+                        pts.size >= 2 && pts.all { (la, lo) -> la.isFinite() && lo.isFinite() }
+                    }
+                if (fairwayOk != null) {
+                    _ui.value =
+                        _ui.value.copy(
+                            routeGeometry = fairwayOk,
+                            routeError = null,
+                            routeFairwayUnavailable = false,
+                        )
+                    scheduleRouteWeatherRefresh()
+                    return@launch
+                }
+                val osrm =
+                    OsrmClient.fetchDrivingGeometry(
                         launchStart.first,
                         launchStart.second,
                         launchEnd.first,
                         launchEnd.second,
                     )
-                }.getOrNull()
-            if (_ui.value.routeStart != launchStart || _ui.value.routeEnd != launchEnd) return@launch
-            val fairwayOk =
-                fairway?.takeIf { pts ->
-                    pts.size >= 2 && pts.all { (la, lo) -> la.isFinite() && lo.isFinite() }
+                if (_ui.value.routeStart != launchStart || _ui.value.routeEnd != launchEnd) return@launch
+                if (!osrm.isNullOrEmpty()) {
+                    _ui.value =
+                        _ui.value.copy(
+                            routeGeometry = osrm,
+                            routeError = null,
+                            routeFairwayUnavailable = true,
+                        )
+                } else {
+                    _ui.value = _ui.value.copy(routeFairwayUnavailable = true)
                 }
-            if (fairwayOk != null) {
-                _ui.value =
-                    _ui.value.copy(
-                        routeGeometry = fairwayOk,
-                        routeError = null,
-                        routeFairwayUnavailable = false,
-                    )
                 scheduleRouteWeatherRefresh()
-                return@launch
+            } finally {
+                if (_ui.value.routeStart == launchStart && _ui.value.routeEnd == launchEnd) {
+                    _ui.value = _ui.value.copy(routeComputingFairway = false)
+                }
             }
-            val osrm =
-                OsrmClient.fetchDrivingGeometry(
-                    launchStart.first,
-                    launchStart.second,
-                    launchEnd.first,
-                    launchEnd.second,
-                )
-            if (_ui.value.routeStart != launchStart || _ui.value.routeEnd != launchEnd) return@launch
-            if (!osrm.isNullOrEmpty()) {
-                _ui.value =
-                    _ui.value.copy(
-                        routeGeometry = osrm,
-                        routeError = null,
-                        routeFairwayUnavailable = true,
-                    )
-            } else {
-                _ui.value = _ui.value.copy(routeFairwayUnavailable = true)
-            }
-            scheduleRouteWeatherRefresh()
         }
     }
 
