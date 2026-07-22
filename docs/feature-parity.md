@@ -100,7 +100,7 @@ Billing intent (store IDs differ by platform):
 | RTE-05 | GPX export | Premium | sync | sync | | 2026-05-24 |
 | RTE-06 | Route plan PDF export | Premium | sync | sync | | 2026-05-24 |
 | RTE-07 | Contextual route hint banner on map | Premium | sync | sync | Capsule banner TopCenter; routeComputingFairway | 2026-06-21 |
-| RTE-08 | Route departure time + timed weather slots | Premium | sync | deferred | `RouteDepartureBar`; depart≠NOW; 15 min steps; PDF | 2026-06-21 |
+| RTE-08 | Route departure time + timed weather slots | Premium | sync | sync | Now / Schedule; local time; 15 min grid; no past; 60s refresh in Now mode; PDF | 2026-07-21 |
 | WIND-01 | 12-day extended wind outlook | Premium | sync | sync | | 2026-05-24 |
 | WTH-06 | Weather outlook tab (24h + 7d, source picker) | Free | sync | sync | `WeatherOutlookPane`; prefs weatherSource | 2026-06-21 |
 | AIS-01 | Digitraffic AIS REST (~60s poll) | Premium | sync | sync | Viewport reload | 2026-05-24 |
@@ -139,6 +139,9 @@ Newest first. One line per change per platform.
 
 | Date | Platform | ID | Summary |
 |------|----------|-----|---------|
+| 2026-07-21 | ios | RTE-08 | Route departure Now/Schedule; local slot times; 15 min snap; clock refresh |
+| 2026-07-21 | android | RTE-08 | Route departure Now/Schedule; `RouteDepartureBar`; timed slots + PDF |
+| 2026-06-22 | android | — | targetSdk/compileSdk 36 (Play API requirement); release 0.3.8 |
 | 2026-06-21 | android | RTE-08 | Route departure time picker (future only); timed weather slots + PDF |
 | 2026-06-21 | android | — | Plan: route departure time + timed forecast slots (RTE-08) |
 | 2026-06-21 | android | NAV-02,WTH-06,RTE-07 | Weather tab, phone hamburger nav, iOS-style route hint banner; v0.3.6 |
