@@ -1,6 +1,7 @@
 package fi.veneappi.app.ui.weather
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +32,7 @@ import fi.veneappi.app.domain.ForecastSampler
 import fi.veneappi.app.domain.HourlySampleRow
 import fi.veneappi.app.domain.SourceId
 import fi.veneappi.app.domain.UnifiedTimePoint
+import fi.veneappi.app.domain.WeatherSymbolDeriver
 import fi.veneappi.app.domain.WindUnit
 import fi.veneappi.app.domain.msToKnots
 import fi.veneappi.app.ui.VeneappiUiState
@@ -154,6 +156,7 @@ fun WeatherOutlookPane(
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
                     horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CircularProgressIndicator()
                     Text(
@@ -221,10 +224,11 @@ private fun WeatherSectionHeader(
     ) {
         Text(
             title,
-            modifier = Modifier.weight(0.22f),
+            modifier = Modifier.weight(0.20f),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
         )
+        Box(modifier = Modifier.weight(0.14f))
         Text(
             stringResource(R.string.weather_col_temp),
             modifier = Modifier.weight(0.14f),
@@ -234,7 +238,7 @@ private fun WeatherSectionHeader(
         )
         Text(
             stringResource(R.string.weather_col_wind, windUnitLabel),
-            modifier = Modifier.weight(0.34f),
+            modifier = Modifier.weight(0.32f),
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -256,6 +260,7 @@ private fun WeatherForecastRow(
     windUnit: WindUnit,
     highlighted: Boolean,
 ) {
+    val symbol = WeatherSymbolDeriver.resolveCode(point)
     Row(
         modifier =
             Modifier
@@ -265,7 +270,7 @@ private fun WeatherForecastRow(
     ) {
         Text(
             label,
-            modifier = Modifier.weight(0.22f),
+            modifier = Modifier.weight(0.20f),
             style =
                 if (highlighted) {
                     MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
@@ -275,6 +280,12 @@ private fun WeatherForecastRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        Box(
+            modifier = Modifier.weight(0.14f),
+            contentAlignment = Alignment.Center,
+        ) {
+            WeatherSymbolImage(symbolCode = symbol, size = 32.dp)
+        }
         Text(
             point?.airTempC?.let { "${it.roundToInt()}°" } ?: "—",
             modifier = Modifier.weight(0.14f),
@@ -283,7 +294,7 @@ private fun WeatherForecastRow(
         )
         Text(
             formatWindCell(point, windUnit),
-            modifier = Modifier.weight(0.34f),
+            modifier = Modifier.weight(0.32f),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             maxLines = 2,

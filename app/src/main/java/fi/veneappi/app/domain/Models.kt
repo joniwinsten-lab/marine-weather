@@ -45,6 +45,8 @@ data class UnifiedTimePoint(
     val windGustMs: Double?,
     val precipitationMmPerH: Double?,
     val thunderProbPercent: Double?,
+    /** FMI smart-symbol code (1–99 day, +100 night). Null when provider does not supply one. */
+    val weatherSymbolCode: Int? = null,
 )
 
 data class UnifiedForecast(

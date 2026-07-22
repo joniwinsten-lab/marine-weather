@@ -36,17 +36,20 @@ object FmiMultipointParser {
                 windSpeedMs = t.windSpeedMs,
                 windFromDeg = t.windFromDeg,
                 windGustMs = t.windGustMs,
-                precipitationMmPerH = null,
+                precipitationMmPerH = t.precipitationMmPerH,
                 thunderProbPercent = null,
+                weatherSymbolCode = t.weatherSymbolCode,
             )
         }
     }
 
     private data class FmiTuple(
+        val weatherSymbolCode: Int?,
         val airTempC: Double,
         val windSpeedMs: Double,
         val windFromDeg: Double,
         val windGustMs: Double?,
+        val precipitationMmPerH: Double?,
     )
 
     private fun parsePositions(block: String): List<Long> {
@@ -73,20 +76,43 @@ object FmiMultipointParser {
                 .lines()
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
+        if (lines.isEmpty()) return emptyList()
+        val columnCount = lines.first().split(Regex("\\s+")).filter { it.isNotEmpty() }.size
+        val usesWeatherSymbol = columnCount >= 6
         val out = ArrayList<FmiTuple>(lines.size)
         for (line in lines) {
             val parts = line.split(Regex("\\s+")).filter { it.isNotEmpty() }
-            if (parts.size < 3) continue
-            val gust =
-                parts.getOrNull(3)?.toDoubleOrNull()?.takeUnless { it.isNaN() }
-            out.add(
-                FmiTuple(
-                    airTempC = parts[0].toDouble(),
-                    windSpeedMs = parts[1].toDouble(),
-                    windFromDeg = parts[2].toDouble(),
-                    windGustMs = gust,
-                ),
-            )
+            if (usesWeatherSymbol && parts.size >= 6) {
+                val symbol = parts[0].toDoubleOrNull()?.toInt()
+                val temp = parts[1].toDoubleOrNull() ?: continue
+                val speed = parts[2].toDoubleOrNull() ?: continue
+                val direction = parts[3].toDoubleOrNull() ?: continue
+                val gust = parts.getOrNull(4)?.toDoubleOrNull()?.takeUnless { it.isNaN() }
+                val precip = parts.getOrNull(5)?.toDoubleOrNull()?.takeUnless { it.isNaN() }
+                out.add(
+                    FmiTuple(
+                        weatherSymbolCode = symbol,
+                        airTempC = temp,
+                        windSpeedMs = speed,
+                        windFromDeg = direction,
+                        windGustMs = gust,
+                        precipitationMmPerH = precip,
+                    ),
+                )
+            } else if (parts.size >= 3) {
+                val gust =
+                    parts.getOrNull(3)?.toDoubleOrNull()?.takeUnless { it.isNaN() }
+                out.add(
+                    FmiTuple(
+                        weatherSymbolCode = null,
+                        airTempC = parts[0].toDouble(),
+                        windSpeedMs = parts[1].toDouble(),
+                        windFromDeg = parts[2].toDouble(),
+                        windGustMs = gust,
+                        precipitationMmPerH = null,
+                    ),
+                )
+            }
         }
         return out
     }

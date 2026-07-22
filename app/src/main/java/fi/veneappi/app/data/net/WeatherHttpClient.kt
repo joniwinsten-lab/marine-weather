@@ -75,7 +75,10 @@ class WeatherHttpClient(
                         "fmi::forecast::harmonie::surface::point::multipointcoverage",
                     )
                     .addQueryParameter("latlon", "$latP,$lonP")
-                    .addQueryParameter("parameters", "temperature,WindSpeedMS,WindDirection,WindGust")
+                    .addQueryParameter(
+                        "parameters",
+                        "WeatherSymbol,temperature,WindSpeedMS,WindDirection,WindGust,PrecipitationAmount",
+                    )
                     .build()
             val xml = executeGet(url.toString())
             val points = FmiMultipointParser.parse(xml)

@@ -25,6 +25,28 @@ class FmiParserTest {
         assertThat(points[0].airTempC).isEqualTo(10.0)
         assertThat(points[0].windSpeedMs).isEqualTo(2.0)
         assertThat(points[0].windFromDeg).isEqualTo(90.0)
+        assertThat(points[0].weatherSymbolCode).isNull()
         assertThat(points[1].airTempC).isEqualTo(9.0)
+    }
+
+    @Test
+    fun parses_weather_symbol_and_precip_columns() {
+        val xml =
+            """
+            <root xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0" xmlns:gml="http://www.opengis.net/gml/3.2">
+              <gmlcov:positions>
+                60.17000 24.94000  1700000000
+              </gmlcov:positions>
+              <gml:doubleOrNilReasonTupleList>
+                1 10.0 2.0 90.0 4.0 0.2
+              </gml:doubleOrNilReasonTupleList>
+            </root>
+            """.trimIndent()
+
+        val points = FmiMultipointParser.parse(xml)
+        assertThat(points).hasSize(1)
+        assertThat(points[0].weatherSymbolCode).isEqualTo(1)
+        assertThat(points[0].airTempC).isEqualTo(10.0)
+        assertThat(points[0].precipitationMmPerH).isEqualTo(0.2)
     }
 }

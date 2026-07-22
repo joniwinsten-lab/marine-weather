@@ -54,7 +54,13 @@ data class MetInstantDetails(
 
 @Serializable
 data class MetNextHours(
+    val summary: MetSummary? = null,
     val details: MetNextDetails? = null,
+)
+
+@Serializable
+data class MetSummary(
+    @SerialName("symbol_code") val symbolCode: String? = null,
 )
 
 @Serializable

@@ -102,7 +102,7 @@ Billing intent (store IDs differ by platform):
 | RTE-07 | Contextual route hint banner on map | Premium | sync | sync | Capsule banner TopCenter; routeComputingFairway | 2026-06-21 |
 | RTE-08 | Route departure time + timed weather slots | Premium | sync | sync | Now / Schedule; local time; 15 min grid; no past; 60s refresh in Now mode; PDF | 2026-07-21 |
 | WIND-01 | 12-day extended wind outlook | Premium | sync | sync | | 2026-05-24 |
-| WTH-06 | Weather outlook tab (24h + 7d, source picker) | Free | sync | sync | `WeatherOutlookPane`; prefs weatherSource | 2026-06-21 |
+| WTH-06 | Weather outlook tab (24h + 7d, source picker) | Free | sync | sync | FMI smart-symbol icons via CDN; MET map + SMHI derive | 2026-06-22 |
 | AIS-01 | Digitraffic AIS REST (~60s poll) | Premium | sync | sync | Viewport reload | 2026-05-24 |
 | AIS-02 | AIS vessel detail sheet | Premium | sync | sync | | 2026-05-24 |
 | AIS-03 | AIS MQTT live stream | Premium | sync | sync | Digitraffic MQTT WSS; viewport MMSI subs; dead reckoning tick | 2026-06-25 |
@@ -141,6 +141,7 @@ Newest first. One line per change per platform.
 |------|----------|-----|---------|
 | 2026-07-21 | ios | RTE-08 | Route departure Now/Schedule; local slot times; 15 min snap; clock refresh |
 | 2026-07-21 | android | RTE-08 | Route departure Now/Schedule; `RouteDepartureBar`; timed slots + PDF |
+| 2026-06-22 | android | WTH-06 | FMI smart-symbol icons on Weather tab (MET/SMHI/FMI); 0.3.11 |
 | 2026-06-22 | android | RTE-08 | Fix route weather cards collapsing in scroll (fixed height strips); 0.3.10 |
 | 2026-06-22 | android | RTE-08 | Route weather pane always scrolls (scheduled departure fits) |
 | 2026-06-22 | android | — | targetSdk/compileSdk 36 (Play API requirement); release 0.3.8 |

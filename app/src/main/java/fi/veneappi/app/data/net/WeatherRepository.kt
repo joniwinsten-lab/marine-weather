@@ -116,6 +116,7 @@ private data class CachedForecast(
                         windGustMs = it.windGustMs,
                         precipitationMmPerH = it.precipitationMmPerH,
                         thunderProbPercent = it.thunderProbPercent,
+                        weatherSymbolCode = it.weatherSymbolCode,
                     )
                 },
         )
@@ -137,6 +138,7 @@ private data class CachedForecast(
                             windGustMs = it.windGustMs,
                             precipitationMmPerH = it.precipitationMmPerH,
                             thunderProbPercent = it.thunderProbPercent,
+                            weatherSymbolCode = it.weatherSymbolCode,
                         )
                     },
             )
@@ -152,4 +154,5 @@ private data class CachedPoint(
     val windGustMs: Double?,
     val precipitationMmPerH: Double?,
     val thunderProbPercent: Double?,
+    val weatherSymbolCode: Int? = null,
 )
