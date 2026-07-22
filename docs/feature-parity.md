@@ -141,6 +141,7 @@ Newest first. One line per change per platform.
 |------|----------|-----|---------|
 | 2026-07-21 | ios | RTE-08 | Route departure Now/Schedule; local slot times; 15 min snap; clock refresh |
 | 2026-07-21 | android | RTE-08 | Route departure Now/Schedule; `RouteDepartureBar`; timed slots + PDF |
+| 2026-06-22 | android | RTE-08 | Route weather pane always scrolls (scheduled departure fits) |
 | 2026-06-22 | android | — | targetSdk/compileSdk 36 (Play API requirement); release 0.3.8 |
 | 2026-06-21 | android | RTE-08 | Route departure time picker (future only); timed weather slots + PDF |
 | 2026-06-21 | android | — | Plan: route departure time + timed forecast slots (RTE-08) |

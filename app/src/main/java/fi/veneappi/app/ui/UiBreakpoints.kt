@@ -29,7 +29,7 @@ object UiBreakpoints {
     /** Dense three-stack needs enough vertical space (e.g. phone landscape side column). */
     const val WEATHER_PANE_DENSE_MIN_HEIGHT_DP = 420
 
-    /** Route weather strip: scroll cards instead of equal-height stack below this height. */
+    /** Route weather strip: historically toggled scroll below this height; pane now always scrolls. */
     const val ROUTE_WEATHER_SCROLL_MAX_HEIGHT_DP = 520
 
     /** Cap readable width for extended wind table on very wide tablets. */

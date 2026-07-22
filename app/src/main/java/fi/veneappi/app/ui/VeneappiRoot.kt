@@ -1584,14 +1584,14 @@ private fun RouteWeatherRightPane(
     onDownloadOfflinePack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier.fillMaxSize()) {
-        val scrollWeather = maxHeight < UiBreakpoints.ROUTE_WEATHER_SCROLL_MAX_HEIGHT_DP.dp
-        Column(
-            Modifier
-                .fillMaxSize()
-                .imePadding()
-                .padding(horizontal = 2.dp, vertical = 1.dp),
-        ) {
+    Column(
+        modifier
+            .fillMaxSize()
+            .imePadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 2.dp, vertical = 1.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+    ) {
         RouteDepartureBar(
             ui = ui,
             onDepartureNow = onDepartureNow,
@@ -1670,51 +1670,23 @@ private fun RouteWeatherRightPane(
                 Triple(SourceId.SMHI, stringResource(R.string.source_smhi), ui.routeWeatherBySource[SourceId.SMHI]),
                 Triple(SourceId.FMI, stringResource(R.string.source_fmi), ui.routeWeatherBySource[SourceId.FMI]),
             )
-        if (scrollWeather) {
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-            ) {
-                for ((id, title, result) in cards) {
-                    RouteStripForSource(
-                        sourceId = id,
-                        title = title,
-                        result = result,
-                        slotLabels = slotLabels,
-                        windUnit = windUnit,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 96.dp),
-                    )
-                }
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 3.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            for ((id, title, result) in cards) {
+                RouteStripForSource(
+                    sourceId = id,
+                    title = title,
+                    result = result,
+                    slotLabels = slotLabels,
+                    windUnit = windUnit,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 112.dp),
+                )
             }
-        } else {
-            Column(
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(3.dp),
-            ) {
-                for ((id, title, result) in cards) {
-                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                        RouteStripForSource(
-                            sourceId = id,
-                            title = title,
-                            result = result,
-                            slotLabels = slotLabels,
-                            windUnit = windUnit,
-                            modifier = Modifier.fillMaxSize(),
-                        )
-                    }
-                }
-            }
-        }
         }
     }
 }
