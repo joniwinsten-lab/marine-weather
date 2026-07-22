@@ -1588,9 +1588,7 @@ private fun RouteWeatherRightPane(
         modifier
             .fillMaxSize()
             .imePadding()
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 2.dp, vertical = 1.dp),
-        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         RouteDepartureBar(
             ui = ui,
@@ -1670,8 +1668,14 @@ private fun RouteWeatherRightPane(
                 Triple(SourceId.SMHI, stringResource(R.string.source_smhi), ui.routeWeatherBySource[SourceId.SMHI]),
                 Triple(SourceId.FMI, stringResource(R.string.source_fmi), ui.routeWeatherBySource[SourceId.FMI]),
             )
+        // Dense SourceWindForecastCard uses fillMaxHeight + weight; needs a bounded height.
+        // Scroll this list so scheduled departure chrome still leaves forecasts reachable.
         Column(
-            modifier = Modifier.fillMaxWidth().padding(top = 3.dp),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(3.dp),
         ) {
             for ((id, title, result) in cards) {
@@ -1684,7 +1688,7 @@ private fun RouteWeatherRightPane(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .heightIn(min = 112.dp),
+                            .height(148.dp),
                 )
             }
         }
